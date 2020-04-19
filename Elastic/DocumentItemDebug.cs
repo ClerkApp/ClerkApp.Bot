@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace ClerkBot.Elastic
 {
-    public class DocumentItem
+    public class DocumentItemDebug
     {
         /// <summary>
         /// Gets or sets the sanitized Id/Key as Object Id.

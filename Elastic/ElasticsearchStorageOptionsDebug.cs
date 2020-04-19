@@ -5,7 +5,7 @@ namespace ClerkBot.Elastic
     /// <summary>
     /// Elasticsearch Storage Options.
     /// </summary>
-    public class ElasticsearchStorageOptions
+    public class ElasticsearchStorageOptionsDebug
     {
         /// <summary>
         /// Gets or sets the Elasticsearch endpoint.

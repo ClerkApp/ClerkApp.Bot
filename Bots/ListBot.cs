@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ClerkBot.Elastic;
+using Bot.Storage.Elasticsearch;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
@@ -23,9 +23,6 @@ namespace ClerkBot.Bots
             IndexName = "conversation-data",
             IndexMappingDepthLimit = 100000
         });
-
-        // Create cancellation token (used by Async Write operation).
-        public CancellationToken cancellationToken { get; private set; }
 
         // Class for storing a log of utterances (text of messages) as a list.
         public class UtteranceLog : IStoreItem

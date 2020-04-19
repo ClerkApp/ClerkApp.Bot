@@ -18,7 +18,7 @@ namespace ClerkBot.Elastic
     /// <summary>
     /// Implements an Elasticsearch based storage provider for a bot.
     /// </summary>
-    public class ElasticsearchStorage : IStorage
+    public class ElasticsearchStorageDebug : IStorage
     {
         // Constants
         public const string IndexMappingDepthLimitSetting = "mapping.depth.limit";
@@ -42,7 +42,7 @@ namespace ClerkBot.Elastic
         private readonly int indexMappingDepthLimit;
 
         // Options for the elasticsearch storage component.
-        private readonly ElasticsearchStorageOptions elasticsearchStorageOptions;
+        private readonly ElasticsearchStorageOptionsDebug elasticsearchStorageOptions;
 
         private ElasticClient elasticClient;
 
@@ -50,7 +50,7 @@ namespace ClerkBot.Elastic
         /// Initializes a new instance of the <see cref="ElasticsearchStorage"/> class.
         /// </summary>
         /// <param name="elasticsearchStorageOptions"><see cref="ElasticsearchStorageOptions"/>.</param>
-        public ElasticsearchStorage(ElasticsearchStorageOptions elasticsearchStorageOptions)
+        public ElasticsearchStorageDebug(ElasticsearchStorageOptionsDebug elasticsearchStorageOptions)
         {
             if (elasticsearchStorageOptions == null)
             {
@@ -90,7 +90,7 @@ namespace ClerkBot.Elastic
             // Delete the corresponding keys.
             foreach (var key in keys)
             {
-                await elasticClient.DeleteAsync<DocumentItem>(SanitizeKey(key), d => d
+                await elasticClient.DeleteAsync<DocumentItemDebug>(SanitizeKey(key), d => d
                     .Index(indexToUse).Refresh(Refresh.True), cancellationToken).ConfigureAwait(false);
             }
         }
@@ -119,7 +119,7 @@ namespace ClerkBot.Elastic
 
             foreach (var key in keys)
             {
-                var searchResponse = await elasticClient.SearchAsync<DocumentItem>(
+                var searchResponse = await elasticClient.SearchAsync<DocumentItemDebug>(
                     s => s
                 .Index(indexToUse)
                 .Sort(ss => ss
@@ -168,7 +168,7 @@ namespace ClerkBot.Elastic
             foreach (var (key, newValue) in changes)
             {
                 var newState = JObject.FromObject(newValue, JsonSerializer);
-                var documentItem = new DocumentItem
+                var documentItem = new DocumentItemDebug
                 {
                     Id = SanitizeKey(key),
                     RealId = key,
@@ -242,7 +242,7 @@ namespace ClerkBot.Elastic
                     {
                         // If the index does not exist, create a new one with the current date and alias it.
                         await elasticClient.Indices.CreateAsync(
-                                indexToUse, c => c.Map<DocumentItem>(m => m.AutoMap())
+                                indexToUse, c => c.Map<DocumentItemDebug>(m => m.AutoMap())
                                     .Settings(s => s.Setting(IndexMappingDepthLimitSetting, indexMappingDepthLimit)))
                             .ConfigureAwait(false);
 
