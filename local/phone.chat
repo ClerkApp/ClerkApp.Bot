@@ -1,0 +1,33 @@
+user=alex
+bot=clerkbot
+
+bot: What can I help you?
+user: Hi, I'm looking for a phone, can you help?
+
+bot: I can help you choose the best phone to suit your needs!
+bot: [Typing][Delay=3000]
+bot: There are four type of range you could choose from
+
+[AttachmentLayout=carousel]
+[Attachment=cards/lowBudget.json adaptivecard]
+[Attachment=cards/midRange.json adaptivecard]
+[Attachment=cards/highEnd.json adaptivecard]
+[Attachment=cards/flagship.json adaptivecard]
+
+bot: What's your best feature?
+
+[Typing][Delay=5000][Suggestions=Gaming|Photos|DailyTaks]
+
+bot: Pick some of your favorites:
+O: Samsung, Huawei, Sony, Xiaomi, OnePlus, Apple
+
+bot: How your old phone looks?
+O: Very used, as new, just a few scrach
+
+bot: Do you have a color prefer?
+O: Black, White, Red, Blue
+
+bot: I believe I've found a perfect phone for you. Just look at these bauties!
+
+user: Awesome! Thanks!
+bot: Anytime!
