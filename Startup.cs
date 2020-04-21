@@ -14,7 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using ClerkBot.Bots;
-using ClerkBot.Elastic;
+using ClerkBot.Services;
 using Microsoft.Extensions.Hosting;
 
 namespace ClerkBot
@@ -38,43 +38,42 @@ namespace ClerkBot
 
             // Configure state
             ConfigureState(services);
-            //services.AddSingleton<IStorage, MemoryStorage>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             //services.AddTransient<IBot, EchoBot>();
-            services.AddTransient<IBot, ListBot>();
+            //services.AddTransient<IBot, ListBot>();
+            //services.AddTransient<IBot, GreetingBot>();
+            services.AddTransient<IBot, GreetingBot>();
         }
 
         public void ConfigureState(IServiceCollection services)
         {
-            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes)
-            //services.AddSingleton<IStorage, MemoryStorage>();
+            var conversationState = new ConversationState(
+                new ElasticsearchStorage(
+                    new ElasticsearchStorageOptions
+                    {
+                        ElasticsearchEndpoint = new Uri("http://localhost:9200"),
+                        IndexName = "conversation-data",
+                        IndexMappingDepthLimit = 100000
+                    }
+                ));
+
+            var userState = new UserState(
+                new ElasticsearchStorage(
+                    new ElasticsearchStorageOptions
+                    {
+                        ElasticsearchEndpoint = new Uri("http://localhost:9200"),
+                        IndexName = "user-data",
+                        IndexMappingDepthLimit = 100000
+                    }
+                ));
+
             services.AddSingleton<IStorage, ElasticsearchStorage>();
-
-            // Conversation State Storage
-            var conversationDataStorageOptions = new ElasticsearchStorageOptions
-            {
-                ElasticsearchEndpoint = new Uri("http://localhost:9200"),
-                IndexName = "conversation-data",
-                IndexMappingDepthLimit = 100000
-            };
-
-            IStorage conversationDataStore = new ElasticsearchStorage(conversationDataStorageOptions);
-            var conversationState = new ConversationState(conversationDataStore);
+            services.AddSingleton(new BotStateService(conversationState, userState));
             services.AddSingleton(conversationState);
-
-            //// User State Storage
-            var userDataStorageOptions = new ElasticsearchStorageOptions
-            {
-                ElasticsearchEndpoint = new Uri("http://localhost:9200"),
-                IndexName = "user-data",
-                IndexMappingDepthLimit = 100000
-            };
-
-            IStorage userDataStore = new ElasticsearchStorage(userDataStorageOptions);
-            var userState = new UserState(userDataStore);
             services.AddSingleton(userState);
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
