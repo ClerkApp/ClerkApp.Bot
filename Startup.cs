@@ -12,10 +12,13 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Configuration;
 
 using ClerkBot.Bots;
+using ClerkBot.Dialogs;
 using ClerkBot.Services;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols;
 
 namespace ClerkBot
 {
@@ -36,14 +39,22 @@ namespace ClerkBot
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
+            // Configure Storage
+            services.AddSingleton<IStorage, ElasticsearchStorage>();
+
             // Configure state
             ConfigureState(services);
 
+            // Configure Dialogs
+            ConfigureDialogs(services);
+
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            //services.AddTransient<IBot, EchoBot>();
-            //services.AddTransient<IBot, ListBot>();
-            //services.AddTransient<IBot, GreetingBot>();
-            services.AddTransient<IBot, GreetingBot>();
+            services.AddTransient<IBot, DialogBot<MainDialog>>();
+        }
+
+        private void ConfigureDialogs(IServiceCollection services)
+        {
+            services.AddSingleton<MainDialog>();
         }
 
         public void ConfigureState(IServiceCollection services)
@@ -52,9 +63,8 @@ namespace ClerkBot
                 new ElasticsearchStorage(
                     new ElasticsearchStorageOptions
                     {
-                        ElasticsearchEndpoint = new Uri("http://localhost:9200"),
-                        IndexName = "conversation-data",
-                        IndexMappingDepthLimit = 100000
+                        ElasticsearchEndpoint = new Uri(Configuration["ConnectionStrings:ElasticsearchEndpoint"]),
+                        IndexName = Configuration["ConnectionStrings:ElasticsearchConversationIndex"]
                     }
                 ));
 
@@ -62,13 +72,11 @@ namespace ClerkBot
                 new ElasticsearchStorage(
                     new ElasticsearchStorageOptions
                     {
-                        ElasticsearchEndpoint = new Uri("http://localhost:9200"),
-                        IndexName = "user-data",
-                        IndexMappingDepthLimit = 100000
+                        ElasticsearchEndpoint = new Uri(Configuration["ConnectionStrings:ElasticsearchEndpoint"]),
+                        IndexName = Configuration["ConnectionStrings:ElasticsearchUserIndex"]
                     }
                 ));
 
-            services.AddSingleton<IStorage, ElasticsearchStorage>();
             services.AddSingleton(new BotStateService(conversationState, userState));
             services.AddSingleton(conversationState);
             services.AddSingleton(userState);
