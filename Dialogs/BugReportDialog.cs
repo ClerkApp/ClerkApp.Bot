@@ -108,10 +108,11 @@ namespace ClerkBot.Dialogs
 
             // Show the summary to the user
             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Here is a summary of your bug report:"), cancellationToken);
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(String.Format("Description: {0}", userProfile.Description)), cancellationToken);
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(String.Format("Callback Time: {0}", userProfile.CallbackTime.ToString())), cancellationToken);
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(String.Format("Phone Number: {0}", userProfile.PhoneNumber)), cancellationToken);
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(String.Format("Bug: {0}", userProfile.Bug)), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Description: {userProfile.Description}"), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(
+                $"Callback Time: {userProfile.CallbackTime.ToString()}"), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Phone Number: {userProfile.PhoneNumber}"), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Bug: {userProfile.Bug}"), cancellationToken);
 
             // Save data in userstate
             await _botStateService.UserProfileAccessor.SetAsync(stepContext.Context, userProfile);

@@ -17,6 +17,8 @@ using System.Configuration;
 using ClerkBot.Bots;
 using ClerkBot.Dialogs;
 using ClerkBot.Services;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols;
 
@@ -35,14 +37,18 @@ namespace ClerkBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddHealthChecks();
+
+            // Create the credential provider to be used with the Bot Framework Adapter.
+            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // Configure Storage
-            services.AddSingleton<IStorage, ElasticsearchStorage>();
+            // Configure Services
+            ConfigureAditionalServices(services);
 
-            // Configure state
+            // Configure State
             ConfigureState(services);
 
             // Configure Dialogs
@@ -52,19 +58,23 @@ namespace ClerkBot
             services.AddTransient<IBot, DialogBot<MainDialog>>();
         }
 
-        private void ConfigureDialogs(IServiceCollection services)
+        private void ConfigureAditionalServices(IServiceCollection services)
         {
-            services.AddSingleton<MainDialog>();
+            services.AddSingleton<BotServices>();
+            services.AddSingleton<BotStateService>();
         }
 
         public void ConfigureState(IServiceCollection services)
         {
+            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.) 
+            services.AddSingleton<IStorage, ElasticsearchStorage>();
+
             var conversationState = new ConversationState(
                 new ElasticsearchStorage(
                     new ElasticsearchStorageOptions
                     {
-                        ElasticsearchEndpoint = new Uri(Configuration["ConnectionStrings:ElasticsearchEndpoint"]),
-                        IndexName = Configuration["ConnectionStrings:ElasticsearchConversationIndex"]
+                        ElasticsearchEndpoint = new Uri(Configuration["ConnectionStrings:Elasticsearch:Endpoint"]),
+                        IndexName = Configuration["ConnectionStrings:Elasticsearch:ConversationIndex"]
                     }
                 ));
 
@@ -72,16 +82,19 @@ namespace ClerkBot
                 new ElasticsearchStorage(
                     new ElasticsearchStorageOptions
                     {
-                        ElasticsearchEndpoint = new Uri(Configuration["ConnectionStrings:ElasticsearchEndpoint"]),
-                        IndexName = Configuration["ConnectionStrings:ElasticsearchUserIndex"]
+                        ElasticsearchEndpoint = new Uri(Configuration["ConnectionStrings:Elasticsearch:Endpoint"]),
+                        IndexName = Configuration["ConnectionStrings:Elasticsearch:UserIndex"]
                     }
                 ));
 
-            services.AddSingleton(new BotStateService(conversationState, userState));
             services.AddSingleton(conversationState);
             services.AddSingleton(userState);
         }
 
+        public void ConfigureDialogs(IServiceCollection services)
+        {
+            services.AddSingleton<MainDialog>();
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -96,28 +109,21 @@ namespace ClerkBot
                 app.UseHsts();
             }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-            app.UseWebSockets();
-
-            // Runs matching. An endpoint is selected and set on the HttpContext if a match is found.
-            app.UseRouting();
-
-            // Middleware that run after routing occurs. Usually the following appear here:
-            app.UseAuthentication();
-            app.UseAuthorization();
             app.UseCors();
-            // These middleware can take different actions based on the endpoint.
-
-            // Executes the endpoint that was selected by routing.
-            app.UseEndpoints(endpoints =>
-            {
-                // Mapping of endpoints goes here:
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
-            });
-
-            // Middleware here will only run if nothing was matched.
+            //app.UseHttpsRedirection();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseRouting()
+                .UseAuthentication()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                    endpoints.MapRazorPages();
+                    //endpoints.MapBlazorHub();
+                    //endpoints.MapFallbackToPage("/_Host");
+                    endpoints.MapHealthChecks("/health");
+                });
         }
     }
 }
