@@ -12,15 +12,12 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-
 using ClerkBot.Bots;
 using ClerkBot.Dialogs;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Protocols;
 
 namespace ClerkBot
 {
@@ -37,6 +34,7 @@ namespace ClerkBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddControllers().AddNewtonsoftJson();
             services.AddHealthChecks();
 
             // Create the credential provider to be used with the Bot Framework Adapter.
@@ -55,7 +53,7 @@ namespace ClerkBot
             ConfigureDialogs(services);
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, DialogBot<MainDialog>>();
+            services.AddTransient<IBot, DialogAndWelcomeBot<RootDialog>>();
         }
 
         private void ConfigureAditionalServices(IServiceCollection services)
@@ -93,7 +91,7 @@ namespace ClerkBot
 
         public void ConfigureDialogs(IServiceCollection services)
         {
-            services.AddSingleton<MainDialog>();
+            services.AddSingleton<RootDialog>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
