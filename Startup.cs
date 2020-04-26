@@ -53,7 +53,8 @@ namespace ClerkBot
             ConfigureDialogs(services);
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, DialogAndWelcomeBot<RootDialog>>();
+            //services.AddTransient<IBot, DialogAndWelcomeBot<RootDialog>>();
+            services.AddTransient<IBot, AuthBot<RootDialog>>();
         }
 
         private void ConfigureAditionalServices(IServiceCollection services)

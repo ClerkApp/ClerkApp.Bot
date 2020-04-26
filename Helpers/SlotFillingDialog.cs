@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ClerkBot.Helpers;
 using ClerkBot.Prompts;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
-namespace ClerkBot.Dialogs
+namespace ClerkBot.Helpers
 {
     /// <summary>
     /// This is an example of implementing a custom Dialog class. This is similar to the Waterfall dialog in the framework;

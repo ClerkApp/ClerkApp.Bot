@@ -47,5 +47,11 @@ namespace ClerkBot.Bots
             Logger.LogInformation("Running dialog with Message Activity.");
             await Dialog.RunAsync(turnContext, BotStateService.DialogStateAccessor, cancellationToken);
         }
+
+        protected override async Task OnTokenResponseEventAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            Logger.LogInformation("Running dialog with Token Response Event Activity.");
+            await Dialog.RunAsync(turnContext, BotStateService.DialogStateAccessor, cancellationToken);
+        }
     }
 }

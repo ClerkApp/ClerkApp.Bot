@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,11 +14,11 @@ using Newtonsoft.Json;
 
 namespace ClerkBot.Bots
 {
-    public class DialogAndWelcomeBot<T> : DialogBot<T> where T : Dialog
+    public class AuthBot<T> : DialogBot<T> where T : Dialog
     {
-        private const string WelcomeText = @"This bot will introduce you to translation middleware. Say 'hi' to get started.";
+        private const string WelcomeText = "Welcome to ClerkApp. Type 'login' to get logged in and'logout' to sign-out.";
 
-        public DialogAndWelcomeBot(BotStateService botStateService, T dialog, ILogger<DialogBot<T>> logger)
+        public AuthBot(BotStateService botStateService, T dialog, ILogger<DialogBot<T>> logger)
             : base(botStateService, dialog, logger)
         {
         }
@@ -38,16 +41,11 @@ namespace ClerkBot.Bots
                     await turnContext.SendActivityAsync(response, cancellationToken);
                     await turnContext.SendActivityAsync(MessageFactory.Text(WelcomeText), cancellationToken);
                 }
-                //else
-                //{
-                //    var userProfile = await BotStateService.UserProfileAccessor.GetAsync(turnContext, () => new UserProfile(), cancellationToken);
-                //    await turnContext.SendActivityAsync(MessageFactory.Text($"Hi {userProfile.FirstName}, how can I help you today?"), cancellationToken);
-                //}
             }
         }
 
         // Load attachment from file.
-        private Attachment CreateAdaptiveCardAttachment()
+        private static Attachment CreateAdaptiveCardAttachment()
         {
             // combine path for cross platform support
             string[] paths = { ".", "Cards", "welcomeCard.json" };

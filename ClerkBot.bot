@@ -1,28 +1,28 @@
 {
-    "name": "ClerkBot",
-    "description": "",
-    "services": [
-        {
-            "type": "endpoint",
-            "appId": "",
-            "appPassword": "",
-            "endpoint": "http://localhost:3978/api/messages",
-            "id": "15da2740-872c-11e9-b564-037877b365dd",
-            "name": "development"
-        },
-        {
-            "type": "luis",
-            "id": "60",
-            "name": "ClerkbotServiceModel",
-            "version": "0.1",
-            "appId": "fa7303b3-0cac-44f7-9406-3c35a0d89d29",
-            "authoringKey": "59b3ce6018f64989a3f0a079d3a6ac79",
-            "subscriptionKey": "59b3ce6018f64989a3f0a079d3a6ac79",
-            "region": "eastus"
-        }
-    ],
-    "padlock": "",
-    "version": "2.0",
-    "overrides": null,
-    "path": "C:\\ClerkApp\\ClerkApp.Bot\\ClerkBot.bot"
+  "name": "ClerkApp.Bot",
+  "description": "",
+  "services": [
+    {
+      "type": "endpoint",
+	    "appId": "a18da856-790d-473e-910c-cd18e85ab64d",
+	    "appPassword": "CgB4YWp=da.RXeyA4GYejr@22xlrbh/.",
+      "endpoint": "http://localhost:3978/api/messages",
+      "id": "15da2740-872c-11e9-b564-037877b365dd",
+      "name": "development"
+    },
+    {
+      "type": "luis",
+      "id": "60",
+      "name": "ClerkbotServiceModel",
+      "version": "0.1",
+      "appId": "fa7303b3-0cac-44f7-9406-3c35a0d89d29",
+      "authoringKey": "59b3ce6018f64989a3f0a079d3a6ac79",
+      "subscriptionKey": "59b3ce6018f64989a3f0a079d3a6ac79",
+      "region": "eastus"
+    }
+  ],
+  "padlock": "",
+  "version": "2.0",
+  "overrides": null,
+  "path": "C:\\ClerkApp\\ClerkApp.Bot\\ClerkApp.bot"
 }

@@ -5,19 +5,22 @@ using ClerkBot.Helpers;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 
 namespace ClerkBot.Dialogs
 {
     public class RootDialog : ComponentDialog
     {
-        private readonly BotStateService _botStateService;
-        private readonly BotServices _botServices;
+        private readonly BotStateService BotStateService;
+        private readonly BotServices BotServices;
+        private readonly IConfiguration Configuration;
 
-        public RootDialog(BotStateService botStateService, BotServices botServices)
+        public RootDialog(IConfiguration configuration, BotStateService botStateService, BotServices botServices)
             : base(Common.BuildDialogId())
         {
-            _botStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
-            _botServices = botServices ?? throw new ArgumentNullException(nameof(botServices));
+            BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
+            BotServices = botServices ?? throw new ArgumentNullException(nameof(botServices));
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
             InitializeWaterfallDialog();
         }
@@ -32,9 +35,10 @@ namespace ClerkBot.Dialogs
             };
 
             // Add Named Dialogs
-            AddDialog(new GreetingDialog(nameof(GreetingDialog), _botStateService));
-            AddDialog(new BugReportDialog(nameof(BugReportDialog), _botStateService));
-            AddDialog(new BugTypeDialog(nameof(BugTypeDialog), _botStateService, _botServices));
+            AddDialog(new GreetingDialog(nameof(GreetingDialog), BotStateService));
+            AddDialog(new BugReportDialog(nameof(BugReportDialog), BotStateService));
+            AddDialog(new BugTypeDialog(nameof(BugTypeDialog), BotStateService, BotServices));
+            AddDialog(new LoginDialog(nameof(LoginDialog), Configuration));
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
 
@@ -45,7 +49,7 @@ namespace ClerkBot.Dialogs
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // First, we use the dispatch model to determine which cognitive service (LUIS or QnA) to use.
-            var recognizerResult = await _botServices.Dispatch.RecognizeAsync(stepContext.Context, cancellationToken);
+            var recognizerResult = await BotServices.Dispatch.RecognizeAsync(stepContext.Context, cancellationToken);
 
             // Top intent tell us which cognitive service to use.
             var topIntent = recognizerResult.GetTopScoringIntent();
@@ -58,9 +62,13 @@ namespace ClerkBot.Dialogs
                     return await stepContext.BeginDialogAsync(nameof(BugReportDialog), null, cancellationToken);
                 case "QueryBugTypeIntent":
                     return await stepContext.BeginDialogAsync(nameof(BugTypeDialog), null, cancellationToken);
+                case "AuthIntent":
+                    return await stepContext.BeginDialogAsync(nameof(LoginDialog), null, cancellationToken);
                 default:
+                {
                     await stepContext.Context.SendActivityAsync(MessageFactory.Text($"I'm sorry I don't know what you mean."), cancellationToken);
                     break;
+                }
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
