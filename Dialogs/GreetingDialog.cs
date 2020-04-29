@@ -43,16 +43,8 @@ namespace ClerkBot.Dialogs
             };
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
-
             InitialDialogId = Common.BuildDialogId();
         }
-
-        private async Task<DialogTurnResult> SendAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            AddDialog(new SlotFillingDialog(Slots));
-            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
-        }
-
 
         private async Task<DialogTurnResult> NameStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -104,6 +96,12 @@ namespace ClerkBot.Dialogs
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> SendAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            AddDialog(new SlotFillingDialog(Slots));
+            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ProcessResultsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

@@ -5,6 +5,11 @@ namespace ClerkBot.Models
     // Defines a state property used to track information about the user.
     public class UserProfile
     {
+        public UserProfile()
+        {
+            ElectronicsProfile = new ElectronicsProfile();
+        }
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -22,5 +27,7 @@ namespace ClerkBot.Models
         public string Bug { get; set; }
 
         public string LanguagePreference { get; set; }
+
+        public ElectronicsProfile ElectronicsProfile { get; set; }
     }
 }

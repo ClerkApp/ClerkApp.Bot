@@ -39,6 +39,7 @@ namespace ClerkBot.Dialogs
             AddDialog(new BugReportDialog(nameof(BugReportDialog), BotStateService));
             AddDialog(new BugTypeDialog(nameof(BugTypeDialog), BotStateService, BotServices));
             AddDialog(new LoginDialog(nameof(LoginDialog), Configuration));
+            AddDialog(new PhoneDialog(nameof(PhoneDialog), BotStateService));
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
 
@@ -64,6 +65,8 @@ namespace ClerkBot.Dialogs
                     return await stepContext.BeginDialogAsync(nameof(BugTypeDialog), null, cancellationToken);
                 case "AuthIntent":
                     return await stepContext.BeginDialogAsync(nameof(LoginDialog), null, cancellationToken);
+                case "ElectronicIntent":
+                    return await stepContext.BeginDialogAsync(nameof(PhoneDialog), null, cancellationToken);
                 default:
                 {
                     await stepContext.Context.SendActivityAsync(MessageFactory.Text($"I'm sorry I don't know what you mean."), cancellationToken);

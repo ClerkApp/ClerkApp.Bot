@@ -1,0 +1,54 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+      {
+          "type": "TextBlock",
+          "text": "What are your most used features?"
+      },
+      {
+        "type": "Input.ChoiceSet",
+        "id": "Features",
+        "isMultiSelect": true,
+        "value": "1",
+        "style": "expanded",
+        "choices": [
+          {
+            "title": "Camera",
+            "value": "camera"
+          },
+          {
+            "title": "Gaming",
+            "value": "gaming"
+          },
+          {
+            "title": "Agnostic Platform",
+            "value": "agnostic"
+          },
+          {
+            "title": "Social Media",
+            "value": "socialMedia"
+          },
+          {
+            "title": "Browsing",
+            "value": "browsing"
+          },
+          {
+            "title": "Video Streaming",
+            "value": "streaming"
+          },
+          {
+            "title": "Calling",
+            "value": "calls"
+          }
+        ]
+      }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "OK"
+        }
+    ]
+}

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
+using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace ClerkBot.Helpers
 {
@@ -30,6 +33,27 @@ namespace ClerkBot.Helpers
             }
 
             return $"{methodInfo.ReflectedType.Name}.{dialogId}";
+        }
+
+        public static Attachment CreateAdaptiveCardAttachment(string adaptiveCardJson)
+        {
+            //var path = Path.Combine(".", "Resources", "Cards", "AdaptiveCards", "ChoiceSet", "PhoneWantedFeatures", "json");
+            var adaptiveCardAttachment = new Attachment()
+            {
+                ContentType = "application/vnd.microsoft.card.adaptive",
+                Content = JsonConvert.DeserializeObject(adaptiveCardJson),
+            };
+            return adaptiveCardAttachment;
+        }
+
+        public static T CreateInstance<T>(params object[] args)
+        {
+            var type = typeof(T);
+            var instance = type.Assembly.CreateInstance(
+                type.FullName ?? throw new InvalidOperationException(), false,
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null, args, null, null);
+            return (T)instance;
         }
     }
 }

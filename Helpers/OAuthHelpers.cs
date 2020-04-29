@@ -60,7 +60,7 @@ namespace ClerkBot.Helpers
             var client = new GraphService(tokenResponse.Token);
             var me = await client.GetMeAsync();
 
-            await turnContext.SendActivityAsync($"You are {me.DisplayName}.");
+            await turnContext.SendActivityAsync($"You are {me.DisplayName}, {me.Identities}, {me.MobilePhone}, {me.EmployeeId}, {me.AboutMe}.");
         }
 
         // Gets recent mail the user has received within the last hour and displays up
