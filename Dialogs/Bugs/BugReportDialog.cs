@@ -10,7 +10,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 
-namespace ClerkBot.Dialogs
+namespace ClerkBot.Dialogs.Bugs
 {
     public class BugReportDialog : ComponentDialog
     {

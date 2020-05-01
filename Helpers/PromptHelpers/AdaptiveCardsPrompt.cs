@@ -1,12 +1,12 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 
-namespace ClerkBot.Prompts
+namespace ClerkBot.Helpers.PromptHelpers
 {
     public class AdaptiveCardsPrompt: AdaptivePromptBase<string>
     {

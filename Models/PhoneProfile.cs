@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ClerkBot.Enums;
 
 namespace ClerkBot.Models
 {
@@ -19,24 +20,5 @@ namespace ClerkBot.Models
         public List<string> Colors { get; set; }
 
         public int Carefulness { get; set; }
-    }
-
-    public enum BugetRanges
-    {
-        lowBudget,
-        midRange,
-        highEnd,
-        flagship
-    }
-
-    public enum Features
-    {
-        camera,
-        gaming,
-        agnostic,
-        socialMedia,
-        browsing,
-        streaming,
-        calls
     }
 }

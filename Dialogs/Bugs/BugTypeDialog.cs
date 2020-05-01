@@ -8,7 +8,7 @@ using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace ClerkBot.Dialogs
+namespace ClerkBot.Dialogs.Bugs
 {
     public class BugTypeDialog : ComponentDialog
     {

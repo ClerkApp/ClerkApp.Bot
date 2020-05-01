@@ -2,15 +2,15 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using ClerkBot.Helpers;
+using ClerkBot.Resources;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace ClerkBot.Bots
 {
@@ -36,26 +36,13 @@ namespace ClerkBot.Bots
                 // To learn more about Adaptive Cards, see https://aka.ms/msbot-adaptivecards for more details.
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    var welcomeCard = CreateAdaptiveCardAttachment();
+                    const string fileName = "Cards.AdaptiveCards.WelcomeCard";
+                    var welcomeCard = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment("Welcome");
                     var response = MessageFactory.Attachment(welcomeCard);
                     await turnContext.SendActivityAsync(response, cancellationToken);
                     await turnContext.SendActivityAsync(MessageFactory.Text(WelcomeText), cancellationToken);
                 }
             }
-        }
-
-        // Load attachment from file.
-        private static Attachment CreateAdaptiveCardAttachment()
-        {
-            // combine path for cross platform support
-            string[] paths = { ".", "Cards", "welcomeCard.json" };
-            var fullPath = Path.Combine(paths);
-            var adaptiveCard = File.ReadAllText(fullPath);
-            return new Attachment()
-            {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = JsonConvert.DeserializeObject(adaptiveCard),
-            };
         }
     }
 }

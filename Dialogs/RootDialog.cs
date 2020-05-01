@@ -1,8 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ClerkBot.Dialogs.Auth;
+using ClerkBot.Dialogs.Bugs;
+using ClerkBot.Dialogs.Conversations;
+using ClerkBot.Dialogs.Electronics;
 using ClerkBot.Helpers;
 using ClerkBot.Services;
+using Luis;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
@@ -27,53 +34,43 @@ namespace ClerkBot.Dialogs
 
         private void InitializeWaterfallDialog()
         {
-            // Create Waterfall Steps
-            var waterfallSteps = new WaterfallStep[]
+            AddActiveDialogs(new WaterfallStep[]
             {
                 InitialStepAsync,
                 FinalStepAsync
-            };
+            });
 
-            // Add Named Dialogs
-            AddDialog(new GreetingDialog(nameof(GreetingDialog), BotStateService));
-            AddDialog(new BugReportDialog(nameof(BugReportDialog), BotStateService));
-            AddDialog(new BugTypeDialog(nameof(BugTypeDialog), BotStateService, BotServices));
-            AddDialog(new LoginDialog(nameof(LoginDialog), Configuration));
-            AddDialog(new PhoneDialog(nameof(PhoneDialog), BotStateService));
-
-            AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
-
-            // Set the starting Dialog
             InitialDialogId = Common.BuildDialogId();
         }
 
+        private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
+        {
+            AddDialog(new BugReportDialog(nameof(BugReportDialog), BotStateService));
+            AddDialog(new BugTypeDialog(nameof(BugTypeDialog), BotStateService, BotServices));
+
+            AddDialog(new GreetingDialog(nameof(GreetingDialog), BotStateService));
+            AddDialog(new LoginDialog(nameof(LoginDialog), Configuration));
+            AddDialog(new ElectronicDialog(nameof(ElectronicDialog), BotStateService));
+
+            AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
+        }
+
+
+
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // First, we use the dispatch model to determine which cognitive service (LUIS or QnA) to use.
-            var recognizerResult = await BotServices.Dispatch.RecognizeAsync(stepContext.Context, cancellationToken);
+            var recognizerResult = await BotServices.Dispatch.RecognizeAsync<ClerkLearningService>(stepContext.Context, cancellationToken);
+            var (intent, _) = recognizerResult.TopIntent();
 
-            // Top intent tell us which cognitive service to use.
-            var topIntent = recognizerResult.GetTopScoringIntent();
+            var intentName = intent.ToString().Split(new[] { "Intent" }, StringSplitOptions.None).First();
+            var dialog = string.Concat(intentName, "Dialog").TryGetRootDialog();
 
-            switch (topIntent.intent)
+            if (dialog != null)
             {
-                case "GreetingIntent":
-                    return await stepContext.BeginDialogAsync(nameof(GreetingDialog), null, cancellationToken);
-                case "NewBugReportIntent":
-                    return await stepContext.BeginDialogAsync(nameof(BugReportDialog), null, cancellationToken);
-                case "QueryBugTypeIntent":
-                    return await stepContext.BeginDialogAsync(nameof(BugTypeDialog), null, cancellationToken);
-                case "AuthIntent":
-                    return await stepContext.BeginDialogAsync(nameof(LoginDialog), null, cancellationToken);
-                case "ElectronicIntent":
-                    return await stepContext.BeginDialogAsync(nameof(PhoneDialog), null, cancellationToken);
-                default:
-                {
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text($"I'm sorry I don't know what you mean."), cancellationToken);
-                    break;
-                }
+                return await stepContext.BeginDialogAsync(dialog, recognizerResult, cancellationToken);
             }
 
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"I'm sorry I don't know what you mean."), cancellationToken);
             return await stepContext.NextAsync(null, cancellationToken);
         }
 

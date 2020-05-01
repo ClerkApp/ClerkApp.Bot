@@ -1,15 +1,14 @@
-﻿using Microsoft.Bot.Builder;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ClerkBot.Helpers;
 
-namespace ClerkBot.Prompts
+namespace ClerkBot.Helpers.PromptHelpers
 {
     public abstract class AdaptivePromptBase<T> : Dialog
     {

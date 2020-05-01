@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using ClerkBot.Helpers;
+using ClerkBot.Helpers.DialogHelpers;
 using Microsoft.Graph;
 
 namespace ClerkBot.Services

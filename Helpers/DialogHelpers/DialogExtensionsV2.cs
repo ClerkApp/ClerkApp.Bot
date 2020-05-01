@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace ClerkBot.Helpers
+namespace ClerkBot.Helpers.DialogHelpers
 {
     public static class DialogExtensionsV2
     {

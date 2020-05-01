@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ClerkBot.Helpers;
+using ClerkBot.Helpers.DialogHelpers;
+using ClerkBot.Helpers.PromptHelpers;
 using ClerkBot.Models;
-using ClerkBot.Prompts;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -12,7 +13,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 
-namespace ClerkBot.Dialogs
+namespace ClerkBot.Dialogs.Conversations
 {
     public class GreetingDialog : ComponentDialog
     {

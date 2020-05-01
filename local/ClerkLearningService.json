@@ -1,0 +1,224 @@
+{
+  "luis_schema_version": "4.0.0",
+  "versionId": "0.1",
+  "name": "Clerk Learning Service",
+  "desc": "",
+  "culture": "en-us",
+  "tokenizerVersion": "1.0.0",
+  "intents": [
+    {
+      "name": "AuthIntent"
+    },
+    {
+      "name": "ElectronicIntent"
+    },
+    {
+      "name": "GreetingIntent"
+    },
+    {
+      "name": "NewBugReportIntent"
+    },
+    {
+      "name": "None"
+    },
+    {
+      "name": "QueryBugTypeIntent"
+    }
+  ],
+  "entities": [
+    {
+      "name": "BugType",
+      "roles": []
+    }
+  ],
+  "composites": [],
+  "closedLists": [
+    {
+      "name": "ElectronicType",
+      "subLists": [
+        {
+          "canonicalForm": "PC",
+          "list": [
+            "workstation",
+            "personal computer",
+            "calculator",
+            "unitate",
+            "pc"
+          ]
+        },
+        {
+          "canonicalForm": "Laptop",
+          "list": [
+            "minicomputer",
+            "microcomputer",
+            "calculator portabil",
+            "laptop"
+          ]
+        },
+        {
+          "canonicalForm": "Phone",
+          "list": [
+            "mobile",
+            "mobil",
+            "telefon",
+            "celular",
+            "phone"
+          ]
+        }
+      ],
+      "roles": []
+    }
+  ],
+  "patternAnyEntities": [],
+  "regex_entities": [],
+  "prebuiltEntities": [],
+  "model_features": [],
+  "regex_features": [],
+  "patterns": [],
+  "utterances": [
+    {
+      "text": "buna",
+      "intent": "GreetingIntent",
+      "entities": []
+    },
+    {
+      "text": "buna ziua",
+      "intent": "GreetingIntent",
+      "entities": []
+    },
+    {
+      "text": "can you check if this is a bug type?",
+      "intent": "QueryBugTypeIntent",
+      "entities": [
+        {
+          "entity": "BugType",
+          "startPos": 17,
+          "endPos": 20
+        }
+      ]
+    },
+    {
+      "text": "can you guid me to buy a new laptop?",
+      "intent": "ElectronicIntent",
+      "entities": []
+    },
+    {
+      "text": "can you tell me if crash is a bug type?",
+      "intent": "QueryBugTypeIntent",
+      "entities": [
+        {
+          "entity": "BugType",
+          "startPos": 19,
+          "endPos": 23
+        }
+      ]
+    },
+    {
+      "text": "create bug",
+      "intent": "NewBugReportIntent",
+      "entities": []
+    },
+    {
+      "text": "exit",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "hey",
+      "intent": "GreetingIntent",
+      "entities": []
+    },
+    {
+      "text": "hola",
+      "intent": "GreetingIntent",
+      "entities": []
+    },
+    {
+      "text": "i want a new pc, can you help me?",
+      "intent": "ElectronicIntent",
+      "entities": []
+    },
+    {
+      "text": "i would like to login",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "i would like to logout",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "is phone an electronic with which you can help me?",
+      "intent": "ElectronicIntent",
+      "entities": []
+    },
+    {
+      "text": "is this a bug type?",
+      "intent": "QueryBugTypeIntent",
+      "entities": [
+        {
+          "entity": "BugType",
+          "startPos": 3,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "login",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "logout",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "logout me",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "me",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "quit",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "recent",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "salut",
+      "intent": "GreetingIntent",
+      "entities": []
+    },
+    {
+      "text": "send",
+      "intent": "AuthIntent",
+      "entities": []
+    },
+    {
+      "text": "there is a problem",
+      "intent": "NewBugReportIntent",
+      "entities": []
+    },
+    {
+      "text": "there seems to be a problem",
+      "intent": "NewBugReportIntent",
+      "entities": []
+    },
+    {
+      "text": "there was a crash",
+      "intent": "NewBugReportIntent",
+      "entities": []
+    }
+  ],
+  "settings": []
+}

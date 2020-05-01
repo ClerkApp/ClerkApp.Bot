@@ -6,9 +6,16 @@ namespace ClerkBot.Resources
 {
     public class EmbeddedResourceReader
     {
-        public string GetJson(string name)
+        private readonly string resourseName;
+
+        public EmbeddedResourceReader(string name)
         {
-            return GetData($"{GetType().Namespace}.{name}.json");
+            resourseName = name;
+        }
+
+        public string GetJson()
+        {
+            return GetData($"{GetType().Namespace}.{resourseName}.json");
         }
 
         private static string GetData(string resourceName)

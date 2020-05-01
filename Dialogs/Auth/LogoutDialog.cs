@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
-namespace ClerkBot.Dialogs
+namespace ClerkBot.Dialogs.Auth
 {
     public class LogoutDialog : ComponentDialog
     {

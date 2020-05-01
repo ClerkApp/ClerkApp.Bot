@@ -1,7 +1,7 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace ClerkBot.Prompts
+namespace ClerkBot.Helpers.PromptHelpers
 {
     public class SlotDetails
     {

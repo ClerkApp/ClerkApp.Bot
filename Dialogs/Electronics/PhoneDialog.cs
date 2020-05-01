@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ClerkBot.Contracts;
+using ClerkBot.Enums;
 using ClerkBot.Helpers;
+using ClerkBot.Helpers.DialogHelpers;
+using ClerkBot.Helpers.PromptHelpers;
 using ClerkBot.Models;
-using ClerkBot.Prompts;
 using ClerkBot.Resources;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
@@ -14,9 +17,9 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 
-namespace ClerkBot.Dialogs
+namespace ClerkBot.Dialogs.Electronics
 {
-    public class PhoneDialog : ComponentDialog
+    public class PhoneDialog : ComponentDialog, ISpecificDialog 
     {
         private readonly BotStateService BotStateService;
         private readonly List<SlotDetails> Slots;
@@ -121,7 +124,7 @@ namespace ClerkBot.Dialogs
             AddDialog(new AdaptiveCardsPrompt(nameof(AdaptiveCardsPrompt), PhoneNumberValidatorAsync));
 
             const string fileName = "Cards.AdaptiveCards.ChoiceSet.PhoneWantedFeatures";
-            var cardAttachment = Common.CreateAdaptiveCardAttachment(new EmbeddedResourceReader().GetJson(fileName));
+            var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
 
             Slots.AddRange(new List<SlotDetails>
             {
@@ -147,19 +150,24 @@ namespace ClerkBot.Dialogs
 
             if (stepContext.Result is IDictionary<string, object> result && result.Count > 0)
             {
-
                 var budgetRange = (FoundChoice)result[nameof(PhoneProfile.BugetRanges)];
-                var featureRange = (FoundChoice)result[nameof(PhoneProfile.Features)];
-                Enum.TryParse(budgetRange.Value, out BugetRanges budgetResult);
-                Enum.TryParse(featureRange.Value, out Features featureResult);
+                var featureRange = result.TryGetChoiceSet(nameof(PhoneProfile.Features));
 
+                Enum.TryParse(budgetRange.Value, out BugetRanges budgetResult);
                 userProfile.ElectronicsProfile.PhoneProfile.BugetRanges.Add(budgetResult);
-                userProfile.ElectronicsProfile.PhoneProfile.Features.Add(featureResult);
+
+                foreach (var choice in featureRange)
+                {
+                    //Common.TryParseEnum(choice, out Features featureResult);
+                    Enum.TryParse(choice, out Features featureResult);
+                    userProfile.ElectronicsProfile.PhoneProfile.Features.Add(featureResult);
+                }
             }
 
             await stepContext.Context.SendActivityAsync(
                 MessageFactory.Text($"I believe I've found a perfect {userProfile.ElectronicsProfile.PhoneProfile.BugetRanges.First()} " +
-                                    $"phone for you with {userProfile.ElectronicsProfile.PhoneProfile.Features.First()}. Just look at these bauties!"),
+                                    $"phone for you with all this features: {string.Join(", ", userProfile.ElectronicsProfile.PhoneProfile.Features.ToArray())}. " +
+                                    $"Just look at these beauties!"),
                 cancellationToken);
 
             Slots.Clear();
@@ -169,12 +177,16 @@ namespace ClerkBot.Dialogs
         private static Task<bool> PhoneNumberValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
         {
             // PromptValidatorContext<IList<DateTimeResolution>>
-
             var valid = false;
-
+            var findOne = true;
             if (promptContext.Recognized.Succeeded)
             {
-                valid = !promptContext.Recognized.Value.Contains("q");
+                var inputList = promptContext.Recognized.Value.TryGetValues(nameof(PhoneProfile.Features));
+                foreach (var result in inputList.Select(input => Enum.TryParse(typeof(Features), input, out _)).Where(result => findOne && !result))
+                {
+                    findOne = false;
+                }
+                valid = findOne;
             }
             return Task.FromResult(valid);
         }

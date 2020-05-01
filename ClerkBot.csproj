@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Helpers\temp\**" />
     <Compile Remove="local\**" />
+    <Content Remove="Helpers\temp\**" />
     <Content Remove="local\**" />
+    <EmbeddedResource Remove="Helpers\temp\**" />
     <EmbeddedResource Remove="local\**" />
+    <None Remove="Helpers\temp\**" />
     <None Remove="local\**" />
   </ItemGroup>
 
@@ -19,10 +23,14 @@
 
   <ItemGroup>
     <Content Remove="Resources\Cards\AdaptiveCards\ChoiceSet\PhoneWantedFeatures.json" />
+    <Content Remove="Resources\Cards\AdaptiveCards\WelcomeCard.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Cards\AdaptiveCards\ChoiceSet\PhoneWantedFeatures.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Cards\AdaptiveCards\WelcomeCard.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -53,9 +61,5 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Cards\" />
-    </ItemGroup>
 
 </Project>

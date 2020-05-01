@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ClerkBot.Prompts;
+using ClerkBot.Helpers.PromptHelpers;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
-namespace ClerkBot.Helpers
+namespace ClerkBot.Helpers.DialogHelpers
 {
     /// <summary>
     /// This is an example of implementing a custom Dialog class. This is similar to the Waterfall dialog in the framework;

@@ -1,1 +1,4 @@
 bf chatdown:convert -i .\phone.chat -o ./
+
+
+LUISGen ClerkLearningService.json -cs ClerkLearningService -o C:\ClerkApp\ClerkApp.Bot\Contracts
