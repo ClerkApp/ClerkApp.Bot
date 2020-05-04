@@ -55,8 +55,6 @@ namespace ClerkBot.Dialogs
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
         }
 
-
-
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var recognizerResult = await BotServices.Dispatch.RecognizeAsync<ClerkLearningService>(stepContext.Context, cancellationToken);
@@ -74,7 +72,7 @@ namespace ClerkBot.Dialogs
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private static async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }

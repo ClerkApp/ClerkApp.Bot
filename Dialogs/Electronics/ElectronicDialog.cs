@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ClerkBot.Contracts;
+using ClerkBot.Dialogs.Electronics.Phone;
 using ClerkBot.Enums;
 using ClerkBot.Helpers;
 using ClerkBot.Services;
@@ -42,7 +43,7 @@ namespace ClerkBot.Dialogs.Electronics
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
         }
 
-        private static async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.ActiveDialog.State["options"] is ClerkLearningService luisEntities)
             {
@@ -65,7 +66,7 @@ namespace ClerkBot.Dialogs.Electronics
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private static async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }

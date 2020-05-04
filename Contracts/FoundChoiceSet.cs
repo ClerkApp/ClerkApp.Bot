@@ -33,7 +33,7 @@ namespace ClerkBot.Contracts
             }
             catch (Exception)
             {
-                list.Add(choises);
+                list.AddRange(choises.Split(','));
             }
 
             return list;

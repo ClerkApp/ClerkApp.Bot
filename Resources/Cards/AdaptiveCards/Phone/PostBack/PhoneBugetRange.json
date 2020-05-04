@@ -1,0 +1,46 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+      {
+        "id": "Prompt",
+        "type": "TextBlock",
+        "text": "There are four types of range you could choose from:"
+      },
+      {
+        "id": "RetryPrompt",
+        "type": "TextBlock",
+        "text": "Please choose something"
+      },
+      {
+        "type": "ActionTypes.PostBack",
+        "id": "Choices",
+        "isMultiSelect": false,
+        "style": "expanded",
+        "choices": [
+          {
+            "title": "Low-Budget",
+            "value": "lowBudget"
+          },
+          {
+            "title": "Mid-Range",
+            "value": "midRange"
+          },
+          {
+            "title": "High-End",
+            "value": "highEnd"
+          },
+          {
+            "title": "Flagship",
+            "value": "flagship"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "type": "Action.PostBack"
+      }
+    ]
+}

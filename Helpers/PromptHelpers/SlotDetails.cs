@@ -21,6 +21,13 @@ namespace ClerkBot.Helpers.PromptHelpers
             Options = options;
         }
 
+        public SlotDetails(string name, string dialogId, SlotPromptOptions options)
+        {
+            Name = name;
+            DialogId = dialogId;
+            Options = options.GetPromptOptions();
+        }
+
         public string Name { get; set; }
 
         public string DialogId { get; set; }

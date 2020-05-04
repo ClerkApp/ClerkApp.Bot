@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -68,7 +69,7 @@ namespace ClerkBot.Helpers.PromptHelpers
              */
             if (state[PersistedOptions] is PromptOptions)
             {
-                //option.Prompt.Attachments = null;
+                opt.Prompt.Attachments = null;
             }
 
             return EndOfTurn;
@@ -84,7 +85,7 @@ namespace ClerkBot.Helpers.PromptHelpers
             // Don't do anything for non-message activities
             if (dc.Context.Activity.Type != ActivityTypes.Message)
             {
-                return Dialog.EndOfTurn;
+                return EndOfTurn;
             }
 
             // Perform base recognition
@@ -137,7 +138,6 @@ namespace ClerkBot.Helpers.PromptHelpers
             var options = (PromptOptions)instance.State[PersistedOptions];
             await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
         }
-
         protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken));
 
         protected abstract Task<PromptRecognizerResult<string>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken));
@@ -167,27 +167,33 @@ namespace ClerkBot.Helpers.PromptHelpers
                     msg = Activity.CreateMessageActivity();
                     msg.Text = text;
                     break;
-                case ListStyle.Auto:
-                    break;
-                case ListStyle.HeroCard:
-                    break;
                 default:
                     msg = ChoiceFactory.ForChannel(channelId, choices, text, null, options);
                     break;
             }
 
-            // Update prompt with text and actions
+            // Update prompt with text, actions and attachments
             if (prompt != null)
             {
                 // clone the prompt the set in the options (note ActivityEx has Properties so this is the safest mechanism)
                 prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt));
 
-                if (msg != null)
+                prompt.Text = msg.Text;
+
+                if (msg.SuggestedActions?.Actions != null && msg.SuggestedActions.Actions.Count > 0)
                 {
-                    prompt.Text = msg.Text;
-                    if (msg.SuggestedActions?.Actions != null && msg.SuggestedActions.Actions.Count > 0)
+                    prompt.SuggestedActions = msg.SuggestedActions;
+                }
+
+                if (msg.Attachments != null && msg.Attachments.Any())
+                {
+                    if (prompt.Attachments == null)
                     {
-                        prompt.SuggestedActions = msg.SuggestedActions;
+                        prompt.Attachments = msg.Attachments;
+                    }
+                    else
+                    {
+                        prompt.Attachments = prompt.Attachments.Concat(msg.Attachments).ToList();
                     }
                 }
 
@@ -195,13 +201,9 @@ namespace ClerkBot.Helpers.PromptHelpers
             }
             else
             {
-                if (msg != null)
-                {
-                    msg.InputHint = InputHints.ExpectingInput;
-                }
+                msg.InputHint = InputHints.ExpectingInput;
+                return msg;
             }
-
-            return msg;
         }
     }
 }

@@ -22,12 +22,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Resources\Cards\AdaptiveCards\ChoiceSet\PhoneWantedFeatures.json" />
+    <Content Remove="Resources\Cards\AdaptiveCards\Phone\ChoiceSet\PhoneBugetRange.json" />
     <Content Remove="Resources\Cards\AdaptiveCards\WelcomeCard.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Cards\AdaptiveCards\ChoiceSet\PhoneWantedFeatures.json">
+    <EmbeddedResource Include="Resources\Cards\AdaptiveCards\Phone\PostBack\PhoneBugetRange.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Cards\AdaptiveCards\Phone\ChoiceSet\PhoneWantedFeatures.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Cards\AdaptiveCards\WelcomeCard.json">
