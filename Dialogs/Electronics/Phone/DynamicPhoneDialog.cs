@@ -8,7 +8,8 @@ using ClerkBot.Enums;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.DialogHelpers;
 using ClerkBot.Helpers.PromptHelpers;
-using ClerkBot.Models;
+using ClerkBot.Models.Electronics.Phone;
+using ClerkBot.Models.User;
 using ClerkBot.Resources;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
@@ -79,15 +80,15 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             if (stepContext.Result is IDictionary<string, object> result && result.Count > 0)
             {
                 var budgetRange = (FoundChoice)result[nameof(PhoneProfile.BugetRanges)];
-                var featureRange = result.TryGetChoiceSet(nameof(PhoneProfile.Features));
+                var featureRange = result.TryGetChoiceSet(nameof(PhoneProfile.FeaturesList));
 
                 Enum.TryParse(budgetRange.Value, out BugetRanges budgetResult);
                 UserProfile.ElectronicsProfile.PhoneProfile.BugetRanges.Add(budgetResult);
 
                 foreach (var choice in featureRange)
                 {
-                    Common.TryParseEnum(choice, out Features featureResult);
-                    UserProfile.ElectronicsProfile.PhoneProfile.Features.Add(featureResult);
+                    Common.TryParseEnum(choice, out PhoneProfile.PhoneFeatures featureResult);
+                    UserProfile.ElectronicsProfile.PhoneProfile.FeaturesList.Add(featureResult);
                 }
             }
 
@@ -133,10 +134,10 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         private async Task<DialogTurnResult> BestFeatureAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            if (!UserProfile.ElectronicsProfile.PhoneProfile.Features.Any())
+            if (!UserProfile.ElectronicsProfile.PhoneProfile.FeaturesList.Any())
             {
                 const string dialogId = "BestFeaturePrompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId, PhoneNumberValidatorAsync));
+                AddDialog(new AdaptiveCardsPrompt(dialogId, PhoneFeaturesValidatorAsync));
 
                 const string fileName = "Cards.AdaptiveCards.Phone.ChoiceSet.PhoneWantedFeatures";
                 var embeddedReader = new EmbeddedResourceReader(fileName);
@@ -144,7 +145,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
                 Slots.AddRange(new List<SlotDetails>
                 {
-                    new SlotDetails(nameof(PhoneProfile.Features), dialogId, new SlotPromptOptions(
+                    new SlotDetails(nameof(PhoneProfile.FeaturesList), dialogId, new SlotPromptOptions(
                         cardAttachment,
                         "Please choose something from this list",
                         embeddedReader.GetJson(),
@@ -155,14 +156,14 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private static Task<bool> PhoneNumberValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
+        private static Task<bool> PhoneFeaturesValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
         {
             var valid = false;
             var findOne = true;
             if (promptContext.Recognized.Succeeded)
             {
-                var inputList = promptContext.Recognized.Value.TryGetValues(nameof(PhoneProfile.Features));
-                foreach (var _ in inputList.Select(input => Enum.TryParse(typeof(Features), input, out _)).Where(result => findOne && !result))
+                var inputList = promptContext.Recognized.Value.TryGetValues(nameof(PhoneProfile.FeaturesList));
+                foreach (var _ in inputList.Select(input => Enum.TryParse(typeof(PhoneProfile.PhoneFeatures), input, out _)).Where(result => findOne && !result))
                 {
                     findOne = false;
                 }

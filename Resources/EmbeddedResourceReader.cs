@@ -23,7 +23,7 @@ namespace ClerkBot.Resources
             var assembly = Assembly.GetExecutingAssembly();
 
             using var stream = assembly.GetManifestResourceStream(resourceName);
-            using var reader = new StreamReader(stream ?? throw new InvalidOperationException());
+            using var reader = new StreamReader(stream ?? throw new InvalidOperationException($"Can't load {resourceName}"));
             var fileContents = reader.ReadToEnd();
             return fileContents;
         }

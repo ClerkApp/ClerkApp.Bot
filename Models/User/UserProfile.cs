@@ -1,6 +1,7 @@
 ﻿using System;
+using ClerkBot.Models.Electronics;
 
-namespace ClerkBot.Models
+namespace ClerkBot.Models.User
 {
     // Defines a state property used to track information about the user.
     public class UserProfile

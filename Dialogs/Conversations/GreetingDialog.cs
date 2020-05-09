@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.DialogHelpers;
 using ClerkBot.Helpers.PromptHelpers;
-using ClerkBot.Models;
+using ClerkBot.Models.User;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;

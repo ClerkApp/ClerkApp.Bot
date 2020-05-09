@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ClerkBot.Models;
+using ClerkBot.Models.User;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;

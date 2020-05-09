@@ -1,0 +1,269 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "OK",
+      "style": "positive"
+    },
+    {
+      "type": "Action.Submit",
+      "title": "I don't want to answear",
+      "style": "destructive"
+    }
+  ],
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Let's decide how important the camera is for you",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "id": "frequency",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "You do at least one photo per:",
+              "wrap": true
+            },
+            {
+              "type": "Input.ChoiceSet",
+              "id": "UsedFrequency",
+              "spacing": "Small",
+              "placeholder": "Placeholder text",
+              "choices": [
+                {
+                  "title": "Hour",
+                  "value": "hour"
+                },
+                {
+                  "title": "Day",
+                  "value": "day"
+                },
+                {
+                  "title": "Week",
+                  "value": "week"
+                }
+              ],
+              "style": "expanded",
+              "value": "week"
+            }
+          ],
+          "width": "stretch"
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "id": "platforms",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Choose most important platforms you're using:"
+            },
+            {
+              "type": "Input.ChoiceSet",
+              "id": "Platforms",
+              "placeholder": "Placeholder text",
+              "choices": [
+                {
+                  "title": "Instagram",
+                  "value": "instagram"
+                },
+                {
+                  "title": "Snapchat",
+                  "value": "snapchat"
+                },
+                {
+                  "title": "TikTok",
+                  "value": "tiktok"
+                }
+              ],
+              "style": "expanded",
+              "isMultiSelect": true,
+              "value": "none"
+            }
+          ],
+          "width": "stretch"
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "Input.Toggle",
+              "title": "Selfie mode is more important for me",
+              "value": "false",
+              "wrap": false,
+              "id": "SelfieMode"
+            }
+          ]
+        }
+      ],
+      "style": "accent",
+      "bleed": true,
+      "minHeight": "0px"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "How often do you take pictures at night:"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "placeholder": "Placeholder text",
+      "choices": [
+        {
+          "title": "Every day",
+          "value": "day"
+        },
+        {
+          "title": "Every week",
+          "value": "week"
+        },
+        {
+          "title": "Special ocasions",
+          "value": "ocasions"
+        }
+      ],
+      "style": "expanded",
+      "id": "NightMode",
+      "value": "ocasions"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "Input.Toggle",
+              "title": "I often printing out my photos",
+              "value": "false",
+              "wrap": false,
+              "id": "Print"
+            }
+          ]
+        }
+      ],
+      "style": "accent",
+      "bleed": true
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "ActionSet",
+                      "actions": [
+                        {
+                          "type": "Action.ShowCard",
+                          "title": "I'm making frequently recordings",
+                          "card": {
+                            "type": "AdaptiveCard",
+                            "body": [
+                              {
+                                "type": "Input.ChoiceSet",
+                                "placeholder": "",
+                                "choices": [
+                                  {
+                                    "title": "Vlogging",
+                                    "value": "vlog"
+                                  },
+                                  {
+                                    "title": "Running, cycling",
+                                    "value": "moving"
+                                  },
+                                  {
+                                    "title": "At parties",
+                                    "value": "party"
+                                  }
+                                ],
+                                "isMultiSelect": true,
+                                "id": "RecordTypes",
+                                "isVisible": true,
+                                "value": "none",
+                                "style": "expanded"
+                              }
+                            ],
+                            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+                          },
+                          "id": "cameraRecord"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "Input.Toggle",
+              "title": "You need 4K video mode",
+              "value": "false",
+              "wrap": false,
+              "id": "FourK"
+            },
+            {
+              "type": "TextBlock",
+              "text": "Attention, this significantly increases the file size",
+              "color": "Attention",
+              "size": "Small",
+              "weight": "Lighter",
+              "horizontalAlignment": "Left",
+              "spacing": "None"
+            }
+          ]
+        }
+      ],
+      "style": "accent",
+      "bleed": true
+    }
+  ],
+  "type": "AdaptiveCard",
+  "version": "1.0"
+}

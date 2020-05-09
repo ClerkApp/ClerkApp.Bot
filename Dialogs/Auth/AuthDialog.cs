@@ -3,6 +3,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using ClerkBot.Contracts;
 using ClerkBot.Helpers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -11,9 +12,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace ClerkBot.Dialogs.Auth
 {
-    public class LoginDialog : LogoutDialog
+    public class AuthDialog : LogoutDialog, IRootDialog
     {
-        public LoginDialog(string dialogId, IConfiguration configuration)
+        public AuthDialog(string dialogId, IConfiguration configuration)
             : base(dialogId, configuration)
         {
             AddDialog(new OAuthPrompt(nameof(OAuthPrompt),

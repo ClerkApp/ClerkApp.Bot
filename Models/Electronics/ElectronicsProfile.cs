@@ -1,4 +1,6 @@
-﻿namespace ClerkBot.Models
+﻿using ClerkBot.Models.Electronics.Phone;
+
+namespace ClerkBot.Models.Electronics
 {
     public class ElectronicsProfile
     {

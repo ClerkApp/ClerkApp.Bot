@@ -1,5 +1,6 @@
 ﻿using System;
 using ClerkBot.Models;
+using ClerkBot.Models.User;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 

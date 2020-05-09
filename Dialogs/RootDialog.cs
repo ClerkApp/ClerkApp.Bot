@@ -34,8 +34,7 @@ namespace ClerkBot.Dialogs
 
         private void InitializeWaterfallDialog()
         {
-            AddActiveDialogs(new WaterfallStep[]
-            {
+            AddActiveDialogs(new WaterfallStep[] {
                 InitialStepAsync,
                 FinalStepAsync
             });
@@ -49,7 +48,7 @@ namespace ClerkBot.Dialogs
             AddDialog(new BugTypeDialog(nameof(BugTypeDialog), BotStateService, BotServices));
 
             AddDialog(new GreetingDialog(nameof(GreetingDialog), BotStateService));
-            AddDialog(new LoginDialog(nameof(LoginDialog), Configuration));
+            AddDialog(new AuthDialog(nameof(AuthDialog), Configuration));
             AddDialog(new ElectronicDialog(nameof(ElectronicDialog), BotStateService));
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));

@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClerkBot.Contracts;
 using ClerkBot.Helpers;
-using ClerkBot.Models;
+using ClerkBot.Models.User;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -25,8 +25,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
         private void InitializeWaterfallDialog()
         {
-            AddActiveDialogs(new WaterfallStep[]
-            {
+            AddActiveDialogs(new WaterfallStep[] {
                 WelcomeAsync,
                 VerifyMissingInfoAsync,
                 QuizMoreInfoAsync,
@@ -78,7 +77,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            if (userProfile.ElectronicsProfile.PhoneProfile.Features.Any())
+            if (userProfile.ElectronicsProfile.PhoneProfile.FeaturesList.Any())
             {
                 return await stepContext.BeginDialogAsync(nameof(QuizPhoneDialog), userProfile, cancellationToken);
             }
