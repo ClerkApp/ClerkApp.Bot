@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using ClerkBot.Contracts;
 using ClerkBot.Resources;
-using Microsoft.Bot.Schema;
+using Nest;
 using Newtonsoft.Json;
+using Attachment = Microsoft.Bot.Schema.Attachment;
 
 namespace ClerkBot.Helpers
 {
@@ -16,7 +18,7 @@ namespace ClerkBot.Helpers
 
         public static string BuildDialogId()
         {
-            var methodInfo = new StackTrace().GetFrame(1).GetMethod();
+            var methodInfo = new StackTrace().GetFrame(1)?.GetMethod();
             
             if (methodInfo.ReflectedType == null)
             {
@@ -94,6 +96,11 @@ namespace ClerkBot.Helpers
         {
             Enum.TryParse(value, out result);
             return result.ToTitleCase();
+        }
+
+        public static string ToJson<T>(this ISearchResponse<T> response) where T : class
+        {
+            return Encoding.UTF8.GetString(response.ApiCall.RequestBodyInBytes);
         }
     }
 }

@@ -16,8 +16,6 @@ namespace ClerkBot.Bots
 {
     public class AuthBot<T> : DialogBot<T> where T : Dialog
     {
-        private const string WelcomeText = "Welcome to ClerkApp. Type 'login' to get logged in and'logout' to sign-out.";
-
         public AuthBot(BotStateService botStateService, T dialog, ILogger<DialogBot<T>> logger)
             : base(botStateService, dialog, logger)
         {
@@ -40,7 +38,6 @@ namespace ClerkBot.Bots
                     var welcomeCard = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment("Welcome");
                     var response = MessageFactory.Attachment(welcomeCard);
                     await turnContext.SendActivityAsync(response, cancellationToken);
-                    await turnContext.SendActivityAsync(MessageFactory.Text(WelcomeText), cancellationToken);
                 }
             }
         }

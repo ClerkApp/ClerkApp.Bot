@@ -9,7 +9,7 @@
     {
       "id": "Prompt",
       "type": "TextBlock",
-      "text": "There are four types of range you could choose from:"
+      "text": "How often it happens to drop your phone?"
     },
     {
       "id": "RetryPrompt",
@@ -23,20 +23,20 @@
       "style": "expanded",
       "choices": [
         {
-          "title": "Low-Budget (200$)",
-          "value": "lowBudget"
+          "title": "Daily",
+          "value": "often"
         },
         {
-          "title": "Mid-Range (400$)",
-          "value": "midRange"
+          "title": "Weekly",
+          "value": "often"
         },
         {
-          "title": "High-End (800$)",
-          "value": "highEnd"
+          "title": "Once a month",
+          "value": "rare"
         },
         {
-          "title": "Flagship",
-          "value": "flagship"
+          "title": "Cant remember",
+          "value": "hardly"
         }
       ]
     }

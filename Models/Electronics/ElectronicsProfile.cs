@@ -1,4 +1,4 @@
-﻿using ClerkBot.Models.Electronics.Phone;
+﻿using ClerkBot.Models.Electronics.Mobile;
 
 namespace ClerkBot.Models.Electronics
 {
@@ -6,9 +6,9 @@ namespace ClerkBot.Models.Electronics
     {
         public ElectronicsProfile()
         {
-            PhoneProfile = new PhoneProfile();
+            MobileProfile = new MobileProfile();
         }
 
-        public PhoneProfile PhoneProfile { get; set; }
+        public MobileProfile MobileProfile { get; set; }
     }
 }

@@ -7,8 +7,8 @@ using ClerkBot.Contracts;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.DialogHelpers;
 using ClerkBot.Helpers.PromptHelpers;
-using ClerkBot.Models.Electronics.Phone;
-using ClerkBot.Models.Electronics.Phone.Features;
+using ClerkBot.Models.Electronics.Mobile;
+using ClerkBot.Models.Electronics.Mobile.Features;
 using ClerkBot.Models.User;
 using ClerkBot.Resources;
 using ClerkBot.Services;
@@ -16,7 +16,6 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace ClerkBot.Dialogs.Electronics.Phone
 {
@@ -78,12 +77,12 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             if (stepContext.Result is IDictionary<string, object> result && result.Count > 0)
             {
                 var cameraFeature =
-                    JsonConvert.DeserializeObject<CameraPhoneFeature>(result[nameof(CameraPhoneFeature)].ToString() ?? string.Empty);
+                    JsonConvert.DeserializeObject<MobileFeatureCamera>(result[nameof(MobileFeatureCamera)].ToString() ?? string.Empty);
 
-                UserProfile.ElectronicsProfile.PhoneProfile.TryAddFeature(cameraFeature);
+                UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(cameraFeature);
             }
 
-            //using var test = UserProfile.ElectronicsProfile.PhoneProfile.Features.GetEnumerator();
+            //using var test = UserProfile.ElectronicsProfile.MobileProfile.Features.GetEnumerator();
             //await stepContext.Context.SendActivityAsync(
             //    MessageFactory.Text($"Phone for you with all this features: {string.Join(", ", )}. "),
             //    cancellationToken);
@@ -95,7 +94,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         private async Task<DialogTurnResult> CameraFeatureAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            if (UserProfile.ElectronicsProfile.PhoneProfile.FeaturesList.Contains(PhoneProfile.PhoneFeatures.camera))
+            if (UserProfile.ElectronicsProfile.MobileProfile.FeaturesList.Contains(MobileProfile.PhoneFeatures.camera))
             {
                 const string dialogId = "CameraFeaturePrompt";
                 AddDialog(new AdaptiveCardsPrompt(dialogId));
@@ -105,7 +104,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
                 Slots.AddRange(new List<SlotDetails>
                 {
-                    new SlotDetails(nameof(CameraPhoneFeature), dialogId, new PromptOptions
+                    new SlotDetails(nameof(MobileFeatureCamera), dialogId, new PromptOptions
                     {
                         Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
                         RetryPrompt = MessageFactory.Text("Please choose something from this list")
@@ -122,8 +121,8 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             var findOne = true;
             if (promptContext.Recognized.Succeeded)
             {
-                var inputList = promptContext.Recognized.Value.TryGetValues(nameof(PhoneProfile.FeaturesList));
-                foreach (var _ in inputList.Select(input => Enum.TryParse(typeof(PhoneProfile.PhoneFeatures), input, out _)).Where(result => findOne && !result))
+                var inputList = promptContext.Recognized.Value.TryGetValues(nameof(MobileProfile.FeaturesList));
+                foreach (var _ in inputList.Select(input => Enum.TryParse(typeof(MobileProfile.PhoneFeatures), input, out _)).Where(result => findOne && !result))
                 {
                     findOne = false;
                 }

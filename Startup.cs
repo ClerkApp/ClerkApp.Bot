@@ -3,7 +3,6 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.6.2
 
-using System;
 using Bot.Storage.Elasticsearch;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +12,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ClerkBot.Bots;
+using ClerkBot.Config;
 using ClerkBot.Dialogs;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder.BotFramework;
@@ -23,9 +23,14 @@ namespace ClerkBot
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -33,6 +38,10 @@ namespace ClerkBot
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            services.Configure<ElasticConfig>(Configuration.GetSection("ElasticConfig"));
+            services.Configure<LuisConfig>(Configuration.GetSection("LuisConfig"));
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddControllers().AddNewtonsoftJson();
             services.AddHealthChecks();
@@ -43,13 +52,7 @@ namespace ClerkBot
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // Configure Services
-            ConfigureAditionalServices(services);
-
-            // Configure State
-            ConfigureState(services);
-
-            // Configure Dialogs
+            ConfigureCoreServices(services);
             ConfigureDialogs(services);
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
@@ -57,37 +60,12 @@ namespace ClerkBot
             services.AddTransient<IBot, AuthBot<RootDialog>>();
         }
 
-        private void ConfigureAditionalServices(IServiceCollection services)
+        private void ConfigureCoreServices(IServiceCollection services)
         {
-            services.AddSingleton<BotServices>();
-            services.AddSingleton<BotStateService>();
-        }
-
-        public void ConfigureState(IServiceCollection services)
-        {
-            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.) 
             services.AddSingleton<IStorage, ElasticsearchStorage>();
-
-            var conversationState = new ConversationState(
-                new ElasticsearchStorage(
-                    new ElasticsearchStorageOptions
-                    {
-                        ElasticsearchEndpoint = new Uri(Configuration["ConnectionStrings:Elasticsearch:Endpoint"]),
-                        IndexName = Configuration["ConnectionStrings:Elasticsearch:ConversationIndex"]
-                    }
-                ));
-
-            var userState = new UserState(
-                new ElasticsearchStorage(
-                    new ElasticsearchStorageOptions
-                    {
-                        ElasticsearchEndpoint = new Uri(Configuration["ConnectionStrings:Elasticsearch:Endpoint"]),
-                        IndexName = Configuration["ConnectionStrings:Elasticsearch:UserIndex"]
-                    }
-                ));
-
-            services.AddSingleton(conversationState);
-            services.AddSingleton(userState);
+            services.AddSingleton<IElasticSearchClientService, ElasticSearchClientService>();
+            services.AddSingleton<IBotServices, BotServices>();
+            services.AddSingleton<BotStateService>();
         }
 
         public void ConfigureDialogs(IServiceCollection services)

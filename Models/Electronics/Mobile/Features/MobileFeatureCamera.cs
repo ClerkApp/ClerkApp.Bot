@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using ClerkBot.Enums;
 using Newtonsoft.Json;
 
-namespace ClerkBot.Models.Electronics.Phone.Features
+namespace ClerkBot.Models.Electronics.Mobile.Features
 {
-    public class CameraPhoneFeature: IPhoneFeature
+    public class MobileFeatureCamera: IMobileFeature
     {
         public Frequency UsedFrequency { get; set; }
         public Frequency NightMode { get; set; }

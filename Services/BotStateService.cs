@@ -1,8 +1,11 @@
 ﻿using System;
+using Bot.Storage.Elasticsearch;
+using ClerkBot.Config;
 using ClerkBot.Models;
 using ClerkBot.Models.User;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Options;
 
 namespace ClerkBot.Services
 {
@@ -24,10 +27,25 @@ namespace ClerkBot.Services
         public IStatePropertyAccessor<ConversationData> ConversationDataAccessor { get; set; }
         public IStatePropertyAccessor<DialogState> DialogStateAccessor { get; set; }
 
-        public BotStateService(ConversationState conversationState, UserState userState)
+        public BotStateService(IOptions<ElasticConfig> elasticConfig)
         {
-            ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
-            UserState = userState ?? throw new ArgumentNullException(nameof(userState));
+            ConversationState = new ConversationState(
+                new ElasticsearchStorage(
+                    new ElasticsearchStorageOptions
+                    {
+                        ElasticsearchEndpoint = new Uri(elasticConfig.Value.Host),
+                        IndexName = elasticConfig.Value.Indexs.Conversations
+                    }
+                ));
+
+            UserState = new UserState(
+                new ElasticsearchStorage(
+                    new ElasticsearchStorageOptions
+                    {
+                        ElasticsearchEndpoint = new Uri(elasticConfig.Value.Host),
+                        IndexName = elasticConfig.Value.Indexs.Users
+                    }
+                ));
 
             InitializeAccessors();
         }

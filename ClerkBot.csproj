@@ -26,11 +26,15 @@
     <Content Remove="Resources\Cards\AdaptiveCards\Phone\ChoiceSet\PhoneCamera.json" />
     <Content Remove="Resources\Cards\AdaptiveCards\Phone\ChoiceSet\PhoneWantedFeatures.json" />
     <Content Remove="Resources\Cards\AdaptiveCards\Phone\PostBack\PhoneBugetRange.json" />
+    <Content Remove="Resources\Cards\AdaptiveCards\Phone\PostBack\PhoneDurability.json" />
     <Content Remove="Resources\Cards\AdaptiveCards\WelcomeCard.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Cards\AdaptiveCards\Phone\ChoiceSet\PhoneCamera.json" />
+    <EmbeddedResource Include="Resources\Cards\AdaptiveCards\Phone\PostBack\PhoneDurability.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Cards\AdaptiveCards\Phone\PostBack\PhoneBugetRange.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -54,6 +58,7 @@
     <PackageReference Include="NEST" Version="7.6.1" />
     <PackageReference Include="NEST.JsonNetSerializer" Version="7.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Octokit" Version="0.47.0" />
   </ItemGroup>
 
   <ItemGroup>

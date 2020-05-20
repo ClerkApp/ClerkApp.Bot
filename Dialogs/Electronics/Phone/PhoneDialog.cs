@@ -5,21 +5,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClerkBot.Contracts;
 using ClerkBot.Helpers;
+using ClerkBot.Helpers.ElasticHelpers;
+using ClerkBot.Models.Electronics.Mobile;
 using ClerkBot.Models.User;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Nest;
 
 namespace ClerkBot.Dialogs.Electronics.Phone
 {
     public class PhoneDialog : ComponentDialog, ISpecificDialog 
     {
         private readonly BotStateService BotStateService;
+        private readonly ElasticClient ElasticClient;
 
-        public PhoneDialog(string dialogId, BotStateService botStateService) : base(dialogId)
+        public PhoneDialog(string dialogId, BotStateService botStateService, IElasticSearchClientService clientService) : base(dialogId)
         {
             BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
-
+            ElasticClient = clientService.GetClient();
             InitializeWaterfallDialog();
         }
 
@@ -37,7 +41,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
         private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
         {
-            AddDialog(new DynamicPhoneDialog(nameof(DynamicPhoneDialog), BotStateService));
+            AddDialog(new DynamicPhoneDialog(nameof(DynamicPhoneDialog), BotStateService, ElasticClient));
             AddDialog(new QuizPhoneDialog(nameof(QuizPhoneDialog), BotStateService));
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
@@ -53,18 +57,42 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
+            var (minBuget, maxBuget) = new MobileBugetRange()
+            {
+                Budget = userProfile.ElectronicsProfile.MobileProfile.BugetRanges.First()
+            }.GetBudgetRangeInEuro();
+
+            var foundedPhones = ElasticClient.Search<MobileElastic>(s => s
+                .Index("mobiles")
+                .From(0)
+                .Size(10)
+                .Query(q => q.Bool(b => b
+                    .Must(m => m
+                        .Match(matchQueryDescriptor => matchQueryDescriptor
+                            .Field("Name.Brand")
+                            .Query(userProfile.ElectronicsProfile.MobileProfile.Brands.First())))) &&
+                            q.Range(r => r
+                                .Field("Price.EUR")
+                                .GreaterThan(minBuget)
+                                .LessThan(maxBuget))));
+
+            var searchResult = ElasticProductSearchResultBuilder.BuildProductSearchResult(foundedPhones);
+
             await stepContext.Context.SendActivityAsync(
-                MessageFactory.Text($"I believe I've found a perfect {userProfile.ElectronicsProfile.PhoneProfile.BugetRanges.First()}. Just look at these beauties!"),
+                MessageFactory.Text($"I believe I've found a perfect {userProfile.ElectronicsProfile.MobileProfile.BugetRanges.First()} " +
+                                    $"and {userProfile.ElectronicsProfile.MobileProfile.Durability}. Just look at these beauties!"),
                 cancellationToken);
 
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
+
+
         private async Task<DialogTurnResult> VerifyMissingInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            if (!userProfile.ElectronicsProfile.PhoneProfile.BugetRanges.Any())
+            if (!userProfile.ElectronicsProfile.MobileProfile.BugetRanges.Any())
             {
                 // something is empty
                 return await stepContext.BeginDialogAsync(nameof(DynamicPhoneDialog), userProfile, cancellationToken);
@@ -77,7 +105,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            if (userProfile.ElectronicsProfile.PhoneProfile.FeaturesList.Any())
+            if (userProfile.ElectronicsProfile.MobileProfile.FeaturesList.Any())
             {
                 return await stepContext.BeginDialogAsync(nameof(QuizPhoneDialog), userProfile, cancellationToken);
             }

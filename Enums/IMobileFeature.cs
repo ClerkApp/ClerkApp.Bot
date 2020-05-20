@@ -1,6 +1,6 @@
 ﻿namespace ClerkBot.Enums
 {
-    public interface IPhoneFeature
+    public interface IMobileFeature
     {
     }
 }

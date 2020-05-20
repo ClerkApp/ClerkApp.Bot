@@ -17,11 +17,12 @@ namespace ClerkBot.Dialogs.Electronics
     public class ElectronicDialog : ComponentDialog, IRootDialog
     {
         private readonly BotStateService BotStateService;
+        private readonly IElasticSearchClientService ElasticService;
 
-        public ElectronicDialog(string dialogId, BotStateService botStateService) : base(dialogId)
+        public ElectronicDialog(string dialogId, BotStateService botStateService, IElasticSearchClientService serviceService) : base(dialogId)
         {
             BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
-
+            ElasticService = serviceService;
             InitializeWaterfallDialog();
         }
 
@@ -38,7 +39,7 @@ namespace ClerkBot.Dialogs.Electronics
 
         private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
         {
-            AddDialog(new PhoneDialog(nameof(PhoneDialog), BotStateService));
+            AddDialog(new PhoneDialog(nameof(PhoneDialog), BotStateService, ElasticService));
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
         }

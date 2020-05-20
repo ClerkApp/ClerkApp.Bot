@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ClerkBot.Dialogs.Auth;
-using ClerkBot.Dialogs.Bugs;
 using ClerkBot.Dialogs.Conversations;
 using ClerkBot.Dialogs.Electronics;
 using ClerkBot.Helpers;
@@ -19,15 +18,20 @@ namespace ClerkBot.Dialogs
     public class RootDialog : ComponentDialog
     {
         private readonly BotStateService BotStateService;
-        private readonly BotServices BotServices;
+        private readonly IBotServices BotServices;
         private readonly IConfiguration Configuration;
+        private readonly IElasticSearchClientService ElasticService;
 
-        public RootDialog(IConfiguration configuration, BotStateService botStateService, BotServices botServices)
+        public RootDialog(IConfiguration configuration,
+            IElasticSearchClientService elasticService,
+            BotStateService botStateService,
+            IBotServices botServices)
             : base(Common.BuildDialogId())
         {
             BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
             BotServices = botServices ?? throw new ArgumentNullException(nameof(botServices));
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            ElasticService = elasticService ?? throw new ArgumentNullException(nameof(elasticService));
 
             InitializeWaterfallDialog();
         }
@@ -44,12 +48,9 @@ namespace ClerkBot.Dialogs
 
         private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
         {
-            AddDialog(new BugReportDialog(nameof(BugReportDialog), BotStateService));
-            AddDialog(new BugTypeDialog(nameof(BugTypeDialog), BotStateService, BotServices));
-
-            AddDialog(new GreetingDialog(nameof(GreetingDialog), BotStateService));
             AddDialog(new AuthDialog(nameof(AuthDialog), Configuration));
-            AddDialog(new ElectronicDialog(nameof(ElectronicDialog), BotStateService));
+            AddDialog(new GreetingDialog(nameof(GreetingDialog), BotStateService));
+            AddDialog(new ElectronicDialog(nameof(ElectronicDialog), BotStateService, ElasticService));
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
         }
