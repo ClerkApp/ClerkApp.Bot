@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ClerkBot.Dialogs.Auth;
 using ClerkBot.Dialogs.Conversations;
 using ClerkBot.Dialogs.Electronics;
 using ClerkBot.Helpers;
@@ -12,6 +11,7 @@ using Luis;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 namespace ClerkBot.Dialogs
 {
@@ -20,9 +20,12 @@ namespace ClerkBot.Dialogs
         private readonly BotStateService BotStateService;
         private readonly IBotServices BotServices;
         private readonly IConfiguration Configuration;
+        private readonly IHostEnvironment Environment;
         private readonly IElasticSearchClientService ElasticService;
 
-        public RootDialog(IConfiguration configuration,
+        public RootDialog(
+            IHostEnvironment environment,
+            IConfiguration configuration,
             IElasticSearchClientService elasticService,
             BotStateService botStateService,
             IBotServices botServices)
@@ -31,6 +34,7 @@ namespace ClerkBot.Dialogs
             BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
             BotServices = botServices ?? throw new ArgumentNullException(nameof(botServices));
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            Environment = environment ?? throw new ArgumentNullException(nameof(environment));
             ElasticService = elasticService ?? throw new ArgumentNullException(nameof(elasticService));
 
             InitializeWaterfallDialog();
@@ -48,7 +52,7 @@ namespace ClerkBot.Dialogs
 
         private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
         {
-            AddDialog(new AuthDialog(nameof(AuthDialog), Configuration));
+            //AddDialog(new AuthDialog(nameof(AuthDialog), Configuration));
             AddDialog(new GreetingDialog(nameof(GreetingDialog), BotStateService));
             AddDialog(new ElectronicDialog(nameof(ElectronicDialog), BotStateService, ElasticService));
 
@@ -57,16 +61,24 @@ namespace ClerkBot.Dialogs
 
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var recognizerResult = await BotServices.Dispatch.RecognizeAsync<ClerkLearningService>(stepContext.Context, cancellationToken);
-            var (intent, _) = recognizerResult.TopIntent();
+            //if (!Environment.EnvironmentName.Contains("Development"))
+            //{
+                var recognizerResult = await BotServices.Dispatch.RecognizeAsync<ClerkLearningService>(stepContext.Context, cancellationToken);
+                var (intent, _) = recognizerResult.TopIntent();
 
-            var intentName = intent.ToString().Split(new[] { "Intent" }, StringSplitOptions.None).First();
-            var dialog = string.Concat(intentName, "Dialog").TryGetRootDialog();
+                var intentName = intent.ToString().Split(new[] { "Intent" }, StringSplitOptions.None).First();
+                var dialog = string.Concat(intentName, "Dialog").TryGetRootDialog();
 
-            if (dialog != null)
-            {
-                return await stepContext.BeginDialogAsync(dialog, recognizerResult, cancellationToken);
-            }
+                if (dialog != null)
+                {
+                    return await stepContext.BeginDialogAsync(dialog, recognizerResult, cancellationToken);
+                }
+            //}
+            //else
+            //{
+            //    AddDialog(new MobileDialog(nameof(MobileDialog), BotStateService, ElasticService));
+            //    return await stepContext.BeginDialogAsync("MobileDialog", null, cancellationToken);
+            //}
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"I'm sorry I don't know what you mean."), cancellationToken);
             return await stepContext.NextAsync(null, cancellationToken);

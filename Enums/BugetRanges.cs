@@ -2,6 +2,7 @@
 {
     public enum BugetRanges
     {
+        all,
         lowbudget,
         midrange,
         highend,

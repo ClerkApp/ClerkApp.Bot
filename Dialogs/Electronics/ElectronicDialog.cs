@@ -39,7 +39,7 @@ namespace ClerkBot.Dialogs.Electronics
 
         private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
         {
-            AddDialog(new PhoneDialog(nameof(PhoneDialog), BotStateService, ElasticService));
+            AddDialog(new MobileDialog(nameof(MobileDialog), BotStateService, ElasticService));
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
         }

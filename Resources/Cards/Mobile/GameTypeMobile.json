@@ -1,0 +1,99 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.2",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "Image",
+                  "url": "https://images-na.ssl-images-amazon.com/images/I/91uLzpeB%2BeL.png",
+                  "size": "Medium"
+                },
+                {
+                  "type": "TextBlock",
+                  "horizontalAlignment": "Center",
+                  "weight": "Bolder",
+                  "text": "Fun & Relax"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "separator": true,
+              "spacing": "Medium",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "What kind of games would you want to play?",
+                  "horizontalAlignment": "Center",
+                  "wrap": true
+                },
+                {
+                  "type": "Input.ChoiceSet",
+                  "choices": [
+                    {
+                      "title": "To clear your mind",
+                      "value": "Soft"
+                    },
+                    {
+                      "title": "Shooter & Racing",
+                      "value": "Hard"
+                    },
+                    {
+                      "title": "Anything",
+                      "value": "Medium"
+                    }
+                  ],
+                  "placeholder": "Placeholder text",
+                  "spacing": "Medium",
+                  "value": "Medium",
+                  "id": "GamingIntensity"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "separator": true,
+              "spacing": "Medium",
+              "items": [
+                {
+                  "type": "Image",
+                  "url": "https://i.pinimg.com/originals/33/0c/42/330c424f4045aa91b8893043ce7dacaa.jpg",
+                  "size": "Medium",
+                  "horizontalAlignment": "Center"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "Competitive",
+                  "horizontalAlignment": "Center",
+                  "weight": "Bolder"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "Let's play",
+          "style": "positive"
+        }
+      ]
+    }
+  ]
+}

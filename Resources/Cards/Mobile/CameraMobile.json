@@ -28,30 +28,33 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "You do at least one photo per:",
+              "text": "You do at least one photo:",
               "wrap": true
             },
             {
               "type": "Input.ChoiceSet",
               "id": "UsedFrequency",
               "spacing": "Small",
-              "placeholder": "Placeholder text",
               "choices": [
                 {
-                  "title": "Hour",
-                  "value": "hour"
+                  "title": "Hourly",
+                  "value": "Hourly"
                 },
                 {
-                  "title": "Day",
-                  "value": "day"
+                  "title": "Daily",
+                  "value": "Daily"
                 },
                 {
-                  "title": "Week",
-                  "value": "week"
+                  "title": "Weekly",
+                  "value": "Weekly"
+                },
+                {
+                  "title": "Monthly",
+                  "value": "Monthly"
                 }
               ],
               "style": "expanded",
-              "value": "week"
+              "value": "Weekly"
             }
           ],
           "width": "stretch"
@@ -67,29 +70,22 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Choose most important platforms you're using:"
+              "text": "How would you like your photos to be:"
             },
             {
               "type": "Input.ChoiceSet",
               "id": "Platforms",
-              "placeholder": "Placeholder text",
               "choices": [
                 {
-                  "title": "Instagram",
-                  "value": "instagram"
+                  "title": "Most unnedited photos",
+                  "value": "natural"
                 },
                 {
-                  "title": "Snapchat",
-                  "value": "snapchat"
-                },
-                {
-                  "title": "TikTok",
-                  "value": "tiktok"
+                  "title": "Ready for media posting",
+                  "value": "beautify"
                 }
               ],
-              "style": "expanded",
-              "isMultiSelect": true,
-              "value": "none"
+              "style": "expanded"
             }
           ],
           "width": "stretch"
@@ -107,7 +103,6 @@
               "type": "Input.Toggle",
               "title": "Selfie mode is more important for me",
               "value": "false",
-              "wrap": false,
               "id": "SelfieMode"
             }
           ]
@@ -138,20 +133,20 @@
       "choices": [
         {
           "title": "Every day",
-          "value": "day"
+          "value": "Daily"
         },
         {
           "title": "Every week",
-          "value": "week"
+          "value": "Weekly"
         },
         {
           "title": "Special ocasions",
-          "value": "ocasions"
+          "value": "Occasionally"
         }
       ],
       "style": "expanded",
       "id": "NightMode",
-      "value": "ocasions"
+      "value": "Occasionally"
     },
     {
       "type": "ColumnSet",
@@ -164,7 +159,6 @@
               "type": "Input.Toggle",
               "title": "I often printing out my photos",
               "value": "false",
-              "wrap": false,
               "id": "Print"
             }
           ]
@@ -198,15 +192,14 @@
                             "body": [
                               {
                                 "type": "Input.ChoiceSet",
-                                "placeholder": "",
                                 "choices": [
-                                  {
-                                    "title": "Vlogging",
-                                    "value": "vlog"
-                                  },
                                   {
                                     "title": "Running, cycling",
                                     "value": "moving"
+                                  },
+                                  {
+                                    "title": "Vlogging",
+                                    "value": "vlog"
                                   },
                                   {
                                     "title": "At parties",
@@ -215,7 +208,6 @@
                                 ],
                                 "isMultiSelect": true,
                                 "id": "RecordTypes",
-                                "isVisible": true,
                                 "value": "none",
                                 "style": "expanded"
                               }
@@ -245,7 +237,6 @@
               "type": "Input.Toggle",
               "title": "You need 4K video mode",
               "value": "false",
-              "wrap": false,
               "id": "FourK"
             },
             {
@@ -254,7 +245,6 @@
               "color": "Attention",
               "size": "Small",
               "weight": "Lighter",
-              "horizontalAlignment": "Left",
               "spacing": "None"
             }
           ]
@@ -265,5 +255,5 @@
     }
   ],
   "type": "AdaptiveCard",
-  "version": "1.0"
+  "version": "1.2"
 }

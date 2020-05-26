@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using ClerkBot.Enums;
+using ClerkBot.Helpers.SmartEnum.JsonNet;
+using ClerkBot.Models.Electronics.Mobile.Features;
+using Newtonsoft.Json;
 
 namespace ClerkBot.Models.Electronics.Mobile
 {
-    public class MobileProfile
+    public class MobileProfile: IUserProfile
     {
         public MobileProfile()
         {
@@ -23,7 +26,8 @@ namespace ClerkBot.Models.Electronics.Mobile
 
         public List<string> Colors { get; set; }
 
-        public DropDurability Durability { get; set; }
+        [JsonConverter(typeof(SmartEnumValueConverter<Intensity, int>))]
+        public Intensity Durability { get; set; } = Intensity.Unknown;
 
         public bool TryAddFeature(IMobileFeature feature)
         {
@@ -36,13 +40,6 @@ namespace ClerkBot.Models.Electronics.Mobile
                 return false;
             }
             return true;
-        }
-
-        public enum DropDurability
-        {
-            often,
-            rare,
-            hardly
         }
 
         public enum PhoneFeatures

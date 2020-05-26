@@ -8,7 +8,7 @@ namespace ClerkBot.Helpers.ElasticHelpers
 {
     public static class ElasticProductSearchResultBuilder
     {
-        public static ProductSearchResult BuildProductSearchResult(ISearchResponse<MobileElastic> searchResponse)
+        public static ProductSearchResult BuildProductSearchResult(ISearchResponse<MobileContract> searchResponse)
         {
             var result = new ProductSearchResult()
             {

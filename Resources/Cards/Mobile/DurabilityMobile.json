@@ -24,23 +24,23 @@
       "choices": [
         {
           "title": "Daily",
-          "value": "often"
+          "value": "ExtraHard"
         },
         {
           "title": "Weekly",
-          "value": "often"
+          "value": "Hard"
         },
         {
-          "title": "Once a month",
-          "value": "rare"
+          "title": "Monthly",
+          "value": "Medium"
         },
         {
-          "title": "Cant remember",
-          "value": "hardly"
+          "title": "Can't remember",
+          "value": "Soft"
         }
       ]
     }
   ],
   "type": "AdaptiveCard",
-  "version": "1.0"
+  "version": "1.2"
 }

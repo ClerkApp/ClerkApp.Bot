@@ -2,7 +2,7 @@
 {
     public enum ElectronicType
     {
-        phone,
+        mobile,
         laptop,
         pc
     }

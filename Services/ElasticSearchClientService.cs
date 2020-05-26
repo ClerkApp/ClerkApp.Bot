@@ -29,6 +29,7 @@ namespace ClerkBot.Services
         {
             var connectionPool = new SingleNodeConnectionPool(new Uri(_elasticConfig.Host));
             var settings = new ConnectionSettings(connectionPool, JsonNetSerializer.Default)
+                .DefaultFieldNameInferrer(p => p)
                 .DisableDirectStreaming()
                 .OnRequestCompleted(call =>
                 {

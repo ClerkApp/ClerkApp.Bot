@@ -23,14 +23,18 @@ using Choice = Microsoft.Bot.Builder.Dialogs.Choices.Choice;
 
 namespace ClerkBot.Dialogs.Electronics.Phone
 {
-    public class DynamicPhoneDialog : ComponentDialog
+    public class ProfileMobileDialog : ComponentDialog
     {
         private readonly BotStateService BotStateService;
         private readonly ElasticClient ElasticClient;
         private readonly List<SlotDetails> Slots;
         private UserProfile UserProfile;
 
-        public DynamicPhoneDialog(string dialogId, BotStateService botStateService, ElasticClient elasticClient) : base(dialogId)
+        public ProfileMobileDialog(
+            string dialogId,
+            BotStateService botStateService,
+            ElasticClient elasticClient)
+            : base(dialogId)
         {
             BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
             ElasticClient = elasticClient ?? throw new ArgumentNullException(nameof(elasticClient));
@@ -45,7 +49,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             {
                 InitialStepAsync,
                 BugetRangeAsync,
-                BrandsAsync,
+                //BrandsAsync,
                 DurabilityAsync,
                 BestFeatureAsync,
                 SendAsync,
@@ -87,16 +91,16 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             {
                 var budgetRange = (FoundChoice)result[nameof(MobileProfile.BugetRanges)];
                 var durability = (FoundChoice)result[nameof(MobileProfile.Durability)];
-                var brand = (FoundChoice)result[nameof(MobileProfile.Brands)];
+                // var brand = (FoundChoice)result[nameof(MobileProfile.Brands)];
                 var featureRange = result.TryGetChoiceSet(nameof(MobileProfile.FeaturesList));
 
                 Enum.TryParse(budgetRange.Value.ToLower(), out BugetRanges budgetResult);
                 UserProfile.ElectronicsProfile.MobileProfile.BugetRanges.Add(budgetResult);
 
-                Enum.TryParse(durability.Value.ToLower(), out MobileProfile.DropDurability durabilityResult);
+                Intensity.TryFromName(durability.Value, out var durabilityResult);
                 UserProfile.ElectronicsProfile.MobileProfile.Durability = durabilityResult;
 
-                UserProfile.ElectronicsProfile.MobileProfile.Brands = new List<string> { brand.Value };
+                // UserProfile.ElectronicsProfile.MobileProfile.Brands = new List<string> { brand.Value };
 
                 foreach (var choice in featureRange)
                 {
@@ -113,7 +117,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             if (UserProfile.ElectronicsProfile.MobileProfile.Brands is null)
             {
-                var brandLists = ElasticClient.Search<MobileElastic>(s => s
+                var brandLists = ElasticClient.Search<MobileContract>(s => s
                     .Index("mobiles")
                     .From(0)
                     .Size(0)
@@ -130,9 +134,12 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var searchResult = ElasticProductSearchResultBuilder.BuildProductSearchResult(brandLists);
                 searchResult.StringAggregations.TryGetValue("brands", out var aggr);
 
+
                 if (aggr != null)
                 {
-                    var title = "Do you have some prefer mobile brands?";
+                    aggr.Add("None", 0);
+
+                    const string title = "Do you have some prefer mobile brands?";
                     //var retry = adaptiveCardContract.Body.First(x => x.Id.Equals("RetryPrompt")).Text;
                     var choices = aggr.Select(choice =>
                         new Choice
@@ -151,7 +158,6 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                         new SlotDetails(nameof(MobileProfile.Brands), nameof(ChoicePrompt), new PromptOptions
                         {
                             Prompt = MessageFactory.Text(title),
-                            //RetryPrompt = MessageFactory.Text(retry),
                             Choices = choices
                         })
                     });
@@ -165,7 +171,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             if (!UserProfile.ElectronicsProfile.MobileProfile.BugetRanges.Any())
             {
-                const string fileName = "Cards.AdaptiveCards.Phone.PostBack.PhoneBugetRange";
+                const string fileName = "Cards.Mobile.BugetRangeMobile";
                 var adaptiveCardContract = JsonConvert.DeserializeObject<AdaptiveCardContract>(new EmbeddedResourceReader(fileName).GetJson());
 
                 var title = adaptiveCardContract.Body.First(x => x.Id.Equals("Prompt")).Text;
@@ -198,9 +204,9 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
         private async Task<DialogTurnResult> DurabilityAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (!UserProfile.ElectronicsProfile.MobileProfile.BugetRanges.Any())
+            if (UserProfile.ElectronicsProfile.MobileProfile.Durability == 0)
             {
-                const string fileName = "Cards.AdaptiveCards.Phone.PostBack.PhoneDurability";
+                const string fileName = "Cards.Mobile.DurabilityMobile";
                 var adaptiveCardContract = JsonConvert.DeserializeObject<AdaptiveCardContract>(new EmbeddedResourceReader(fileName).GetJson());
 
                 var title = adaptiveCardContract.Body.First(x => x.Id.Equals("Prompt")).Text;
@@ -239,7 +245,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 const string dialogId = "BestFeaturePrompt";
                 AddDialog(new AdaptiveCardsPrompt(dialogId, PhoneFeaturesValidatorAsync));
 
-                const string fileName = "Cards.AdaptiveCards.Phone.ChoiceSet.PhoneWantedFeatures";
+                const string fileName = "Cards.Mobile.WantedFeaturesMobile";
                 var embeddedReader = new EmbeddedResourceReader(fileName);
                 var cardAttachment = embeddedReader.CreateAdaptiveCardAttachment();
 

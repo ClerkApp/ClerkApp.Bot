@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ClerkBot.Models.Electronics.Mobile
 {
-    public class MobileElastic
+    public class MobileContract: IElasticContract
     {
         public Guid Id { get; set; }
         public DateTime Timestamp { get; set; }

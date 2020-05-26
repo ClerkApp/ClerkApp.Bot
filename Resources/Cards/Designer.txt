@@ -1,0 +1,4 @@
+﻿https://adaptivecards.io/designer/
+https://adaptivecards.io/visualizer/index.html?hostApp=Bot%20Framework%20WebChat
+https://adaptivecards.io/explorer/Image.html
+https://adaptivecards.io/samples/Solitaire.html

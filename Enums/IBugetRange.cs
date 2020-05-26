@@ -1,8 +1,10 @@
-﻿namespace ClerkBot.Enums
+﻿using System.Collections.Generic;
+
+namespace ClerkBot.Enums
 {
     public interface IBugetRange
     {
-        public BugetRanges Budget { get; set; }
+        public List<BugetRanges> Budgets { get; set; }
 
         public (int, int) GetBudgetRangeInEuro();
     }

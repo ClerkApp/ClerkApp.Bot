@@ -34,7 +34,7 @@ namespace ClerkBot.Bots
                 // To learn more about Adaptive Cards, see https://aka.ms/msbot-adaptivecards for more details.
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    const string fileName = "Cards.AdaptiveCards.WelcomeCard";
+                    const string fileName = "Cards.WelcomeCard";
                     var welcomeCard = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment("Welcome");
                     var response = MessageFactory.Attachment(welcomeCard);
                     await turnContext.SendActivityAsync(response, cancellationToken);

@@ -11,16 +11,17 @@ using ClerkBot.Models.User;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 using Nest;
 
 namespace ClerkBot.Dialogs.Electronics.Phone
 {
-    public class PhoneDialog : ComponentDialog, ISpecificDialog 
+    public class MobileDialog : ComponentDialog, ISpecificDialog 
     {
         private readonly BotStateService BotStateService;
         private readonly ElasticClient ElasticClient;
 
-        public PhoneDialog(string dialogId, BotStateService botStateService, IElasticSearchClientService clientService) : base(dialogId)
+        public MobileDialog(string dialogId, BotStateService botStateService, IElasticSearchClientService clientService) : base(dialogId)
         {
             BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
             ElasticClient = clientService.GetClient();
@@ -31,7 +32,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             AddActiveDialogs(new WaterfallStep[] {
                 WelcomeAsync,
-                VerifyMissingInfoAsync,
+                GetProfileInfoAsync,
                 QuizMoreInfoAsync,
                 FinalStepAsync
             });
@@ -41,8 +42,8 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
         private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
         {
-            AddDialog(new DynamicPhoneDialog(nameof(DynamicPhoneDialog), BotStateService, ElasticClient));
-            AddDialog(new QuizPhoneDialog(nameof(QuizPhoneDialog), BotStateService));
+            AddDialog(new ProfileMobileDialog(nameof(ProfileMobileDialog), BotStateService, ElasticClient));
+            AddDialog(new QuizMobileDialog(nameof(QuizMobileDialog), BotStateService));
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
         }
@@ -56,46 +57,59 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+            var filterBuilder = new MobileFiltersBuilder<MobileProfile, MobileContract>(userProfile.ElectronicsProfile.MobileProfile);
 
-            var (minBuget, maxBuget) = new MobileBugetRange()
+            var searchResponse =
+                ElasticClient.Search<MobileContract>(s => s
+                    .Index("mobiles")
+                    .From(0)
+                    .Size(10)
+                    .Query(filterBuilder.BuildQuery())
+                    .Sort(filterBuilder.BuildSort()));
+
+            var queryTest = searchResponse.ToJson();
+            var searchResult = ElasticProductSearchResultBuilder.BuildProductSearchResult(searchResponse);
+
+            var botResponse = new List<IActivity>();
+            if (searchResult.Products.Any())
             {
-                Budget = userProfile.ElectronicsProfile.MobileProfile.BugetRanges.First()
-            }.GetBudgetRangeInEuro();
+                var phoneCards = searchResult.Products.Select(mobile => new HeroCard()
+                    {
+                        Title = mobile.Name.Main,
+                        //Images = new List<CardImage>() { new CardImage(mobile.Image.Images.ToString()) }
+                    }.ToAttachment())
+                    .ToList();
 
-            var foundedPhones = ElasticClient.Search<MobileElastic>(s => s
-                .Index("mobiles")
-                .From(0)
-                .Size(10)
-                .Query(q => q.Bool(b => b
-                    .Must(m => m
-                        .Match(matchQueryDescriptor => matchQueryDescriptor
-                            .Field("Name.Brand")
-                            .Query(userProfile.ElectronicsProfile.MobileProfile.Brands.First())))) &&
-                            q.Range(r => r
-                                .Field("Price.EUR")
-                                .GreaterThan(minBuget)
-                                .LessThan(maxBuget))));
+                botResponse.AddRange(new List<IActivity>
+                {
+                    MessageFactory.Text($"I believe I've found a list of {userProfile.ElectronicsProfile.MobileProfile.BugetRanges.First()} phone that perfectly fits you:"),
+                    MessageFactory.Carousel(phoneCards)
+                });
+            }
+            else
+            {
+                botResponse.AddRange(new List<IActivity>
+                {
+                    MessageFactory.Text(
+                        $"I'm sorry, but I don't think there is a phone in this {userProfile.ElectronicsProfile.MobileProfile.BugetRanges.First()} range that will fulfill your wishes."),
+                    MessageFactory.Text("You could try again, maybe increasing your budget or taking out some features...")
+                });
+            }
 
-            var searchResult = ElasticProductSearchResultBuilder.BuildProductSearchResult(foundedPhones);
-
-            await stepContext.Context.SendActivityAsync(
-                MessageFactory.Text($"I believe I've found a perfect {userProfile.ElectronicsProfile.MobileProfile.BugetRanges.First()} " +
-                                    $"and {userProfile.ElectronicsProfile.MobileProfile.Durability}. Just look at these beauties!"),
-                cancellationToken);
-
+            await stepContext.Context.SendActivitiesAsync(botResponse.ToArray(), cancellationToken);
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
 
 
-        private async Task<DialogTurnResult> VerifyMissingInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> GetProfileInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
             if (!userProfile.ElectronicsProfile.MobileProfile.BugetRanges.Any())
             {
                 // something is empty
-                return await stepContext.BeginDialogAsync(nameof(DynamicPhoneDialog), userProfile, cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(ProfileMobileDialog), userProfile, cancellationToken);
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
@@ -107,7 +121,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
             if (userProfile.ElectronicsProfile.MobileProfile.FeaturesList.Any())
             {
-                return await stepContext.BeginDialogAsync(nameof(QuizPhoneDialog), userProfile, cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(QuizMobileDialog), userProfile, cancellationToken);
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
