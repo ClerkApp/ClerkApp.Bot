@@ -4,9 +4,9 @@ using ClerkBot.Enums;
 
 namespace ClerkBot.Models.Electronics.Mobile.Enrichment
 {
-    public class MobileBugetRange: IBugetRange
+    public class MobileBudgetRange: IBudgetRange
     {
-        public List<BugetRanges> Budgets { get; set; }
+        public List<BudgetRanges> Budgets { get; set; }
 
         public (int, int) GetBudgetRangeInEuro()
         {
@@ -16,19 +16,19 @@ namespace ClerkBot.Models.Electronics.Mobile.Enrichment
             {
                 switch(budget)
                 {
-                    case BugetRanges.lowbudget:
+                    case BudgetRanges.lowbudget:
                         min.Add(50);
                         max.Add(200);
                         break;
-                    case BugetRanges.midrange:
+                    case BudgetRanges.midrange:
                         min.Add(200);
                         max.Add(400);
                         break;
-                    case BugetRanges.highend:
+                    case BudgetRanges.highend:
                         min.Add(600);
                         max.Add(800);
                         break;
-                    case BugetRanges.flagship:
+                    case BudgetRanges.flagship:
                         min.Add(800);
                         max.Add(0);
                         break;

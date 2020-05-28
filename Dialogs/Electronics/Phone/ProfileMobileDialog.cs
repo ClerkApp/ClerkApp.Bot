@@ -7,15 +7,14 @@ using ClerkBot.Contracts;
 using ClerkBot.Enums;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.DialogHelpers;
-using ClerkBot.Helpers.ElasticHelpers;
 using ClerkBot.Helpers.PromptHelpers;
+using ClerkBot.Models;
 using ClerkBot.Models.Electronics.Mobile;
 using ClerkBot.Models.User;
 using ClerkBot.Resources;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Nest;
 using Newtonsoft.Json;
@@ -48,8 +47,8 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             AddActiveDialogs(new WaterfallStep[]
             {
                 InitialStepAsync,
-                BugetRangeAsync,
-                //BrandsAsync,
+                BudgetRangeAsync,
+                ReliableBrandsAsync,
                 DurabilityAsync,
                 BestFeatureAsync,
                 SendAsync,
@@ -85,22 +84,24 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
         private async Task<DialogTurnResult> ProcessResultsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            Slots.Clear();
             UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
             if (stepContext.Result is IDictionary<string, object> result && result.Count > 0)
             {
-                var budgetRange = (FoundChoice)result[nameof(MobileProfile.BugetRanges)];
-                var durability = (FoundChoice)result[nameof(MobileProfile.Durability)];
-                // var brand = (FoundChoice)result[nameof(MobileProfile.Brands)];
-                var featureRange = result.TryGetChoiceSet(nameof(MobileProfile.FeaturesList));
+                result.TryGetValue(nameof(MobileProfile.ReliableBrands), out var reliableResult);
+                result.TryGetFoundChoice(nameof(MobileProfile.BudgetRanges), out var budgetRange);
+                result.TryGetFoundChoice(nameof(MobileProfile.Durability), out var durability);
+                result.TryGetChoiceSet(nameof(MobileProfile.FeaturesList), out var featureRange);
 
-                Enum.TryParse(budgetRange.Value.ToLower(), out BugetRanges budgetResult);
-                UserProfile.ElectronicsProfile.MobileProfile.BugetRanges.Add(budgetResult);
+                Enum.TryParse(budgetRange.Value.ToLower(), out BudgetRanges budgetResult);
+                UserProfile.ElectronicsProfile.MobileProfile.BudgetRanges.Add(budgetResult);
 
                 Intensity.TryFromName(durability.Value, out var durabilityResult);
                 UserProfile.ElectronicsProfile.MobileProfile.Durability = durabilityResult;
 
-                // UserProfile.ElectronicsProfile.MobileProfile.Brands = new List<string> { brand.Value };
+                var reliable = JsonConvert.DeserializeObject<CardAction<bool>>(reliableResult.ToString() ?? string.Empty);
+                UserProfile.ElectronicsProfile.MobileProfile.ReliableBrands = reliable.Action;
 
                 foreach (var choice in featureRange)
                 {
@@ -109,69 +110,54 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 }
             }
 
-            Slots.Clear();
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> BrandsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> ReliableBrandsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (UserProfile.ElectronicsProfile.MobileProfile.Brands is null)
+            //var brandLists = ElasticClient.Search<MobileContract>(s => s
+            //    .Index("mobiles")
+            //    .From(0)
+            //    .Size(0)
+            //    .Aggregations(new AggregationDictionary
+            //    {
+            //        {
+            //            "brands", new TermsAggregation("Brand")
+            //            {
+            //                Field = "Name.Brand.keyword"
+            //            }
+            //        }
+            //    }));
+
+            //var searchResult = ElasticProductSearchResultBuilder.BuildProductSearchResult(brandLists);
+            //searchResult.StringAggregations.TryGetValue("brands", out var aggr);
+
+            if (!UserProfile.ElectronicsProfile.MobileProfile.ReliableBrands)
             {
-                var brandLists = ElasticClient.Search<MobileContract>(s => s
-                    .Index("mobiles")
-                    .From(0)
-                    .Size(0)
-                    .Aggregations(new AggregationDictionary
-                    {
-                        {
-                            "brands", new TermsAggregation("Brand")
-                            {
-                                Field = "Name.Brand.keyword"
-                            }
-                        }
-                    }));
+                const string dialogId = "ReliableBrandsPrompt";
+                AddDialog(new AdaptiveCardsPrompt(dialogId));
 
-                var searchResult = ElasticProductSearchResultBuilder.BuildProductSearchResult(brandLists);
-                searchResult.StringAggregations.TryGetValue("brands", out var aggr);
+                const string fileName = "Cards.Mobile.ReliableBrands";
+                var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
 
-
-                if (aggr != null)
+                Slots.AddRange(new List<SlotDetails>
                 {
-                    aggr.Add("None", 0);
-
-                    const string title = "Do you have some prefer mobile brands?";
-                    //var retry = adaptiveCardContract.Body.First(x => x.Id.Equals("RetryPrompt")).Text;
-                    var choices = aggr.Select(choice =>
-                        new Choice
-                        {
-                            Value = choice.Key,
-                            Action = new CardAction
-                            {
-                                Title = choice.Key,
-                                Type = ActionTypes.PostBack,
-                                Value = choice.Key
-                            }
-                        }).ToList();
-
-                    Slots.AddRange(new List<SlotDetails>
+                    new SlotDetails(nameof(MobileProfile.ReliableBrands), dialogId, new PromptOptions
                     {
-                        new SlotDetails(nameof(MobileProfile.Brands), nameof(ChoicePrompt), new PromptOptions
-                        {
-                            Prompt = MessageFactory.Text(title),
-                            Choices = choices
-                        })
-                    });
-                }
+                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
+                        RetryPrompt = MessageFactory.Text("Please one of the above options")
+                    })
+                });
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> BugetRangeAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> BudgetRangeAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (!UserProfile.ElectronicsProfile.MobileProfile.BugetRanges.Any())
+            if (!UserProfile.ElectronicsProfile.MobileProfile.BudgetRanges.Any())
             {
-                const string fileName = "Cards.Mobile.BugetRangeMobile";
+                const string fileName = "Cards.Mobile.BudgetRangeMobile";
                 var adaptiveCardContract = JsonConvert.DeserializeObject<AdaptiveCardContract>(new EmbeddedResourceReader(fileName).GetJson());
 
                 var title = adaptiveCardContract.Body.First(x => x.Id.Equals("Prompt")).Text;
@@ -190,7 +176,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
                 Slots.AddRange(new List<SlotDetails>
                 {
-                    new SlotDetails(nameof(MobileProfile.BugetRanges), nameof(ChoicePrompt), new PromptOptions
+                    new SlotDetails(nameof(MobileProfile.BudgetRanges), nameof(ChoicePrompt), new PromptOptions
                     {
                         Prompt = MessageFactory.Text(title),
                         RetryPrompt = MessageFactory.Text(retry),

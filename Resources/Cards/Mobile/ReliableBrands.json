@@ -1,0 +1,124 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "size": "Medium",
+      "weight": "Bolder",
+      "text": "Reliable smartphone brands\n",
+      "horizontalAlignment": "Center"
+    },
+    {
+      "type": "TextBlock",
+      "wrap": true,
+      "text": "There are many mobile brands out there, some of them may need specific software to properly work.",
+      "spacing": "Medium"
+    },
+    {
+      "type": "TextBlock",
+      "text": "If that's important for you, I can select only the most reliable brands out there.",
+      "wrap": true
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        {
+          "title": "Visibility",
+          "value": "If you're a person who often transfers data from your phone to other unknown devices"
+        },
+        {
+          "title": "Compatibility",
+          "value": "If you don't want to worry about charging or any compatibility of your phone with your friends"
+        }
+      ],
+      "spacing": "None"
+    },
+    {
+      "type": "TextBlock",
+      "text": "List of brands:",
+      "weight": "Bolder",
+      "separator": true,
+      "spacing": "Medium"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "- Samsung \n- Google\n- Sony\n- Nokia\n- Huawei",
+              "maxLines": 2,
+              "color": "Accent",
+              "size": "Medium",
+              "fontType": "Default",
+              "weight": "Bolder"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "- Oneplus\n- Motorola\n- LG\n- Xiaomi\n- Asus",
+              "size": "Medium",
+              "color": "Accent",
+              "weight": "Bolder"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "If you select YES, you'll exclude Apple products from search",
+      "color": "Attention",
+      "fontType": "Default",
+      "size": "Small",
+      "horizontalAlignment": "Center"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "id": "ReliableBrands",
+                  "type": "Action.Submit",
+                  "title": "Use only the brands from the list",
+                  "style": "positive",
+                  "data": {
+                    "action": true
+                  }
+                }
+              ]
+            },
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "type": "Action.Submit",
+                  "title": "Search for all brands",
+                  "data": {
+                    "action": false
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.2"
+}

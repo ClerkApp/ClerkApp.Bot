@@ -4,12 +4,18 @@
     {
       "type": "Action.Submit",
       "title": "OK",
-      "style": "positive"
+      "style": "positive",
+      "data": {
+        "action": true
+      }
     },
     {
       "type": "Action.Submit",
       "title": "I don't want to answear",
-      "style": "destructive"
+      "style": "destructive",
+      "data": {
+        "action": false
+      }
     }
   ],
   "body": [
@@ -235,9 +241,9 @@
           "items": [
             {
               "type": "Input.Toggle",
-              "title": "You need 4K video mode",
+              "title": "You need K video resolution",
               "value": "false",
-              "id": "FourK"
+              "id": "KResolution"
             },
             {
               "type": "TextBlock",

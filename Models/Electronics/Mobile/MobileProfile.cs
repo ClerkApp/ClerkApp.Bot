@@ -11,18 +11,18 @@ namespace ClerkBot.Models.Electronics.Mobile
     {
         public MobileProfile()
         {
-            BugetRanges = new List<BugetRanges>();
+            BudgetRanges = new List<BudgetRanges>();
             FeaturesList = new List<PhoneFeatures>();
             Features = new List<IMobileFeature>();
         }
 
-        public List<BugetRanges> BugetRanges { get; set; }
+        public List<BudgetRanges> BudgetRanges { get; set; }
 
         public List<PhoneFeatures> FeaturesList { get; set; }
 
         public List<IMobileFeature> Features { get; }
 
-        public List<string> Brands { get; set; }
+        public bool ReliableBrands { get; set; } = false;
 
         public List<string> Colors { get; set; }
 
@@ -46,7 +46,6 @@ namespace ClerkBot.Models.Electronics.Mobile
         {
             camera,
             gaming,
-            agnostic,
             socialMedia,
             browsing,
             streaming,

@@ -1,6 +1,6 @@
 ﻿namespace ClerkBot.Enums
 {
-    public enum BugetRanges
+    public enum BudgetRanges
     {
         all,
         lowbudget,

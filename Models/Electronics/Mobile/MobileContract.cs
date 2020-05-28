@@ -7,7 +7,8 @@ namespace ClerkBot.Models.Electronics.Mobile
     {
         public Guid Id { get; set; }
         public DateTime Timestamp { get; set; }
-        public ImageData Image { get; set; }
+        public Uri Image { get; set; }
+        //public ImageData Image { get; set; }
         public Status Status { get; set; }
         public Name Name { get; set; }
         public Network Network { get; set; }
@@ -20,8 +21,13 @@ namespace ClerkBot.Models.Electronics.Mobile
         public Comms Comms { get; set; }
         public Battery Battery { get; set; }
         public FeaturesDb Features { get; set; }
-        public Dictionary<string, double> Price { get; set; }
+        public List<PriceSpec<double>> Price { get; set; }
         public List<string> Colors { get; set; }
+    }
+
+    public class ImageData
+    {
+        public List<byte[]> Images { get; set; }
     }
 
     public enum Cores
@@ -33,14 +39,10 @@ namespace ClerkBot.Models.Electronics.Mobile
         octacore = 8
     }
 
-    public class ImageData
-    {
-        public List<byte[]> Images { get; set; }
-    }
-
     public class Status
     {
         public string Announced { get; set; }
+        public int Year { get; set; }
         public string Launch { get; set; }
     }
 
@@ -54,7 +56,14 @@ namespace ClerkBot.Models.Electronics.Mobile
     {
         public List<string> Technology { get; set; }
         public List<string> Speed { get; set; }
-        public Dictionary<string, List<string>> Bands { get; set; }
+        public List<BandSpec> Bands { get; set; }
+    }
+
+    public class BandSpec
+    {
+        public string Type { get; set; }
+        public int Count { get; set; }
+        public List<string> Values { get; set; }
     }
 
     public class Body
@@ -76,8 +85,8 @@ namespace ClerkBot.Models.Electronics.Mobile
     {
         public Dictionary<string, int> Os { get; set; }
         public List<Chipset> Chipset { get; set; }
-        public List<CPU> CPU { get; set; }
-        public List<GPU> GPU { get; set; }
+        public List<Cpu> Cpu { get; set; }
+        public List<Gpu> Gpu { get; set; }
         public List<Performance> Tests { get; set; }
     }
 
@@ -91,11 +100,11 @@ namespace ClerkBot.Models.Electronics.Mobile
     {
         public string Type { get; set; }
         public string Name { get; set; }
-        public string Generation { get; set; }
+        public int Generation { get; set; }
         public double Size { get; set; }
     }
 
-    public class CPU
+    public class Cpu
     {
         public string Type { get; set; }
         public int Cores { get; set; }
@@ -109,11 +118,11 @@ namespace ClerkBot.Models.Electronics.Mobile
         public string Name { get; set; }
     }
 
-    public class GPU
+    public class Gpu
     {
         public string Type { get; set; }
         public string Name { get; set; }
-        public string Generation { get; set; }
+        public int Generation { get; set; }
     }
 
     public class Memory
@@ -127,7 +136,7 @@ namespace ClerkBot.Models.Electronics.Mobile
     public class InternalMemory
     {
         public int Size { get; set; }
-        public int RAM { get; set; }
+        public int Ram { get; set; }
     }
 
     public class Display
@@ -165,7 +174,7 @@ namespace ClerkBot.Models.Electronics.Mobile
         public int Number { get; set; }
         public List<LensCamera> Lens { get; set; }
         public List<string> Features { get; set; }
-        public Dictionary<int, List<string>> Videos { get; set; }
+        public List<Spec<int>> Videos { get; set; }
     }
 
     public class SelfieCamera
@@ -173,7 +182,19 @@ namespace ClerkBot.Models.Electronics.Mobile
         public int Number { get; set; }
         public List<LensCamera> Lens { get; set; }
         public List<string> Features { get; set; }
-        public Dictionary<int, List<string>> Videos { get; set; }
+        public List<Spec<int>> Videos { get; set; }
+    }
+
+    public class Spec<T>
+    {
+        public T Value { get; set; }
+        public List<string> Name { get; set; }
+    }
+
+    public class PriceSpec<T>
+    {
+        public T Value { get; set; }
+        public string Type { get; set; }
     }
 
     public class LensCamera
@@ -191,12 +212,11 @@ namespace ClerkBot.Models.Electronics.Mobile
         public bool Stereo { get; set; }
         public bool Loudspeaker { get; set; }
         public bool Jack { get; set; }
-        public List<string> Others { get; set; }
     }
 
     public class Comms
     {
-        public List<string> GPS { get; set; }
+        public List<string> Gps { get; set; }
         public double Bluetooth { get; set; }
         public List<string> Wifi { get; set; }
         public KeyValuePair<string, double> Usb { get; set; }
@@ -212,7 +232,7 @@ namespace ClerkBot.Models.Electronics.Mobile
         public bool Nfc { get; set; }
         public bool Gps { get; set; }
         public bool Gyro { get; set; }
-        public KeyValuePair<bool, string> Fingerprint { get; set; }
+        public Spec<bool> Fingerprint { get; set; }
     }
 
     public class Battery

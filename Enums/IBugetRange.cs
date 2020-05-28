@@ -2,9 +2,9 @@
 
 namespace ClerkBot.Enums
 {
-    public interface IBugetRange
+    public interface IBudgetRange
     {
-        public List<BugetRanges> Budgets { get; set; }
+        public List<BudgetRanges> Budgets { get; set; }
 
         public (int, int) GetBudgetRangeInEuro();
     }

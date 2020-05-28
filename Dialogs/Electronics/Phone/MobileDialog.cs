@@ -7,6 +7,7 @@ using ClerkBot.Contracts;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.ElasticHelpers;
 using ClerkBot.Models.Electronics.Mobile;
+using ClerkBot.Models.Electronics.Mobile.Enrichment;
 using ClerkBot.Models.User;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
@@ -73,16 +74,17 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             var botResponse = new List<IActivity>();
             if (searchResult.Products.Any())
             {
-                var phoneCards = searchResult.Products.Select(mobile => new HeroCard()
+                var phoneCards = searchResult.Products.Select(mobile => new HeroCard
                     {
-                        Title = mobile.Name.Main,
-                        //Images = new List<CardImage>() { new CardImage(mobile.Image.Images.ToString()) }
+                        Title = mobile.Name.Main.ToTitleCase(),
+                        Images = new List<CardImage> { new CardImage(mobile.Image.ToString()) },
+                        Text = $"- Price: {mobile.Price.First(s => s.Type.Equals(nameof(CurrencyType.EUR))).Value} {nameof(CurrencyType.EUR)}"
                     }.ToAttachment())
                     .ToList();
 
                 botResponse.AddRange(new List<IActivity>
                 {
-                    MessageFactory.Text($"I believe I've found a list of {userProfile.ElectronicsProfile.MobileProfile.BugetRanges.First()} phone that perfectly fits you:"),
+                    MessageFactory.Text($"I believe I've found a list of {userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.First()} phone that perfectly fits you:"),
                     MessageFactory.Carousel(phoneCards)
                 });
             }
@@ -91,7 +93,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 botResponse.AddRange(new List<IActivity>
                 {
                     MessageFactory.Text(
-                        $"I'm sorry, but I don't think there is a phone in this {userProfile.ElectronicsProfile.MobileProfile.BugetRanges.First()} range that will fulfill your wishes."),
+                        $"I'm sorry, but I don't think there is a phone in this {userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.First()} range that will fulfill your wishes."),
                     MessageFactory.Text("You could try again, maybe increasing your budget or taking out some features...")
                 });
             }
@@ -106,7 +108,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            if (!userProfile.ElectronicsProfile.MobileProfile.BugetRanges.Any())
+            if (!userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.Any())
             {
                 // something is empty
                 return await stepContext.BeginDialogAsync(nameof(ProfileMobileDialog), userProfile, cancellationToken);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Newtonsoft.Json.Linq;
 
 namespace ClerkBot.Contracts
@@ -9,31 +10,48 @@ namespace ClerkBot.Contracts
         /// <summary>
         /// Represents a result from matching user input against a list of choice set from an adaptive card prompt.
         /// </summary>
-        public static List<string> TryGetChoiceSet(this IDictionary<string, object> selectedChoises, string propertyKey)
+        public static bool TryGetChoiceSet(this IDictionary<string, object> selectedChoices, string propertyKey, out List<string> resultList)
         {
-            selectedChoises.TryGetValue(propertyKey, out var choises);
+            resultList = new List<string>();
 
-            if (choises != null)
+            selectedChoices.TryGetValue(propertyKey, out var choices);
+
+            if (choices != null)
             {
-                var formatData = choises.ToString();
-                return formatData.TryGetValues(propertyKey);
+                var formatData = choices.ToString();
+                resultList.AddRange(formatData.TryGetValues(propertyKey));
+                return true;
             }
 
-            return new List<string>();
+            return false;
         }
 
-        public static List<string> TryGetValues(this string choises, string propertyKey)
+        public static bool TryGetFoundChoice(this IDictionary<string, object> selectedChoices, string propertyKey, out FoundChoice foundChoice)
+        {
+            foundChoice = new FoundChoice();
+            selectedChoices.TryGetValue(propertyKey, out var choice);
+
+            if (choice != null)
+            {
+                foundChoice = choice as FoundChoice;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static List<string> TryGetValues(this string choices, string propertyKey)
         {
             var list = new List<string>();
 
             try
             {
-                var jsonObject = JToken.Parse(choises);
+                var jsonObject = JToken.Parse(choices);
                 list.AddRange(jsonObject[propertyKey].ToString().Split(','));
             }
             catch (Exception)
             {
-                list.AddRange(choises.Split(','));
+                list.AddRange(choices.Split(','));
             }
 
             return list;

@@ -7,28 +7,28 @@ using Nest;
 
 namespace ClerkBot.Models.Electronics.Mobile
 {
-    public class MobileFiltersBuilder<P, C> : IFiltersBuilder<P, C> 
-        where P : MobileProfile
-        where C : MobileContract
+    public class MobileFiltersBuilder<TP, TC> : IFiltersBuilder<TP, TC> 
+        where TP : MobileProfile
+        where TC : MobileContract
     {
-        public P Profile { get; set; }
+        public TP Profile { get; set; }
 
-        private List<Func<QueryContainerDescriptor<C>, QueryContainer>> MustCollection { get; }
-        private List<Func<QueryContainerDescriptor<C>, QueryContainer>> MustNotCollection { get; }
-        private List<Func<TermQueryDescriptor<C>, ITermQuery>> TermsCollection { get; }
+        private List<Func<QueryContainerDescriptor<TC>, QueryContainer>> MustCollection { get; }
+        private List<Func<QueryContainerDescriptor<TC>, QueryContainer>> MustNotCollection { get; }
+        private List<Func<TermQueryDescriptor<TC>, ITermQuery>> TermsCollection { get; }
 
-        public MobileFiltersBuilder(P profile)
+        public MobileFiltersBuilder(TP profile)
         {
             Profile = profile;
-            MustCollection = new List<Func<QueryContainerDescriptor<C>, QueryContainer>>();
-            MustNotCollection = new List<Func<QueryContainerDescriptor<C>, QueryContainer>>();
-            TermsCollection = new List<Func<TermQueryDescriptor<C>, ITermQuery>>();
+            MustCollection = new List<Func<QueryContainerDescriptor<TC>, QueryContainer>>();
+            MustNotCollection = new List<Func<QueryContainerDescriptor<TC>, QueryContainer>>();
+            TermsCollection = new List<Func<TermQueryDescriptor<TC>, ITermQuery>>();
         }
 
-        public Func<QueryContainerDescriptor<C>, QueryContainer> BuildQuery()
+        public Func<QueryContainerDescriptor<TC>, QueryContainer> BuildQuery()
         {
             BudgetBuilder();
-            //BrandBuilder();
+            ReliableBuilder();
             DurabilityBuilder();
 
             return q => q
@@ -44,52 +44,57 @@ namespace ClerkBot.Models.Electronics.Mobile
 
         private void BudgetBuilder()
         {
-            var (minBuget, maxBuget) = new MobileBugetRange
+            var (minBudget, maxBudget) = new MobileBudgetRange
             {
-                Budgets = Profile.BugetRanges
+                Budgets = Profile.BudgetRanges
             }.GetBudgetRangeInEuro();
 
-            if (minBuget.Equals(0) && maxBuget.Equals(0))
+            if (minBudget.Equals(0) && maxBudget.Equals(0))
             {
                 return;
             }
 
-            var bugetCriteria = new List<Func<NumericRangeQueryDescriptor<C>, INumericRangeQuery>>
+            var budgetRangeCriteria = new List<Func<NumericRangeQueryDescriptor<TC>, INumericRangeQuery>>
             {
-                device => device.Field(f => f.Price[nameof(CurrencyType.EUR)]).GreaterThan(minBuget),
-                device => device.Field(f => f.Price[nameof(CurrencyType.EUR)]).LessThan(maxBuget)
+                device => device.Field(f => f.Price.First().Value).GreaterThan(minBudget),
+                device => device.Field(f => f.Price.First().Value).LessThan(maxBudget),
+            };
+            var budgetTypeCriteria = new List<Func<MatchQueryDescriptor<TC>, IMatchQuery>>
+            {
+                device => device.Field(f => f.Price.First().Type).Query(nameof(CurrencyType.EUR))
             };
 
-            MustCollection.AddRange(bugetCriteria.Select(filter =>
+            MustCollection.AddRange(budgetRangeCriteria.Select(filter =>
             {
-                return (Func<QueryContainerDescriptor<C>, QueryContainer>)(buget => buget.Range(filter));
+                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(budget => budget.Range(filter));
+            }).ToList());
+            MustCollection.AddRange(budgetTypeCriteria.Select(filter =>
+            {
+                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(b => b.Match(filter));
             }).ToList());
         }
 
-        private void BrandBuilder()
+        private void ReliableBuilder()
         {
-            var brand = Profile.Brands.First();
+            var reliable = Profile.ReliableBrands;
 
-            if (!brand.Equals("None"))
+            if (!reliable) return;
+
+            var brands = Enum.GetNames(typeof(ReliableBrands)).ToList();
+            var brandCriteria = new List<Func<QueryContainerDescriptor<TC>, QueryContainer>>
             {
-                var brandCriteria = new List<Func<MatchQueryDescriptor<C>, IMatchQuery>>
-                {
-                    device => device.Field(f => f.Name.Brand).Query(brand)
-                };
+                device => device.Terms(t => t.Field(p => p.Name.Brand).Terms(brands))
+            };
 
-                MustCollection.AddRange(brandCriteria.Select(filter =>
-                {
-                    return (Func<QueryContainerDescriptor<C>, QueryContainer>)(b => b.Match(filter));
-                }).ToList());
-            }
+            MustCollection.AddRange(brandCriteria);
         }
 
         private void DurabilityBuilder()
         {
             var durability = Profile.Durability;
 
-            var matchCriteria = new List<Func<MatchQueryDescriptor<C>, IMatchQuery>>();
-            var matchNotCriteria = new List<Func<MatchPhraseQueryDescriptor<C>, IMatchPhraseQuery>>();
+            var matchCriteria = new List<Func<MatchQueryDescriptor<TC>, IMatchQuery>>();
+            var matchNotCriteria = new List<Func<MatchPhraseQueryDescriptor<TC>, IMatchPhraseQuery>>();
 
             switch (durability.Name)
             {
@@ -108,12 +113,12 @@ namespace ClerkBot.Models.Electronics.Mobile
 
             MustCollection.AddRange(matchCriteria.Select(filter =>
             {
-                return (Func<QueryContainerDescriptor<C>, QueryContainer>)(b => b.Match(filter));
+                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(b => b.Match(filter));
             }).ToList());
 
             MustNotCollection.AddRange(matchNotCriteria.Select(filter =>
             {
-                return (Func<QueryContainerDescriptor<C>, QueryContainer>)(b => b.MatchPhrase(filter));
+                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(b => b.MatchPhrase(filter));
             }).ToList());
         }
     }

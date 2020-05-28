@@ -2,5 +2,6 @@
 {
     public interface IMobileFeature
     {
+        public int PriorityOrder { get; set; }
     }
 }

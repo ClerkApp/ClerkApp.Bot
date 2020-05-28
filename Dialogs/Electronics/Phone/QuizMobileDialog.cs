@@ -76,16 +76,19 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             if (stepContext.Result is IDictionary<string, object> result && result.Count > 0)
             {
                 result.TryGetValue(nameof(CameraMobileFeature), out var cameraResult);
-                result.TryGetValue(nameof(GameTypeMobileFeature), out var gameTypeResult);
+                result.TryGetValue(nameof(GamingMobileFeature), out var gameTypeResult);
 
                 if (cameraResult != null)
                 {
                     var cameraFeature =  JsonConvert.DeserializeObject<CameraMobileFeature>(cameraResult.ToString() ?? string.Empty);
-                    UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(cameraFeature);
+                    if (cameraFeature.Action)
+                    {
+                        UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(cameraFeature);
+                    }
                 }
                 if (gameTypeResult != null)
                 {
-                    var gamingFeature = JsonConvert.DeserializeObject<GameTypeMobileFeature>(gameTypeResult.ToString() ?? string.Empty);
+                    var gamingFeature = JsonConvert.DeserializeObject<GamingMobileFeature>(gameTypeResult.ToString() ?? string.Empty);
                     UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(gamingFeature);
                 }
             }
@@ -131,7 +134,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
                 Slots.AddRange(new List<SlotDetails>
                 {
-                    new SlotDetails(nameof(GameTypeMobileFeature), dialogId, new PromptOptions
+                    new SlotDetails(nameof(GamingMobileFeature), dialogId, new PromptOptions
                     {
                         Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
                         RetryPrompt = MessageFactory.Text("Please choose something from this list")
