@@ -26,7 +26,8 @@ namespace ClerkBot.Dialogs.Electronics.Phone
     {
         private readonly BotStateService BotStateService;
         private readonly ElasticClient ElasticClient;
-        private readonly List<SlotDetails> Slots;
+        private List<SlotDetails> Slots;
+        private IDictionary<string, object> State;
         private UserProfile UserProfile;
 
         public ProfileMobileDialog(
@@ -38,6 +39,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
             ElasticClient = elasticClient ?? throw new ArgumentNullException(nameof(elasticClient));
             Slots = new List<SlotDetails>();
+            State = new Dictionary<string, object>();
 
             InitializeWaterfallDialog();
         }
@@ -51,7 +53,6 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 ReliableBrandsAsync,
                 DurabilityAsync,
                 BestFeatureAsync,
-                SendAsync,
                 ProcessResultsAsync
             });
 
@@ -62,32 +63,26 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
         }
 
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (stepContext.ActiveDialog.State["options"] is UserProfile userProfile)
-            {
-                UserProfile = userProfile;
-            }
+            UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
+            Slots.Clear();
+            State.Clear();
+
+            AddDialog(new SlotFillingDialog(ref Slots, ref State));
             return await stepContext.NextAsync(null, cancellationToken);
-        }
-
-        private async Task<DialogTurnResult> SendAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            AddDialog(new SlotFillingDialog(Slots));
-            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ProcessResultsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            Slots.Clear();
+            var result = State;
             UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            if (stepContext.Result is IDictionary<string, object> result && result.Count > 0)
+            if (result.Count > 0)
             {
                 result.TryGetValue(nameof(MobileProfile.ReliableBrands), out var reliableResult);
                 result.TryGetFoundChoice(nameof(MobileProfile.BudgetRanges), out var budgetRange);
@@ -111,46 +106,6 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             }
 
             return await stepContext.EndDialogAsync(null, cancellationToken);
-        }
-
-        private async Task<DialogTurnResult> ReliableBrandsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            //var brandLists = ElasticClient.Search<MobileContract>(s => s
-            //    .Index("mobiles")
-            //    .From(0)
-            //    .Size(0)
-            //    .Aggregations(new AggregationDictionary
-            //    {
-            //        {
-            //            "brands", new TermsAggregation("Brand")
-            //            {
-            //                Field = "Name.Brand.keyword"
-            //            }
-            //        }
-            //    }));
-
-            //var searchResult = ElasticProductSearchResultBuilder.BuildProductSearchResult(brandLists);
-            //searchResult.StringAggregations.TryGetValue("brands", out var aggr);
-
-            if (!UserProfile.ElectronicsProfile.MobileProfile.ReliableBrands)
-            {
-                const string dialogId = "ReliableBrandsPrompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId));
-
-                const string fileName = "Cards.Mobile.ReliableBrands";
-                var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
-
-                Slots.AddRange(new List<SlotDetails>
-                {
-                    new SlotDetails(nameof(MobileProfile.ReliableBrands), dialogId, new PromptOptions
-                    {
-                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                        RetryPrompt = MessageFactory.Text("Please one of the above options")
-                    })
-                });
-            }
-
-            return await stepContext.NextAsync(null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> BudgetRangeAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -185,7 +140,30 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 });
             }
 
-            return await stepContext.NextAsync(null, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> ReliableBrandsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if (!UserProfile.ElectronicsProfile.MobileProfile.ReliableBrands)
+            {
+                const string dialogId = "ReliableBrandsPrompt";
+                AddDialog(new AdaptiveCardsPrompt(dialogId));
+
+                const string fileName = "Cards.Mobile.ReliableBrands";
+                var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
+
+                Slots.AddRange(new List<SlotDetails>
+                {
+                    new SlotDetails(nameof(MobileProfile.ReliableBrands), dialogId, new PromptOptions
+                    {
+                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
+                        RetryPrompt = MessageFactory.Text("Please one of the above options")
+                    })
+                });
+            }
+
+            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> DurabilityAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -220,7 +198,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 });
             }
 
-            return await stepContext.NextAsync(null, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> BestFeatureAsync(WaterfallStepContext stepContext,
@@ -245,7 +223,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 });
             }
 
-            return await stepContext.NextAsync(null, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
 
         private static Task<bool> PhoneFeaturesValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
