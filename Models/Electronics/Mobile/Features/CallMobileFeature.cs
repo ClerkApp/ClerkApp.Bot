@@ -5,6 +5,5 @@
         public int PriorityOrder { get; set; }
         public bool ImageSaturation { get; set; }
         public bool SelfieFeature { get; set; }
-        public bool SelfieFeature { get; set; }
     }
 }

@@ -25,8 +25,6 @@ namespace ClerkBot.Models.User
 
         public string PhoneNumber { get; set; }
 
-        public string Bug { get; set; }
-
         public string LanguagePreference { get; set; }
 
         public ElectronicsProfile ElectronicsProfile { get; set; }

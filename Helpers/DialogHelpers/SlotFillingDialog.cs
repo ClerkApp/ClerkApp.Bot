@@ -29,11 +29,19 @@ namespace ClerkBot.Helpers.DialogHelpers
 
         // The list of slots defines the properties to collect and the dialogs to use to collect them.
         private readonly List<SlotDetails> _slots;
+        private IDictionary<string, object> _state;
 
         public SlotFillingDialog(List<SlotDetails> slots, string dialogId = nameof(SlotFillingDialog))
             : base(dialogId)
         {
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+        }
+
+        public SlotFillingDialog(ref List<SlotDetails> slots, ref IDictionary<string, object> state, string dialogId = nameof(SlotFillingDialog))
+            : base(dialogId)
+        {
+            _slots = slots ?? throw new ArgumentNullException(nameof(slots));
+            _state = state;
         }
 
         /// <summary>
@@ -135,6 +143,9 @@ namespace ClerkBot.Helpers.DialogHelpers
             var slotName = (string)dialogContext.ActiveDialog.State[SlotName];
             var values = dialogContext.ActiveDialog.GetPersistedValues();
             values[slotName] = result;
+
+            _slots.Remove(_slots.FirstOrDefault((item) => item.Name.Equals(slotName)));
+            _state.Add(slotName, result);
 
             // Run prompt.
             return await RunPromptAsync(dialogContext, cancellationToken);

@@ -61,24 +61,16 @@ namespace ClerkBot.Dialogs
 
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            //if (!Environment.EnvironmentName.Contains("Development"))
-            //{
-                var recognizerResult = await BotServices.Dispatch.RecognizeAsync<ClerkLearningService>(stepContext.Context, cancellationToken);
-                var (intent, _) = recognizerResult.TopIntent();
+            var recognizerResult = await BotServices.Dispatch.RecognizeAsync<ClerkLearningService>(stepContext.Context, cancellationToken);
+            var (intent, _) = recognizerResult.TopIntent();
 
-                var intentName = intent.ToString().Split(new[] { "Intent" }, StringSplitOptions.None).First();
-                var dialog = string.Concat(intentName, "Dialog").TryGetRootDialog();
+            var intentName = intent.ToString().Split(new[] { "Intent" }, StringSplitOptions.None).First();
+            var dialog = string.Concat(intentName, "Dialog").TryGetRootDialog();
 
-                if (dialog != null)
-                {
-                    return await stepContext.BeginDialogAsync(dialog, recognizerResult, cancellationToken);
-                }
-            //}
-            //else
-            //{
-            //    AddDialog(new MobileDialog(nameof(MobileDialog), BotStateService, ElasticService));
-            //    return await stepContext.BeginDialogAsync("MobileDialog", null, cancellationToken);
-            //}
+            if (dialog != null)
+            {
+                return await stepContext.BeginDialogAsync(dialog, recognizerResult, cancellationToken);
+            }
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"I'm sorry I don't know what you mean."), cancellationToken);
             return await stepContext.NextAsync(null, cancellationToken);

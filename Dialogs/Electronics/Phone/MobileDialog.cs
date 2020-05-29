@@ -102,16 +102,13 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
-
-
         private async Task<DialogTurnResult> GetProfileInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
             if (!userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.Any())
             {
-                // something is empty
-                return await stepContext.BeginDialogAsync(nameof(ProfileMobileDialog), userProfile, cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(ProfileMobileDialog), null, cancellationToken);
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
