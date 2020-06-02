@@ -6,9 +6,7 @@ namespace ClerkBot.Models.Electronics.Mobile
     public class MobileContract: IElasticContract
     {
         public Guid Id { get; set; }
-        public DateTime Timestamp { get; set; }
-        public Uri Image { get; set; }
-        //public ImageData Image { get; set; }
+        public DataLink DataLinks { get; set; }
         public Status Status { get; set; }
         public Name Name { get; set; }
         public Network Network { get; set; }
@@ -20,23 +18,28 @@ namespace ClerkBot.Models.Electronics.Mobile
         public Sound Sound { get; set; }
         public Comms Comms { get; set; }
         public Battery Battery { get; set; }
-        public FeaturesDb Features { get; set; }
-        public List<PriceSpec<double>> Price { get; set; }
+        public MobileFeatures Features { get; set; }
+        public Dictionary<string, double> Price { get; set; }
         public List<string> Colors { get; set; }
     }
 
-    public class ImageData
+     public class DataLink
     {
-        public List<byte[]> Images { get; set; }
+        public Uri Image { get; set; }
+        public Uri Link { get; set; }
     }
 
-    public enum Cores
+    public class MobileFeatures
     {
-        singlecore = 1,
-        dualcore = 2,
-        quadcore = 4,
-        hexacore = 6,
-        octacore = 8
+        public bool WaterResistant { get; set; }
+        public bool DustResistant { get; set; }
+        public bool Radio { get; set; }
+        public bool FastCharging { get; set; }
+        public bool Jack { get; set; }
+        public bool Nfc { get; set; }
+        public bool Gps { get; set; }
+        public bool Gyro { get; set; }
+        public Spec<bool> Fingerprint { get; set; }
     }
 
     public class Status
@@ -56,10 +59,18 @@ namespace ClerkBot.Models.Electronics.Mobile
     {
         public List<string> Technology { get; set; }
         public List<string> Speed { get; set; }
-        public List<BandSpec> Bands { get; set; }
+        public BandSpec Band { get; set; }
     }
 
     public class BandSpec
+    {
+        public int TotalBands { get; set; }
+
+        public List<BandType> Bands { get; set; }
+
+    }
+
+    public class BandType
     {
         public string Type { get; set; }
         public int Count { get; set; }
@@ -83,11 +94,18 @@ namespace ClerkBot.Models.Electronics.Mobile
 
     public class Platform
     {
-        public Dictionary<string, int> Os { get; set; }
+        public Os Os { get; set; }
         public List<Chipset> Chipset { get; set; }
         public List<Cpu> Cpu { get; set; }
         public List<Gpu> Gpu { get; set; }
         public List<Performance> Tests { get; set; }
+    }
+
+    public class Os
+    {
+        public string System { get; set; }
+        public int Version { get; set; }
+        public string Interface { get; set; }
     }
 
     public class Performance
@@ -144,8 +162,8 @@ namespace ClerkBot.Models.Electronics.Mobile
         public List<string> RefreshRate { get; set; }
         public Size Size { get; set; }
         public Resolution Resolution { get; set; }
-        public KeyValuePair<string, int> Protection { get; set; }
-        public KeyValuePair<string, string> Type { get; set; }
+        public Spec<int> Protection { get; set; }
+        public Spec<string> Type { get; set; }
     }
 
     public class Size
@@ -220,19 +238,6 @@ namespace ClerkBot.Models.Electronics.Mobile
         public double Bluetooth { get; set; }
         public List<string> Wifi { get; set; }
         public KeyValuePair<string, double> Usb { get; set; }
-    }
-
-    public class FeaturesDb
-    {
-        public bool WaterResistant { get; set; }
-        public bool DustResistant { get; set; }
-        public bool Radio { get; set; }
-        public bool FastCharging { get; set; }
-        public bool Jack { get; set; }
-        public bool Nfc { get; set; }
-        public bool Gps { get; set; }
-        public bool Gyro { get; set; }
-        public Spec<bool> Fingerprint { get; set; }
     }
 
     public class Battery

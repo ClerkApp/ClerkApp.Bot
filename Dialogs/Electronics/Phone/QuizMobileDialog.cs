@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ClerkBot.Helpers;
@@ -20,13 +21,15 @@ namespace ClerkBot.Dialogs.Electronics.Phone
     public class QuizMobileDialog : ComponentDialog
     {
         private readonly BotStateService BotStateService;
-        private readonly List<SlotDetails> Slots;
         private UserProfile UserProfile;
+        private List<SlotDetails> Slots;
+        private IDictionary<string, object> State;
 
         public QuizMobileDialog(string dialogId, BotStateService botStateService) : base(dialogId)
         {
             BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
             Slots = new List<SlotDetails>();
+            State = new Dictionary<string, object>();
 
             InitializeWaterfallDialog();
         }
@@ -35,45 +38,40 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             AddActiveDialogs(new WaterfallStep[]
             {
-                InitialStepAsync,
                 CameraFeatureAsync,
-                GamingFeatureAsync,
-                SendAsync,
-                ProcessResultsAsync
+                GamingFeatureAsync
             });
 
             InitialDialogId = Common.BuildDialogId();
         }
 
-        private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
+        private void AddActiveDialogs(IEnumerable<WaterfallStep> profileSteps)
         {
+            var shuffledSteps = profileSteps.OrderBy(x => Guid.NewGuid()).ToList();
+            shuffledSteps.Insert(0, InitialStepAsync);
+            shuffledSteps.Add(ProcessResultsAsync);
+
+
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
 
-            AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
+            AddDialog(new WaterfallDialog(Common.BuildDialogId(), shuffledSteps));
         }
 
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (stepContext.ActiveDialog.State["options"] is UserProfile userProfile)
-            {
-                UserProfile = userProfile;
-            }
+            UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
+            AddDialog(new SlotFillingDialog(ref Slots, ref State));
             return await stepContext.NextAsync(null, cancellationToken);
-        }
-
-        private async Task<DialogTurnResult> SendAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            AddDialog(new SlotFillingDialog(Slots));
-            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ProcessResultsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var result = State;
             UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            if (stepContext.Result is IDictionary<string, object> result && result.Count > 0)
+            if (result.Count > 0)
             {
                 result.TryGetValue(nameof(CameraMobileFeature), out var cameraResult);
                 result.TryGetValue(nameof(GamingMobileFeature), out var gameTypeResult);
@@ -93,7 +91,6 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 }
             }
 
-            Slots.Clear();
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
@@ -102,11 +99,21 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             if (UserProfile.ElectronicsProfile.MobileProfile.FeaturesList.Contains(MobileProfile.PhoneFeatures.camera))
             {
-                const string dialogId = "CameraFeaturePrompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId));
+                var feature = UserProfile.ElectronicsProfile.MobileProfile.Features.FirstOrDefault(x =>
+                    x.GetType().Name.Equals(nameof(CameraMobileFeature)));
 
-                const string fileName = "Cards.Mobile.CameraMobile";
+                if (feature != null)
+                {
+                    return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
+                }
+
+                var dialogTypeName = GetType().Name.GetDialogType();
+                var resourceCardName = dialogTypeName.GetCardName();
+                var fileName = $"{dialogTypeName}.{resourceCardName}";
                 var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
+
+                var dialogId = $"{resourceCardName}Prompt";
+                AddDialog(new AdaptiveCardsPrompt(dialogId));
 
                 Slots.AddRange(new List<SlotDetails>
                 {
@@ -118,7 +125,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 });
             }
 
-            return await stepContext.NextAsync(null, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> GamingFeatureAsync(WaterfallStepContext stepContext,
@@ -126,11 +133,21 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             if (UserProfile.ElectronicsProfile.MobileProfile.FeaturesList.Contains(MobileProfile.PhoneFeatures.gaming))
             {
-                const string dialogId = "GamingFeaturePrompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId));
+                var feature = UserProfile.ElectronicsProfile.MobileProfile.Features.FirstOrDefault(x =>
+                    x.GetType().Name.Equals(nameof(GamingMobileFeature)));
 
-                const string fileName = "Cards.Mobile.GameTypeMobile";
+                if (feature != null)
+                {
+                    return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
+                }
+
+                var dialogTypeName = GetType().Name.GetDialogType();
+                var resourceCardName = dialogTypeName.GetCardName();
+                var fileName = $"{dialogTypeName}.{resourceCardName}";
                 var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
+
+                var dialogId = $"{resourceCardName}Prompt";
+                AddDialog(new AdaptiveCardsPrompt(dialogId));
 
                 Slots.AddRange(new List<SlotDetails>
                 {
@@ -142,7 +159,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 });
             }
 
-            return await stepContext.NextAsync(null, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
     }
 }

@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveCards.Templating;
 using ClerkBot.Contracts;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.ElasticHelpers;
 using ClerkBot.Models.Electronics.Mobile;
-using ClerkBot.Models.Electronics.Mobile.Enrichment;
 using ClerkBot.Models.User;
+using ClerkBot.Resources;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Nest;
+using Newtonsoft.Json;
+using Attachment = Microsoft.Bot.Schema.Attachment;
 
 namespace ClerkBot.Dialogs.Electronics.Phone
 {
@@ -33,9 +36,9 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             AddActiveDialogs(new WaterfallStep[] {
                 WelcomeAsync,
-                GetProfileInfoAsync,
-                QuizMoreInfoAsync,
-                FinalStepAsync
+                ProfileInfoAsync,
+                QuizInfoAsync,
+                ResultCardAsync
             });
 
             InitialDialogId = Common.BuildDialogId();
@@ -43,7 +46,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
         private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
         {
-            AddDialog(new ProfileMobileDialog(nameof(ProfileMobileDialog), BotStateService, ElasticClient));
+            AddDialog(new ProfileMobileDialog(nameof(ProfileMobileDialog), BotStateService));
             AddDialog(new QuizMobileDialog(nameof(QuizMobileDialog), BotStateService));
 
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
@@ -55,7 +58,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> ResultCardAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
             var filterBuilder = new MobileFiltersBuilder<MobileProfile, MobileContract>(userProfile.ElectronicsProfile.MobileProfile);
@@ -65,6 +68,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                     .Index("mobiles")
                     .From(0)
                     .Size(10)
+                    .TrackScores()
                     .Query(filterBuilder.BuildQuery())
                     .Sort(filterBuilder.BuildSort()));
 
@@ -74,13 +78,18 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             var botResponse = new List<IActivity>();
             if (searchResult.Products.Any())
             {
-                var phoneCards = searchResult.Products.Select(mobile => new HeroCard
-                    {
-                        Title = mobile.Name.Main.ToTitleCase(),
-                        Images = new List<CardImage> { new CardImage(mobile.Image.ToString()) },
-                        Text = $"- Price: {mobile.Price.First(s => s.Type.Equals(nameof(CurrencyType.EUR))).Value} {nameof(CurrencyType.EUR)}"
-                    }.ToAttachment())
-                    .ToList();
+                var phoneCards = new List<Attachment>();
+
+                foreach (var mobile in searchResult.Products)
+                {
+                    var dialogTypeName = GetType().Name.GetDialogType();
+                    var resourceCardName = dialogTypeName.GetCardName();
+                    var fileName = $"{dialogTypeName}.{resourceCardName}";
+
+                    var phoneResultTemplate = new AdaptiveCardTemplate(new EmbeddedResourceReader(fileName).GetJson());
+                        
+                    phoneCards.Add(Common.CreateAdaptiveCardAttachment(phoneResultTemplate.Expand(JsonConvert.SerializeObject(mobile))));
+                }
 
                 botResponse.AddRange(new List<IActivity>
                 {
@@ -102,11 +111,13 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> GetProfileInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> ProfileInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            if (!userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.Any())
+            var areAllPropertiesNotNull = userProfile.ElectronicsProfile.MobileProfile.ArePropertiesNotNull();
+
+            if (!areAllPropertiesNotNull)
             {
                 return await stepContext.BeginDialogAsync(nameof(ProfileMobileDialog), null, cancellationToken);
             }
@@ -114,7 +125,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> QuizMoreInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> QuizInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 

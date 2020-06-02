@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ClerkBot.Helpers;
@@ -34,11 +35,15 @@ namespace ClerkBot.Bots
                 // To learn more about Adaptive Cards, see https://aka.ms/msbot-adaptivecards for more details.
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    const string fileName = "Cards.WelcomeCard";
+                    const string fileName = "WelcomeCard";
                     var welcomeCard = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment("Welcome");
                     var response = MessageFactory.Attachment(welcomeCard);
                     await turnContext.SendActivityAsync(response, cancellationToken);
                 }
+
+                var dialogNames = Common.TryGetAllSpecificDialog().Select(dialog => dialog.Replace("Dialog", string.Empty)).ToList();
+                var options = string.Join(",", dialogNames);
+                await turnContext.SendActivityAsync(MessageFactory.Text($"For now I can help you find: {options}"), cancellationToken);
             }
         }
     }

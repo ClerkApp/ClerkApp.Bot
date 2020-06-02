@@ -33,14 +33,17 @@ namespace ClerkBot.Bots
         {
             await base.OnTurnAsync(turnContext, cancellationToken);
 
+            await BotStateService.UserState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
+            await BotStateService.ConversationState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
+        }
+        
+        protected override async Task OnEndOfConversationActivityAsync(ITurnContext<IEndOfConversationActivity> turnContext, CancellationToken cancellationToken)
+        {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(turnContext, () => new UserProfile(), cancellationToken);
             var conversationData = await BotStateService.ConversationDataAccessor.GetAsync(turnContext, () => new ConversationData(), cancellationToken);
 
             await BotStateService.UserProfileAccessor.SetAsync(turnContext, userProfile, cancellationToken);
             await BotStateService.ConversationDataAccessor.SetAsync(turnContext, conversationData, cancellationToken);
-
-            await BotStateService.UserState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
-            await BotStateService.ConversationState.SaveChangesAsync(turnContext, cancellationToken: cancellationToken);
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)

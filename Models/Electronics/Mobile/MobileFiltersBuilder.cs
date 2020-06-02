@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ClerkBot.Enums;
 using ClerkBot.Models.Electronics.Mobile.Enrichment;
+using ClerkBot.Models.Electronics.Mobile.Features;
 using Nest;
 
 namespace ClerkBot.Models.Electronics.Mobile
@@ -13,23 +14,25 @@ namespace ClerkBot.Models.Electronics.Mobile
     {
         public TP Profile { get; set; }
 
+        private bool BuildersExecuted;
+        private SortDescriptor<TC> SortCollection { get; }
         private List<Func<QueryContainerDescriptor<TC>, QueryContainer>> MustCollection { get; }
         private List<Func<QueryContainerDescriptor<TC>, QueryContainer>> MustNotCollection { get; }
-        private List<Func<TermQueryDescriptor<TC>, ITermQuery>> TermsCollection { get; }
 
         public MobileFiltersBuilder(TP profile)
         {
             Profile = profile;
             MustCollection = new List<Func<QueryContainerDescriptor<TC>, QueryContainer>>();
             MustNotCollection = new List<Func<QueryContainerDescriptor<TC>, QueryContainer>>();
-            TermsCollection = new List<Func<TermQueryDescriptor<TC>, ITermQuery>>();
+            SortCollection = new SortDescriptor<TC>();
         }
 
         public Func<QueryContainerDescriptor<TC>, QueryContainer> BuildQuery()
         {
-            BudgetBuilder();
-            ReliableBuilder();
-            DurabilityBuilder();
+            if (!BuildersExecuted)
+            {
+                BuildersExecuted = ExecuteBuilders();
+            }
 
             return q => q
                 .Bool(bq => bq
@@ -39,7 +42,33 @@ namespace ClerkBot.Models.Electronics.Mobile
 
         public Func<SortDescriptor<MobileContract>, IPromise<IList<ISort>>> BuildSort()
         {
-            return s => s.Descending(d => d.Display.Protection.Value);
+            if (!BuildersExecuted)
+            {
+                BuildersExecuted = ExecuteBuilders();
+            }
+
+            SortCollection.Descending(de => de.Display.Protection.Value);
+            SortCollection.Descending(des => des.Features.DustResistant);
+            SortCollection.Descending(desc => desc.Battery.Capacity);
+
+            SortCollection.Descending(SortSpecialField.Score);
+            return s => SortCollection;
+        }
+
+        private bool ExecuteBuilders()
+        {
+            BudgetBuilder();
+            ReliableBuilder();
+            DurabilityBuilder();
+            CameraBuilder();
+            CallBuilder();
+
+            return true;
+        }
+
+        private void CallBuilder()
+        {
+            SortCollection.Descending(d => d.Camera.Selfie.Lens.First().Size);
         }
 
         private void BudgetBuilder()
@@ -56,21 +85,13 @@ namespace ClerkBot.Models.Electronics.Mobile
 
             var budgetRangeCriteria = new List<Func<NumericRangeQueryDescriptor<TC>, INumericRangeQuery>>
             {
-                device => device.Field(f => f.Price.First().Value).GreaterThan(minBudget),
-                device => device.Field(f => f.Price.First().Value).LessThan(maxBudget),
-            };
-            var budgetTypeCriteria = new List<Func<MatchQueryDescriptor<TC>, IMatchQuery>>
-            {
-                device => device.Field(f => f.Price.First().Type).Query(nameof(CurrencyType.EUR))
+                device => device.Field(f => f.Price[nameof(CurrencyType.EUR)]).GreaterThan(minBudget),
+                device => device.Field(f => f.Price[nameof(CurrencyType.EUR)]).LessThan(maxBudget)
             };
 
             MustCollection.AddRange(budgetRangeCriteria.Select(filter =>
             {
-                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(budget => budget.Range(filter));
-            }).ToList());
-            MustCollection.AddRange(budgetTypeCriteria.Select(filter =>
-            {
-                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(b => b.Match(filter));
+                return (Func<QueryContainerDescriptor<TC>, QueryContainer>) (budget => budget.Range(filter));
             }).ToList());
         }
 
@@ -119,6 +140,85 @@ namespace ClerkBot.Models.Electronics.Mobile
             MustNotCollection.AddRange(matchNotCriteria.Select(filter =>
             {
                 return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(b => b.MatchPhrase(filter));
+            }).ToList());
+        }
+
+        private void CameraBuilder()
+        {
+            var matchCriteria = new List<Func<MatchQueryDescriptor<TC>, IMatchQuery>>();
+            var matchPhraseCriteria = new List<Func<MatchPhraseQueryDescriptor<TC>, IMatchPhraseQuery>>();
+            var rangeCriteria = new List<Func<NumericRangeQueryDescriptor<TC>, INumericRangeQuery>>();
+
+            var mobileFeature = Profile.Features.FirstOrDefault(f => f.GetType().Name.ToLower().Contains(nameof(MobileProfile.PhoneFeatures.camera)));
+
+            if (mobileFeature is null)
+            {
+                return;
+            }
+
+            var camera = mobileFeature as CameraMobileFeature;
+
+            if (camera.SelfieMode)
+            {
+                matchPhraseCriteria.Add(device => device.Field(f => f.Camera.Selfie.Features).Query("hdr"));
+
+                SortCollection.Descending(d => d.Camera.Selfie.Lens.First().Size);
+                SortCollection.Ascending(d => d.Camera.Selfie.Lens.First().Aperture);
+            }
+
+            if (camera.NightMode.Value >= Periodicity.Occasionally.Value)
+            {
+                matchPhraseCriteria.Add(device => device.Field(f => f.Camera.Main.Features).Query("hdr"));
+
+                if(camera.NightMode.Value >= Periodicity.Weekly.Value)
+                {
+                    SortCollection.Ascending(d => d.Camera.Main.Lens.First().Aperture);
+
+                    if (camera.NightMode.Value >= Periodicity.Daily.Value)
+                    {
+                        SortCollection.Descending(d => d.Camera.Main.Lens.First().Micro);
+                        SortCollection.Descending(d => d.Camera.Main.Lens.First().Size);
+                    }
+                }
+            }
+
+            if (camera.Print)
+            {
+                SortCollection.Descending(d => d.Camera.Main.Lens.First().Megapixels);
+            }
+
+            if (camera.KResolution)
+            {
+                rangeCriteria.Add(
+                    device => device.Field(f => f.Camera.Main.Videos.First().Value).GreaterThan(0));
+                rangeCriteria.Add(
+                    device => device.Field(f => f.Camera.Main.Videos.First().Value).LessThan(100));
+            }
+
+            if(camera.RecordTypes.Value >= Intensity.Medium.Value)
+            {
+                matchCriteria.Add(device => device.Field(f => f.Features.Gyro).Query(bool.TrueString.ToLower()));
+                matchCriteria.Add(device => device.Field(f => f.Memory.CardSlot).Query(bool.TrueString.ToLower()));
+
+                if (camera.NightMode.Value >= Intensity.ExtraHard.Value)
+                {
+                    matchPhraseCriteria.Add(device => device.Field(f => f.Camera.Main.Videos.First().Name).Query("60"));
+                }
+            }
+            
+            MustCollection.AddRange(matchPhraseCriteria.Select(filter =>
+            {
+                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(budget => budget.MatchPhrase(filter));
+            }).ToList());
+
+            MustCollection.AddRange(matchCriteria.Select(filter =>
+            {
+                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(budget => budget.Match(filter));
+            }).ToList());
+
+            MustCollection.AddRange(rangeCriteria.Select(filter =>
+            {
+                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(budget => budget.Range(filter));
             }).ToList());
         }
     }

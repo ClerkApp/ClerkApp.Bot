@@ -1,0 +1,57 @@
+﻿{
+  "type": "AdaptiveCard",
+  "version": "1.2",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "Image",
+          "url": "${DataLinks.Image}",
+          "horizontalAlignment": "Center",
+          "size": "Large"
+        }
+      ],
+      "style": "default",
+      "horizontalAlignment": "Center"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 2,
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${Name.Brand}, ${Status.Year}"
+            },
+            {
+              "type": "TextBlock",
+              "text": "${Name.Main}",
+              "weight": "Bolder",
+              "size": "ExtraLarge",
+              "spacing": "None",
+              "wrap": true
+            },
+            {
+              "type": "TextBlock",
+              "text": "${Price['EUR']}€",
+              "isSubtle": true,
+              "spacing": "None"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "url": "${DataLinks.Link}",
+      "style": "positive",
+      "title": "See more about it"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}

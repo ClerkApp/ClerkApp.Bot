@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
+using AdaptiveCards;
 using ClerkBot.Contracts;
 using ClerkBot.Resources;
 using Nest;
@@ -52,6 +55,17 @@ namespace ClerkBot.Helpers
             return adaptiveCardAttachment;
         }
 
+        public static Attachment CreateAdaptiveCardAttachment(string jsonData)
+        {
+            //var path = Path.Combine(".", "Resources", "Cards", "AdaptiveCards", "ChoiceSet", "PhoneWantedFeatures", "json");
+            var adaptiveCardAttachment = new Attachment()
+            {
+                ContentType = "application/vnd.microsoft.card.adaptive",
+                Content = AdaptiveCard.FromJson(jsonData).Card
+            };
+            return adaptiveCardAttachment;
+        }
+
         public static T CreateInstance<T>(params object[] args)
         {
             var type = typeof(T);
@@ -81,15 +95,54 @@ namespace ClerkBot.Helpers
                 .Select(x => x.Name).ToList();
         }
 
+        //https://stackoverflow.com/a/50128943
+        public static bool ArePropertiesNotNull<T>(this T obj)
+        {
+            return PropertyCache<T>.PublicProperties.All(propertyInfo => propertyInfo.GetValue(obj) != null);
+        }
+
+        public static class PropertyCache<T>
+        {
+            private static readonly Lazy<IReadOnlyCollection<PropertyInfo>> publicPropertiesLazy
+                = new Lazy<IReadOnlyCollection<PropertyInfo>>(() => typeof(T).GetProperties());
+
+            public static IReadOnlyCollection<PropertyInfo> PublicProperties => publicPropertiesLazy.Value;
+        }
+
+        // https://stackoverflow.com/a/4489031
+        public static List<string> SplitCamelCase(this string source) {
+            return Regex.Split(source, @"(?<!^)(?=[A-Z])").ToList();
+        }
+
+        public static string GetCardName(this string className, [CallerMemberName]string name = "")
+        {
+            var cardName = string.Join("", name.SplitCamelCase().SkipLast(1));
+            return $"{cardName}{className}";
+        }
+
+        public static string GetDialogType(this string dialogClassName)
+        {
+            return dialogClassName.SplitCamelCase()[^2];
+        }
+        
+        public static string GetCallerMethodName([CallerMemberName]string name = "")
+        {
+            return name;
+        }
 
         public static string TryGetRootDialog(this string dialog)
         {
-            return GetAllTypes(typeof(IRootDialog)).Find(x => x.Contains(dialog));
+            return GetAllTypes(typeof(IRootDialog)).Find(x => x.Equals(dialog));
         }
 
         public static string TryGetSpecificDialog(this string dialog)
         {
-            return GetAllTypes(typeof(ISpecificDialog)).Find(x => x.Contains(dialog));
+            return GetAllTypes(typeof(ISpecificDialog)).Find(x => x.Equals(dialog));
+        }
+
+        public static List<string> TryGetAllSpecificDialog()
+        {
+            return GetAllTypes(typeof(ISpecificDialog));
         }
 
         public static string TryParseEnum<TEnum>(string value, out TEnum result) where TEnum: struct

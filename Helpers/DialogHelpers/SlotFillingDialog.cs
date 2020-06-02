@@ -40,6 +40,9 @@ namespace ClerkBot.Helpers.DialogHelpers
         public SlotFillingDialog(ref List<SlotDetails> slots, ref IDictionary<string, object> state, string dialogId = nameof(SlotFillingDialog))
             : base(dialogId)
         {
+            slots.Clear();
+            state.Clear();
+
             _slots = slots ?? throw new ArgumentNullException(nameof(slots));
             _state = state;
         }

@@ -72,37 +72,6 @@
       "columns": [
         {
           "type": "Column",
-          "id": "platforms",
-          "items": [
-            {
-              "type": "TextBlock",
-              "text": "How would you like your photos to be:"
-            },
-            {
-              "type": "Input.ChoiceSet",
-              "id": "Platforms",
-              "choices": [
-                {
-                  "title": "Most unnedited photos",
-                  "value": "natural"
-                },
-                {
-                  "title": "Ready for media posting",
-                  "value": "beautify"
-                }
-              ],
-              "style": "expanded"
-            }
-          ],
-          "width": "stretch"
-        }
-      ]
-    },
-    {
-      "type": "ColumnSet",
-      "columns": [
-        {
-          "type": "Column",
           "width": "stretch",
           "items": [
             {
@@ -201,15 +170,15 @@
                                 "choices": [
                                   {
                                     "title": "Running, cycling",
-                                    "value": "moving"
+                                    "value": "ExtraHard"
                                   },
                                   {
                                     "title": "Vlogging",
-                                    "value": "vlog"
+                                    "value": "Medium"
                                   },
                                   {
                                     "title": "At parties",
-                                    "value": "party"
+                                    "value": "Soft"
                                   }
                                 ],
                                 "isMultiSelect": true,

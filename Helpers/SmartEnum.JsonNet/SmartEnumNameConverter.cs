@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Ardalis.SmartEnum;
 using Newtonsoft.Json;
 
@@ -32,7 +34,17 @@ namespace ClerkBot.Helpers.SmartEnum.JsonNet
             switch (reader.TokenType)
             {
                 case JsonToken.String:
-                    return GetFromName((string)reader.Value);
+                    if (reader.Value.ToString().Contains(","))
+                    {
+                        var values = new List<string>(((string)reader.Value)?.Split(','));
+                        var list = values.Select(GetFromName).ToList();
+
+                        return (TEnum) list.Max(x => x.Value);
+                    }
+                    else
+                    {
+                        return GetFromName((string)reader.Value);
+                    }
 
                 default:
                     throw new JsonSerializationException($"Unexpected token {reader.TokenType} when parsing a smart enum.");

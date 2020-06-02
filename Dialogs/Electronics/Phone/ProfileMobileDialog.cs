@@ -16,7 +16,6 @@ using ClerkBot.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using Nest;
 using Newtonsoft.Json;
 using Choice = Microsoft.Bot.Builder.Dialogs.Choices.Choice;
 
@@ -25,19 +24,16 @@ namespace ClerkBot.Dialogs.Electronics.Phone
     public class ProfileMobileDialog : ComponentDialog
     {
         private readonly BotStateService BotStateService;
-        private readonly ElasticClient ElasticClient;
+        private UserProfile UserProfile;
         private List<SlotDetails> Slots;
         private IDictionary<string, object> State;
-        private UserProfile UserProfile;
 
         public ProfileMobileDialog(
             string dialogId,
-            BotStateService botStateService,
-            ElasticClient elasticClient)
+            BotStateService botStateService)
             : base(dialogId)
         {
             BotStateService = botStateService ?? throw new ArgumentNullException(nameof(botStateService));
-            ElasticClient = elasticClient ?? throw new ArgumentNullException(nameof(elasticClient));
             Slots = new List<SlotDetails>();
             State = new Dictionary<string, object>();
 
@@ -48,30 +44,30 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             AddActiveDialogs(new WaterfallStep[]
             {
-                InitialStepAsync,
                 BudgetRangeAsync,
                 ReliableBrandsAsync,
                 DurabilityAsync,
                 BestFeatureAsync,
-                ProcessResultsAsync
             });
 
             InitialDialogId = Common.BuildDialogId();
         }
 
-        private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
+        private void AddActiveDialogs(IEnumerable<WaterfallStep> profileSteps)
         {
+            var shuffledSteps = profileSteps.OrderBy(x => Guid.NewGuid()).ToList();
+            shuffledSteps.Insert(0, InitialStepAsync);
+            shuffledSteps.Add(ProcessResultsAsync);
+
+
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
+            AddDialog(new WaterfallDialog(Common.BuildDialogId(), shuffledSteps.ToArray()));
         }
 
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
-
-            Slots.Clear();
-            State.Clear();
 
             AddDialog(new SlotFillingDialog(ref Slots, ref State));
             return await stepContext.NextAsync(null, cancellationToken);
@@ -112,7 +108,10 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             if (!UserProfile.ElectronicsProfile.MobileProfile.BudgetRanges.Any())
             {
-                const string fileName = "Cards.Mobile.BudgetRangeMobile";
+                var dialogTypeName = GetType().Name.GetDialogType();
+                var resourceCardName = dialogTypeName.GetCardName();
+                var fileName = $"{dialogTypeName}.{resourceCardName}";
+
                 var adaptiveCardContract = JsonConvert.DeserializeObject<AdaptiveCardContract>(new EmbeddedResourceReader(fileName).GetJson());
 
                 var title = adaptiveCardContract.Body.First(x => x.Id.Equals("Prompt")).Text;
@@ -147,11 +146,13 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             if (!UserProfile.ElectronicsProfile.MobileProfile.ReliableBrands)
             {
-                const string dialogId = "ReliableBrandsPrompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId));
-
-                const string fileName = "Cards.Mobile.ReliableBrands";
+                var dialogTypeName = GetType().Name.GetDialogType();
+                var resourceCardName = dialogTypeName.GetCardName();
+                var fileName = $"{dialogTypeName}.{resourceCardName}";
                 var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
+
+                var dialogId = $"{resourceCardName}Prompt";
+                AddDialog(new AdaptiveCardsPrompt(dialogId));
 
                 Slots.AddRange(new List<SlotDetails>
                 {
@@ -170,7 +171,9 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             if (UserProfile.ElectronicsProfile.MobileProfile.Durability == 0)
             {
-                const string fileName = "Cards.Mobile.DurabilityMobile";
+                var dialogTypeName = GetType().Name.GetDialogType();
+                var resourceCardName = dialogTypeName.GetCardName();
+                var fileName = $"{dialogTypeName}.{resourceCardName}";
                 var adaptiveCardContract = JsonConvert.DeserializeObject<AdaptiveCardContract>(new EmbeddedResourceReader(fileName).GetJson());
 
                 var title = adaptiveCardContract.Body.First(x => x.Id.Equals("Prompt")).Text;
@@ -206,12 +209,16 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             if (!UserProfile.ElectronicsProfile.MobileProfile.FeaturesList.Any())
             {
-                const string dialogId = "BestFeaturePrompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId, PhoneFeaturesValidatorAsync));
-
-                const string fileName = "Cards.Mobile.WantedFeaturesMobile";
+                var dialogTypeName = GetType().Name.GetDialogType();
+                var resourceCardName = dialogTypeName.GetCardName();
+                var fileName = $"{dialogTypeName}.{resourceCardName}";
                 var embeddedReader = new EmbeddedResourceReader(fileName);
                 var cardAttachment = embeddedReader.CreateAdaptiveCardAttachment();
+
+                var dialogId = $"{resourceCardName}Prompt";
+                AddDialog(new AdaptiveCardsPrompt(dialogId, PhoneFeaturesValidatorAsync));
+
+
 
                 Slots.AddRange(new List<SlotDetails>
                 {
