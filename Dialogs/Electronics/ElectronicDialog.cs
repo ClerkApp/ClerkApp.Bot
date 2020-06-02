@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ClerkBot.Contracts;
 using ClerkBot.Dialogs.Electronics.Phone;
 using ClerkBot.Enums;
 using ClerkBot.Helpers;
+using ClerkBot.Models.Dialog;
 using ClerkBot.Services;
 using Luis;
 using Microsoft.Bot.Builder;
@@ -46,7 +46,7 @@ namespace ClerkBot.Dialogs.Electronics
 
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (stepContext.ActiveDialog.State["options"] is ClerkLearningService luisEntities)
+            if (stepContext.ActiveDialog.State["options"] is LuisService luisEntities)
             {
                 foreach (var entity in luisEntities.Entities.ElectronicType)
                 {

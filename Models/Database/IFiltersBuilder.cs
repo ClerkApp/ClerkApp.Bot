@@ -1,7 +1,7 @@
 ﻿using System;
 using Nest;
 
-namespace ClerkBot.Models
+namespace ClerkBot.Models.Database
 {
     public interface IFiltersBuilder<P, C>
         where P: class, IUserProfile

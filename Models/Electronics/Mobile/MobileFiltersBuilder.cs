@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using ClerkBot.Enums;
+using ClerkBot.Models.Database;
 using ClerkBot.Models.Electronics.Mobile.Enrichment;
+using ClerkBot.Models.Electronics.Mobile.Enums;
 using ClerkBot.Models.Electronics.Mobile.Features;
 using Nest;
 

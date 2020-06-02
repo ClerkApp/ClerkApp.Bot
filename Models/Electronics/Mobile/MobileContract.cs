@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ClerkBot.Models.Database;
 
 namespace ClerkBot.Models.Electronics.Mobile
 {

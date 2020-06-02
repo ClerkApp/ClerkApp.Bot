@@ -1,4 +1,4 @@
-﻿namespace ClerkBot.Models.Electronics.Mobile
+﻿namespace ClerkBot.Models.Electronics.Mobile.Enums
 {
     public enum ReliableBrands
     {

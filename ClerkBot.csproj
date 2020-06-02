@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dialogs\Auth\**" />
     <Compile Remove="Helpers\temp\**" />
     <Compile Remove="local\**" />
+    <Content Remove="Dialogs\Auth\**" />
     <Content Remove="Helpers\temp\**" />
     <Content Remove="local\**" />
+    <EmbeddedResource Remove="Dialogs\Auth\**" />
     <EmbeddedResource Remove="Helpers\temp\**" />
     <EmbeddedResource Remove="local\**" />
+    <None Remove="Dialogs\Auth\**" />
     <None Remove="Helpers\temp\**" />
     <None Remove="local\**" />
   </ItemGroup>

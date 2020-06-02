@@ -1,7 +1,7 @@
 ﻿using System;
 using Bot.Storage.Elasticsearch;
 using ClerkBot.Config;
-using ClerkBot.Models;
+using ClerkBot.Models.Database;
 using ClerkBot.Models.User;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;

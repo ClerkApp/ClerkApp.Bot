@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace ClerkBot.Contracts
+namespace ClerkBot.Models.Dialog
 { 
     public partial class AdaptiveCardContract
     {

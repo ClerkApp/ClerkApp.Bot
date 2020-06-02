@@ -1,4 +1,4 @@
-﻿namespace ClerkBot.Models
+﻿namespace ClerkBot.Models.Database
 {
     // Defines a state property used to track conversation data.
     public class ConversationData

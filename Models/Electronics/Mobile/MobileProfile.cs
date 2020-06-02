@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ClerkBot.Enums;
 using ClerkBot.Helpers.SmartEnum.JsonNet;
+using ClerkBot.Models.Database;
 using ClerkBot.Models.Electronics.Mobile.Features;
 using Newtonsoft.Json;
 

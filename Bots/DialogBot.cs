@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ClerkBot.Models;
+using ClerkBot.Models.Database;
 using ClerkBot.Models.User;
 using ClerkBot.Services;
 using Microsoft.Bot.Builder;

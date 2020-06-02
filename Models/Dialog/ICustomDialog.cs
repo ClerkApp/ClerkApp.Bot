@@ -1,4 +1,4 @@
-﻿namespace ClerkBot.Contracts
+﻿namespace ClerkBot.Models.Dialog
 {
     public interface IRootDialog { }
 

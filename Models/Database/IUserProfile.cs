@@ -1,4 +1,4 @@
-﻿namespace ClerkBot.Models
+﻿namespace ClerkBot.Models.Database
 {
     public interface IUserProfile
     {

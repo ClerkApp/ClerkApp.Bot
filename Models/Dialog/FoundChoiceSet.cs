@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Newtonsoft.Json.Linq;
 
-namespace ClerkBot.Contracts
+namespace ClerkBot.Models.Dialog
 {
     public static class FoundChoiceSet
     {

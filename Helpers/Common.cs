@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using AdaptiveCards;
-using ClerkBot.Contracts;
+using ClerkBot.Models.Dialog;
 using ClerkBot.Resources;
 using Nest;
 using Newtonsoft.Json;

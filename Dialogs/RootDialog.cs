@@ -52,7 +52,6 @@ namespace ClerkBot.Dialogs
 
         private void AddActiveDialogs(IEnumerable<WaterfallStep> waterfallSteps)
         {
-            //AddDialog(new AuthDialog(nameof(AuthDialog), Configuration));
             AddDialog(new GreetingDialog(nameof(GreetingDialog), BotStateService));
             AddDialog(new ElectronicDialog(nameof(ElectronicDialog), BotStateService, ElasticService));
 
@@ -61,7 +60,7 @@ namespace ClerkBot.Dialogs
 
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var recognizerResult = await BotServices.Dispatch.RecognizeAsync<ClerkLearningService>(stepContext.Context, cancellationToken);
+            var recognizerResult = await BotServices.Dispatch.RecognizeAsync<LuisService>(stepContext.Context, cancellationToken);
             var (intent, _) = recognizerResult.TopIntent();
 
             var intentName = intent.ToString().Split(new[] { "Intent" }, StringSplitOptions.None).First();
