@@ -11,7 +11,7 @@ namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
     public class AspectBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
     {
-                private readonly BaseBuilderMobile<TP, TC> BaseBuilder;
+        private readonly BaseBuilderMobile<TP, TC> BaseBuilder;
 
         private readonly List<Func<NumericRangeQueryDescriptor<TC>, INumericRangeQuery>> RangeCriteria;
 

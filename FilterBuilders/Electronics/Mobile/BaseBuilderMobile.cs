@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ClerkBot.Models.Electronics.Mobile;
 using Nest;
 
-namespace ClerkBot.Builders.Electronics.Mobile
+namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
     public class BaseBuilderMobile<TP, TC> : IFiltersBuilder<TP, TC> 
         where TP : MobileProfile

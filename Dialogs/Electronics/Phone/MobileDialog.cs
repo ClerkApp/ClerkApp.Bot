@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Templating;
+using Centvrio.Emoji;
 using ClerkBot.FilterBuilders.Electronics.Mobile;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.ElasticHelpers;
@@ -55,7 +56,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
         private static async Task<DialogTurnResult> WelcomeAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("I can help you choose the best phone to suit your needs!"), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"I can help you choose the best phone {Centvrio.Emoji.Phone.Mobile} to suit your needs {FacePositive.Squinting}"), cancellationToken);
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
@@ -94,8 +95,10 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
                 botResponse.AddRange(new List<IActivity>
                 {
-                    MessageFactory.Text($"I believe I've found a list of {userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.First()} phone that perfectly fits you:"),
-                    MessageFactory.Carousel(phoneCards)
+                    MessageFactory.Text($"{FaceRole.Partying} I believe I've found a list of {userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.First()} " +
+                                        $"phone that perfectly fits you {FacePositive.GrinningSmilingEyes}"),
+                    MessageFactory.Carousel(phoneCards),
+                    MessageFactory.Text($"If you want to give another try, just say re-try {FacePositive.Grinning}")
                 });
             }
             else
@@ -103,8 +106,10 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 botResponse.AddRange(new List<IActivity>
                 {
                     MessageFactory.Text(
-                        $"I'm sorry, but I don't think there is a phone in this {userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.First()} range that will fulfill your wishes."),
-                    MessageFactory.Text("You could try again, maybe increasing your budget or taking out some features...")
+                        $"Sorry {FaceNegative.Crying} but I don't think there is a phone {Centvrio.Emoji.Phone.Mobile}" +
+                        $"in this {userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.First()} range that will fulfill your wishes {Money.Receipt}"),
+                    MessageFactory.Text($"You could try again, maybe increasing {Arrow.Up} your budget or taking out {OtherSymbols.CrossMark} some features..."),
+                    MessageFactory.Text($"If you want to give another try, just say re-try {FacePositive.Grinning}")
                 });
             }
 

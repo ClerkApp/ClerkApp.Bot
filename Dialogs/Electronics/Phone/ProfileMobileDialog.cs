@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Centvrio.Emoji;
 using ClerkBot.Enums;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.DialogHelpers;
@@ -115,7 +116,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
                 Slots.Add(new SlotDetails(nameof(MobileProfile.BudgetRanges), nameof(DialogTypes.ChoicePrompt), new PromptOptions
                 {
-                    RetryPrompt = MessageFactory.Text(adaptiveCardContract.GetRetryPrompt()),
+                    RetryPrompt = MessageFactory.Text($"{adaptiveCardContract.GetRetryPrompt()} {FaceNeutral.Thinking}"),
                     Choices = adaptiveCardContract.GetChoicesList()
                 }));
             }
@@ -139,7 +140,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 Slots.Add(new SlotDetails(nameof(MobileProfile.ReliableBrands), dialogId, new PromptOptions
                 {
                     Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                    RetryPrompt = MessageFactory.Text("Please select one of the options")
+                    RetryPrompt = MessageFactory.Text($"Please select one of the options {OtherSymbols.HeavyCheckMark}")
                 }));
             }
 
@@ -158,7 +159,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 Slots.Add(new SlotDetails(nameof(MobileProfile.Durability), nameof(DialogTypes.ChoicePrompt), new PromptOptions
                     {
                         Prompt = MessageFactory.Text(adaptiveCardContract.GetTitle()),
-                        RetryPrompt = MessageFactory.Text(adaptiveCardContract.GetRetryPrompt()),
+                        RetryPrompt = MessageFactory.Text($"{adaptiveCardContract.GetRetryPrompt()} {FaceNegative.Weary}"),
                         Choices = adaptiveCardContract.GetChoicesList()
                     }));
             }
@@ -183,7 +184,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 Slots.Add(new SlotDetails(nameof(MobileProfile.WantedFeatures), dialogId, new PromptOptions
                 {
                     Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                    RetryPrompt = MessageFactory.Text("Please choose something from that list and press on button")
+                    RetryPrompt = MessageFactory.Text($"Please choose something from that list {Centvrio.Emoji.Body.BackhandIndexUp} and press the button {Geometric.BlueCircle}")
                 }));
             }
 

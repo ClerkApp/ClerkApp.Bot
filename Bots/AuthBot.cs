@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Centvrio.Emoji;
 using ClerkBot.Helpers;
 using ClerkBot.Resources;
 using ClerkBot.Services;
@@ -43,7 +44,7 @@ namespace ClerkBot.Bots
                     var options = string.Join(",", dialogNames);
 
                     await turnContext.SendActivityAsync(response, cancellationToken);
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"For now I can help you find: {options}"), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"For now {Time.HourglassNotDone} I can help you find: {options}"), cancellationToken);
                 }
             }
         }

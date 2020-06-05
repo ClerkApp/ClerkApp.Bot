@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Centvrio.Emoji;
 using ClerkBot.Enums;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.DialogHelpers;
@@ -24,7 +25,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         private UserProfile UserProfile;
         private List<SlotDetails> Slots;
         private IDictionary<string, object> State;
-        private const string RetryText = @"Please used the submit button after selecting";
+        private readonly string RetryText = $"Please used the submit button {Geometric.BlueCircle} up there {Body.BackhandIndexUp} after selecting";
 
         public QuizMobileDialog(string dialogId, BotStateService botStateService) : base(dialogId)
         {
@@ -130,7 +131,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 Slots.Add(new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
                 {
                     Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                    RetryPrompt = MessageFactory.Text(RetryText)
+                    RetryPrompt = MessageFactory.Text($"Interesting size {FaceNeutral.Thinking} but can we use the known options {Body.IndexUp} from up there {FaceRole.SmilingWithHalo}")
                 }));
             }
 
@@ -152,7 +153,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 Slots.Add(new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
                 {
                     Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                    RetryPrompt = MessageFactory.Text(RetryText)
+                    RetryPrompt = MessageFactory.Text($"I'm pretty sure that's not {Money.DollarSign} what I expected {FaceNegative.Dizzy}")
                 }));
             }
 
