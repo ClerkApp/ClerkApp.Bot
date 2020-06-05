@@ -2,9 +2,9 @@
 using System.Linq;
 using ClerkBot.Enums;
 
-namespace ClerkBot.Models.Electronics.Mobile.Enrichment
+namespace ClerkBot.Enrichment.Electronics.Mobile
 {
-    public class MobileBudgetRange: IBudgetRange
+    public class BudgetRangeMobile: IBudgetRange
     {
         public List<BudgetRanges> Budgets { get; set; }
 

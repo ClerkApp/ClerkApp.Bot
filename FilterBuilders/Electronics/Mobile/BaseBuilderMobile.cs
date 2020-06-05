@@ -21,6 +21,7 @@ namespace ClerkBot.Builders.Electronics.Mobile
         private readonly DurabilityBuilderMobile<TP, TC> DurabilityBuilderMobile;
         private readonly ReliableBuilderMobile<TP, TC> ReliableBuilderMobile;
         private readonly BudgetBuilderMobile<TP, TC> BudgetBuilderMobile;
+        private readonly AspectBuilderMobile<TP, TC> AspectBuilderMobile;
 
         public BaseBuilderMobile(TP profile)
         {
@@ -36,6 +37,7 @@ namespace ClerkBot.Builders.Electronics.Mobile
             DurabilityBuilderMobile = new DurabilityBuilderMobile<TP, TC>(this);
             ReliableBuilderMobile = new ReliableBuilderMobile<TP, TC>(this);
             BudgetBuilderMobile = new BudgetBuilderMobile<TP, TC>(this);
+            AspectBuilderMobile = new AspectBuilderMobile<TP, TC>(this);
 
             ExecuteBuilders();
         }
@@ -66,6 +68,7 @@ namespace ClerkBot.Builders.Electronics.Mobile
             CameraBuilderMobile.Build();
             GamingBuilderMobile.Build();
             CallBuilderMobile.Build();
+            AspectBuilderMobile.Build();
         }
     }
 }

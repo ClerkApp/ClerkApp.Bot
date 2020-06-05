@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ClerkBot.Enrichment.Electronics.Mobile.Enums;
 using ClerkBot.Models.Electronics.Mobile;
-using ClerkBot.Models.Electronics.Mobile.Enums;
 using Nest;
 
-namespace ClerkBot.Builders.Electronics.Mobile
+namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
     public class ReliableBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
     {

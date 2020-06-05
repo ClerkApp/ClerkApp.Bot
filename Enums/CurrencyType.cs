@@ -1,4 +1,4 @@
-﻿namespace ClerkBot.Models.Electronics.Mobile.Enums
+﻿namespace ClerkBot.Enums
 {
     public enum CurrencyType
     {

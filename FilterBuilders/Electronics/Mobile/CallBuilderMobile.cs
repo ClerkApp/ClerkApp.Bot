@@ -5,7 +5,7 @@ using ClerkBot.Models.Electronics.Mobile;
 using ClerkBot.Models.Electronics.Mobile.Features;
 using Nest;
 
-namespace ClerkBot.Builders.Electronics.Mobile
+namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
     public class CallBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
     {

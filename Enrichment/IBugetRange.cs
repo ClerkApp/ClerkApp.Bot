@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using ClerkBot.Enums;
 
-namespace ClerkBot.Enums
+namespace ClerkBot.Enrichment
 {
     public interface IBudgetRange
     {

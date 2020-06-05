@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ClerkBot.Models.Database;
 using Nest;
 
-namespace ClerkBot.Builders
+namespace ClerkBot.FilterBuilders
 {
     public interface IFiltersBuilder<P, C>
         where P: class, IUserProfile

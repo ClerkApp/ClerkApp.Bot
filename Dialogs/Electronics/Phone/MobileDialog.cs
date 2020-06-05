@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Templating;
-using ClerkBot.Builders.Electronics.Mobile;
+using ClerkBot.FilterBuilders.Electronics.Mobile;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.ElasticHelpers;
 using ClerkBot.Models.Dialog;

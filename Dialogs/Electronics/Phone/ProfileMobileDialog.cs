@@ -130,6 +130,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var dialogTypeName = GetType().Name.GetDialogType();
                 var resourceCardName = dialogTypeName.GetCardName();
                 var fileName = $"{dialogTypeName}.{resourceCardName}";
+
                 var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
 
                 var dialogId = $"{resourceCardName}Prompt";

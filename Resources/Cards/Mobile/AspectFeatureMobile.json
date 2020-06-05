@@ -110,7 +110,7 @@
                 {
                   "type": "Input.Toggle",
                   "title": "On between",
-                  "value": "true",
+                  "value": "false",
                   "id": "SizeMedium"
                 }
               ]

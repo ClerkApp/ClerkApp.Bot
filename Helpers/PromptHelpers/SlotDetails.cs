@@ -8,8 +8,8 @@ namespace ClerkBot.Helpers.PromptHelpers
 {
     public class SlotDetails
     {
-        public SlotDetails(string name, string dialogId, string prompt = null, string retryPrompt = null)
-            : this(name, dialogId, new PromptOptions
+        public SlotDetails(string resultIdentifier, string dialogTypeId, string prompt = null, string retryPrompt = null)
+            : this(resultIdentifier, dialogTypeId, new PromptOptions
             {
                 Prompt = MessageFactory.Text(prompt),
                 RetryPrompt = MessageFactory.Text(retryPrompt),
@@ -17,10 +17,10 @@ namespace ClerkBot.Helpers.PromptHelpers
         {
         }
 
-        public SlotDetails(string name, string dialogId, PromptOptions options)
+        public SlotDetails(string resultIdentifier, string dialogTypeId, PromptOptions options)
         {
-            Name = name;
-            DialogId = dialogId;
+            Name = resultIdentifier;
+            DialogId = dialogTypeId;
             Options = options;
         }
 

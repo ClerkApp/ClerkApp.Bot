@@ -5,7 +5,7 @@ using ClerkBot.Enums;
 using ClerkBot.Models.Electronics.Mobile;
 using Nest;
 
-namespace ClerkBot.Builders.Electronics.Mobile
+namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
     public class DurabilityBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
     {

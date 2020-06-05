@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ClerkBot.Enrichment.Electronics.Mobile;
 using ClerkBot.Enums;
 using ClerkBot.Models.Electronics.Mobile;
-using ClerkBot.Models.Electronics.Mobile.Enrichment;
-using ClerkBot.Models.Electronics.Mobile.Enums;
 using ClerkBot.Models.Electronics.Mobile.Features;
 using Nest;
 
-namespace ClerkBot.Builders.Electronics.Mobile
+namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
     public class BudgetBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
     {
@@ -53,7 +52,7 @@ namespace ClerkBot.Builders.Electronics.Mobile
             }
             else
             {
-                var (minBudget, maxBudget) = new MobileBudgetRange
+                var (minBudget, maxBudget) = new BudgetRangeMobile
                 {
                     Budgets = BaseBuilder.Profile.BudgetRanges
                 }.GetBudgetRangeInEuro();

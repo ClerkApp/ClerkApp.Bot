@@ -111,6 +111,14 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             if (UserProfile.ElectronicsProfile.MobileProfile.WantedFeatures.Aspect)
             {
+                var feature = UserProfile.ElectronicsProfile.MobileProfile.Features.FirstOrDefault(x =>
+                    x.GetType().Name.Equals(nameof(AspectFeatureMobile)));
+
+                if (feature != null)
+                {
+                    return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
+                }
+
                 var dialogTypeName = GetType().Name.GetDialogType();
                 var resourceCardName = dialogTypeName.GetCardName();
                 var fileName = $"{dialogTypeName}.{resourceCardName}";

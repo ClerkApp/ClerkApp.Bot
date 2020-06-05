@@ -6,7 +6,7 @@ using ClerkBot.Models.Electronics.Mobile;
 using ClerkBot.Models.Electronics.Mobile.Features;
 using Nest;
 
-namespace ClerkBot.Builders.Electronics.Mobile
+namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
     public class CameraBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
     {
@@ -89,13 +89,17 @@ namespace ClerkBot.Builders.Electronics.Mobile
                 RangeCriteria.Add(
                     device => device.Field(f => f.Camera.Main.Videos.First().Value).GreaterThan(0));
                 RangeCriteria.Add(
-                    device => device.Field(f => f.Camera.Main.Videos.First().Value).LessThan(100));
+                    device => device.Field(f => f.Camera.Main.Videos.First().Value).LessThan(50));
             }
 
             if(feature.RecordTypes.Value >= Intensity.Medium.Value)
             {
+                if (feature.KResolution)
+                {
+                    MatchCriteria.Add(device => device.Field(f => f.Memory.CardSlot).Query(bool.TrueString.ToLower()));
+                }
+
                 MatchCriteria.Add(device => device.Field(f => f.Features.Gyro).Query(bool.TrueString.ToLower()));
-                MatchCriteria.Add(device => device.Field(f => f.Memory.CardSlot).Query(bool.TrueString.ToLower()));
 
                 if (feature.NightMode.Value >= Intensity.ExtraHard.Value)
                 {
