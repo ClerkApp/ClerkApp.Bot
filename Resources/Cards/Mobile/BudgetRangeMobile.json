@@ -27,6 +27,10 @@
           "value": "all"
         },
         {
+          "title": "Custom",
+          "value": "custom"
+        },
+        {
           "title": "Low-Budget (200$)",
           "value": "lowBudget"
         },

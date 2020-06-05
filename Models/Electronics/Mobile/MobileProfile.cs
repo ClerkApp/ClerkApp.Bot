@@ -13,13 +13,13 @@ namespace ClerkBot.Models.Electronics.Mobile
         public MobileProfile()
         {
             BudgetRanges = new List<BudgetRanges>();
-            FeaturesList = new List<PhoneFeatures>();
             Features = new List<IMobileFeature>();
+            WantedFeatures = new PhoneFeatures();
         }
 
-        public List<BudgetRanges> BudgetRanges { get; set; }
+        public PhoneFeatures WantedFeatures { get; set; }
 
-        public List<PhoneFeatures> FeaturesList { get; set; }
+        public List<BudgetRanges> BudgetRanges { get; set; }
 
         public List<IMobileFeature> Features { get; }
 
@@ -43,14 +43,14 @@ namespace ClerkBot.Models.Electronics.Mobile
             return true;
         }
 
-        public enum PhoneFeatures
+        public class PhoneFeatures
         {
-            camera,
-            gaming,
-            socialMedia,
-            browsing,
-            streaming,
-            calls
+            public bool Camera { get; set; } = false;
+            public bool Gaming { get; set; } = false;
+            public bool Call { get; set; } = false;
+            public bool Browsing { get; set; } = false;
+            public bool Aspect { get; set; } = false;
+            public bool Budget { get; set; } = false;
         }
     }
 }

@@ -1,0 +1,154 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.2",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            {
+              "type": "Image",
+              "size": "Small",
+              "url": "https://image.flaticon.com/icons/svg/639/639365.svg"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "You have selected custom budget",
+              "horizontalAlignment": "Right",
+              "isSubtle": true
+            },
+            {
+              "type": "TextBlock",
+              "text": "What's your budget?",
+              "horizontalAlignment": "Right",
+              "spacing": "None",
+              "size": "Large",
+              "color": "Attention"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "separator": true,
+      "spacing": "Medium",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Starting value"
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "Input.Number",
+                      "placeholder": "0",
+                      "id": "MinBudget",
+                      "min": 0,
+                      "value": 0,
+                      "max": 9999999
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/778/778301.svg",
+                      "size": "Small",
+                      "height": "30px",
+                      "width": "25px",
+                      "horizontalAlignment": "Center"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "Medium",
+      "separator": true,
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "height": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Maximum value"
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "Input.Number",
+                      "placeholder": "0",
+                      "id": "MaxBudget",
+                      "max": 0,
+                      "min": 0,
+                      "value": 0
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/778/778301.svg",
+                      "size": "Small",
+                      "height": "30px",
+                      "width": "25px",
+                      "horizontalAlignment": "Center"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "Submit my range",
+          "style": "positive"
+        }
+      ]
+    }
+  ]
+}

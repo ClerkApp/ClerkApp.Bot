@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Templating;
+using ClerkBot.Builders.Electronics.Mobile;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.ElasticHelpers;
 using ClerkBot.Models.Dialog;
@@ -61,7 +62,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         private async Task<DialogTurnResult> ResultCardAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
-            var filterBuilder = new MobileFiltersBuilder<MobileProfile, MobileContract>(userProfile.ElectronicsProfile.MobileProfile);
+            var filterBuilder = new BaseBuilderMobile<MobileProfile, MobileContract>(userProfile.ElectronicsProfile.MobileProfile);
 
             var searchResponse =
                 ElasticClient.Search<MobileContract>(s => s
@@ -69,8 +70,8 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                     .From(0)
                     .Size(10)
                     .TrackScores()
-                    .Query(filterBuilder.BuildQuery())
-                    .Sort(filterBuilder.BuildSort()));
+                    .Query(filterBuilder.GetQuery())
+                    .Sort(filterBuilder.GetSort()));
 
             var queryTest = searchResponse.ToJson();
             var searchResult = ElasticProductSearchResultBuilder.BuildProductSearchResult(searchResponse);
@@ -129,7 +130,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            if (userProfile.ElectronicsProfile.MobileProfile.FeaturesList.Any())
+            if (!userProfile.ElectronicsProfile.MobileProfile.WantedFeatures.AreSomePropertiesFalse())
             {
                 return await stepContext.BeginDialogAsync(nameof(QuizMobileDialog), userProfile, cancellationToken);
             }

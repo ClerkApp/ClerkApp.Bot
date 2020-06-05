@@ -1,0 +1,200 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "Container",
+      "style": "emphasis",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "size": "ExtraLarge",
+                  "text": "Phone Dimensions",
+                  "spacing": "None"
+                }
+              ],
+              "width": "stretch"
+            },
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "Image",
+                  "url": "https://image.flaticon.com/icons/svg/2971/2971416.svg",
+                  "height": "30px",
+                  "size": "Small"
+                }
+              ],
+              "width": "auto"
+            }
+          ]
+        }
+      ],
+      "spacing": "None",
+      "bleed": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "size": "Large",
+                  "text": "Size in hand",
+                  "wrap": true,
+                  "weight": "Bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "spacing": "Small",
+                  "size": "Small",
+                  "weight": "Bolder",
+                  "color": "Accent",
+                  "text": "Height x Width",
+                  "height": "stretch"
+                }
+              ],
+              "width": "stretch"
+            }
+          ]
+        },
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "Image",
+                  "url": "https://image.flaticon.com/icons/svg/977/977411.svg",
+                  "size": "Small",
+                  "horizontalAlignment": "Center",
+                  "width": "45px",
+                  "height": "40px"
+                },
+                {
+                  "type": "Input.Toggle",
+                  "title": "Smaller one",
+                  "value": "false",
+                  "id": "SizeSmall"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "Container",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/977/977411.svg",
+                      "width": "55px",
+                      "height": "50px",
+                      "horizontalAlignment": "Center"
+                    }
+                  ]
+                },
+                {
+                  "type": "Input.Toggle",
+                  "title": "On between",
+                  "value": "true",
+                  "id": "SizeMedium"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "Image",
+                  "url": "https://image.flaticon.com/icons/svg/977/977411.svg",
+                  "size": "Small",
+                  "horizontalAlignment": "Center",
+                  "width": "65px",
+                  "height": "60px"
+                },
+                {
+                  "type": "Input.Toggle",
+                  "title": "Not in pocket",
+                  "value": "false",
+                  "id": "SizeBig"
+                }
+              ]
+            }
+          ],
+          "horizontalAlignment": "Center"
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "spacing": "Small",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Thickness",
+          "size": "Large",
+          "weight": "Bolder"
+        },
+        {
+          "type": "Input.ChoiceSet",
+          "choices": [
+            {
+              "title": "As thin as possible",
+              "value": "ExtraHard"
+            },
+            {
+              "title": "Not that slim",
+              "value": "Medium"
+            },
+            {
+              "title": "Doesn't matter",
+              "value": "Unknown"
+            }
+          ],
+          "id": "Thickness",
+          "value": "Unknown",
+          "placeholder": "Doesn't matter"
+        }
+      ],
+      "bleed": true,
+      "style": "emphasis"
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Submit",
+              "title": "Ok, what's next",
+              "style": "positive",
+              "data": {
+                "id": "_qkQW8dJlUeLVi7ZMEzYVw",
+                "action": "approve"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.2",
+  "fallbackText": "This card requires Adaptive Cards v1.2 support to be rendered properly."
+}

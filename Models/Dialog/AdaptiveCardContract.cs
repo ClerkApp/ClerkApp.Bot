@@ -1,18 +1,45 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace ClerkBot.Models.Dialog
 { 
-    public partial class AdaptiveCardContract
+    public class AdaptiveCardContract
     {
         [JsonProperty("body")]
-        public List<Body> Body { get; set; }
+        private List<Body> Body { get; set; }
 
         [JsonProperty("actions")]
-        public List<Action> Actions { get; set; }
+        private List<Action> Actions { get; set; }
+
+        public string GetTitle()
+        {
+            return Body.First(x => x.Id.Equals("Prompt")).Text;
+        }
+
+        public string GetRetryPrompt()
+        {
+            return Body.First(x => x.Id.Equals("RetryPrompt")).Text;
+        }
+
+        public List<Microsoft.Bot.Builder.Dialogs.Choices.Choice> GetChoicesList()
+        {
+            return Body.First(x => x.Id.Equals("Choices")).Choices.Select(choice =>
+                new Microsoft.Bot.Builder.Dialogs.Choices.Choice
+                {
+                    Value = choice.Value,
+                    Action = new CardAction
+                    {
+                        Title = choice.Title,
+                        Type = ActionTypes.PostBack,
+                        Value = choice.Value
+                    }
+                }).ToList();
+        }
     }
 
-    public partial class Action
+    public class Action
     {
         [JsonProperty("type")]
         public string Type { get; set; }
@@ -21,7 +48,7 @@ namespace ClerkBot.Models.Dialog
         public string Title { get; set; }
     }
 
-    public partial class Body
+    public class Body
     {
         [JsonProperty("type")]
         public string Type { get; set; }
@@ -45,7 +72,7 @@ namespace ClerkBot.Models.Dialog
         public List<Choice> Choices { get; set; }
     }
 
-    public partial class Choice
+    public class Choice
     {
         [JsonProperty("title")]
         public string Title { get; set; }

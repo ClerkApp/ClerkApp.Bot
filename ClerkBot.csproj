@@ -26,16 +26,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Resources\Cards\Mobile\BestFeatureMobile.json" />
+    <Content Remove="Resources\Cards\Mobile\AspectFeatureMobile.json" />
+    <Content Remove="Resources\Cards\Mobile\BudgetFeatureMobile.json" />
     <Content Remove="Resources\Cards\Mobile\BudgetRangeMobile.json" />
     <Content Remove="Resources\Cards\Mobile\CameraFeatureMobile.json" />
     <Content Remove="Resources\Cards\Mobile\DurabilityMobile.json" />
     <Content Remove="Resources\Cards\Mobile\GamingFeatureMobile.json" />
     <Content Remove="Resources\Cards\Mobile\ReliableBrandsMobile.json" />
     <Content Remove="Resources\Cards\Mobile\ResultCardMobile.json" />
+    <Content Remove="Resources\Cards\Mobile\WantedFeatureMobile.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Cards\Mobile\AspectFeatureMobile.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Cards\Mobile\BudgetFeatureMobile.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Cards\Mobile\ResultCardMobile.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -50,7 +58,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Cards\Mobile\ReliableBrandsMobile.json" />
-    <EmbeddedResource Include="Resources\Cards\Mobile\BestFeatureMobile.json">
+    <EmbeddedResource Include="Resources\Cards\Mobile\WantedFeatureMobile.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Cards\WelcomeCard.json">

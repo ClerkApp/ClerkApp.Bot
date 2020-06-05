@@ -1,0 +1,669 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "Container",
+      "horizontalAlignment": "Center",
+      "style": "emphasis",
+      "bleed": true,
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Select most important features for you",
+          "horizontalAlignment": "Center",
+          "size": "Large",
+          "weight": "Bolder"
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "\n",
+                      "size": "Small"
+                    },
+                    {
+                      "type": "Input.Toggle",
+                      "title": "Camera",
+                      "value": "false",
+                      "id": "Camera"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": "110px"
+        },
+        {
+          "type": "Column",
+          "backgroundImage": {
+            "url": "https://messagecardplayground.azurewebsites.net/assets/SmallVerticalLineGray.png",
+            "fillMode": "RepeatVertically",
+            "horizontalAlignment": "Center"
+          },
+          "width": "auto",
+          "spacing": "None",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "\n",
+              "size": "Small"
+            },
+            {
+              "type": "Image",
+              "url": "https://messagecardplayground.azurewebsites.net/assets/Gray_Dot.png",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "\n",
+              "size": "Small"
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/3014/3014969.svg",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Love to keep memories",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/2693/2693319.svg",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Record all around me",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": 40
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "\n",
+                      "size": "Small"
+                    },
+                    {
+                      "type": "Input.Toggle",
+                      "title": "Gaming",
+                      "value": "false",
+                      "id": "Gaming"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": "110px"
+        },
+        {
+          "type": "Column",
+          "backgroundImage": {
+            "url": "https://messagecardplayground.azurewebsites.net/assets/SmallVerticalLineGray.png",
+            "fillMode": "RepeatVertically",
+            "horizontalAlignment": "Center"
+          },
+          "width": "auto",
+          "items": [
+            {
+              "type": "TextBlock",
+              "size": "Small",
+              "text": "\n"
+            },
+            {
+              "type": "Image",
+              "url": "https://messagecardplayground.azurewebsites.net/assets/Gray_Dot.png",
+              "spacing": "None"
+            }
+          ],
+          "spacing": "None"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "\n",
+              "size": "Small"
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/2927/2927917.svg",
+                      "size": "Small",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Never give up",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/2991/2991410.svg",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Put the wheels to work",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": 40
+        }
+      ],
+      "spacing": "None"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "\n",
+                      "size": "Small"
+                    },
+                    {
+                      "type": "Input.Toggle",
+                      "title": "Calling",
+                      "value": "false",
+                      "id": "Call"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": "110px"
+        },
+        {
+          "type": "Column",
+          "backgroundImage": {
+            "url": "https://messagecardplayground.azurewebsites.net/assets/SmallVerticalLineGray.png",
+            "fillMode": "RepeatVertically",
+            "horizontalAlignment": "Center"
+          },
+          "width": "auto",
+          "items": [
+            {
+              "type": "TextBlock",
+              "size": "Small",
+              "text": "\n"
+            },
+            {
+              "type": "Image",
+              "url": "https://messagecardplayground.azurewebsites.net/assets/Gray_Dot.png",
+              "spacing": "None"
+            }
+          ],
+          "spacing": "None"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "\n",
+              "size": "Small"
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/3011/3011172.svg",
+                      "size": "Small",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "In call most of the time",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/2932/2932564.svg",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Available 24/24H",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": 40
+        }
+      ],
+      "spacing": "None"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "\n",
+                      "size": "Small"
+                    },
+                    {
+                      "type": "Input.Toggle",
+                      "title": "Browsing",
+                      "value": "false",
+                      "id": "Browsing"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": "110px"
+        },
+        {
+          "type": "Column",
+          "backgroundImage": {
+            "url": "https://messagecardplayground.azurewebsites.net/assets/SmallVerticalLineGray.png",
+            "fillMode": "RepeatVertically",
+            "horizontalAlignment": "Center"
+          },
+          "width": "auto",
+          "items": [
+            {
+              "type": "TextBlock",
+              "size": "Small",
+              "text": "\n"
+            },
+            {
+              "type": "Image",
+              "url": "https://messagecardplayground.azurewebsites.net/assets/Gray_Dot.png",
+              "spacing": "None"
+            }
+          ],
+          "spacing": "None"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "\n",
+              "size": "Small"
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/2111/2111463.svg",
+                      "size": "Small",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Getting the latest feed",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/2996/2996811.svg",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Connected with people",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/2991/2991408.svg",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Latest news",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": 40
+        }
+      ],
+      "spacing": "None"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "\n",
+                      "size": "Small"
+                    },
+                    {
+                      "type": "Input.Toggle",
+                      "value": "false",
+                      "id": "Aspect",
+                      "title": "Aspect"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": "110px"
+        },
+        {
+          "type": "Column",
+          "backgroundImage": {
+            "url": "https://messagecardplayground.azurewebsites.net/assets/SmallVerticalLineGray.png",
+            "fillMode": "RepeatVertically",
+            "horizontalAlignment": "Center"
+          },
+          "width": "auto",
+          "items": [
+            {
+              "type": "TextBlock",
+              "size": "Small",
+              "text": "\n"
+            },
+            {
+              "type": "Image",
+              "url": "https://messagecardplayground.azurewebsites.net/assets/Gray_Dot.png",
+              "spacing": "None"
+            }
+          ],
+          "spacing": "None"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "\n",
+              "size": "Small"
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/992/992547.svg",
+                      "size": "Small",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Height x Weight size",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://image.flaticon.com/icons/svg/2025/2025448.svg",
+                      "width": "25px"
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Phone thickness",
+                      "size": "Medium"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "width": 40
+        }
+      ],
+      "spacing": "None"
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
+        {
+          "type": "Action.Submit",
+          "title": "I think that's all",
+          "style": "positive"
+        }
+      ],
+      "spacing": "Medium",
+      "horizontalAlignment": "Center"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.2"
+}

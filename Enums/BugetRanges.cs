@@ -6,6 +6,7 @@
         lowbudget,
         midrange,
         highend,
-        flagship
+        flagship,
+        custom
     }
 }

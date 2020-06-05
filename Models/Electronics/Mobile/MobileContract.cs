@@ -58,9 +58,16 @@ namespace ClerkBot.Models.Electronics.Mobile
 
     public class Network
     {
-        public List<string> Technology { get; set; }
+        public TechSpec Technology { get; set; }
         public List<string> Speed { get; set; }
         public BandSpec Band { get; set; }
+    }
+
+    public class TechSpec
+    {
+        public int TotalTechs { get; set; }
+
+        public List<string> Techs { get; set; }
     }
 
     public class BandSpec
@@ -96,10 +103,10 @@ namespace ClerkBot.Models.Electronics.Mobile
     public class Platform
     {
         public Os Os { get; set; }
-        public List<Chipset> Chipset { get; set; }
-        public List<Cpu> Cpu { get; set; }
-        public List<Gpu> Gpu { get; set; }
-        public List<Performance> Tests { get; set; }
+        public Dictionary<string, List<Chipset>> Chipset { get; set; }
+        public Dictionary<string, List<Cpu>> Cpu { get; set; }
+        public Dictionary<string, List<Gpu>> Gpu { get; set; }
+        public Dictionary<string, double> Tests { get; set; }
     }
 
     public class Os
@@ -109,15 +116,8 @@ namespace ClerkBot.Models.Electronics.Mobile
         public string Interface { get; set; }
     }
 
-    public class Performance
-    {
-        public string Type { get; set; }
-        public double Score { get; set; }
-    }
-
     public class Chipset
     {
-        public string Type { get; set; }
         public string Name { get; set; }
         public int Generation { get; set; }
         public double Size { get; set; }
@@ -125,7 +125,6 @@ namespace ClerkBot.Models.Electronics.Mobile
 
     public class Cpu
     {
-        public string Type { get; set; }
         public int Cores { get; set; }
         public List<CpuType> CpuList { get; set; }
     }
@@ -139,15 +138,12 @@ namespace ClerkBot.Models.Electronics.Mobile
 
     public class Gpu
     {
-        public string Type { get; set; }
         public string Name { get; set; }
         public int Generation { get; set; }
     }
 
     public class Memory
     {
-        public string Type { get; set; }
-
         public List<InternalMemory> Internals { get; set; }
         public bool CardSlot { get; set; }
     }
@@ -160,7 +156,7 @@ namespace ClerkBot.Models.Electronics.Mobile
 
     public class Display
     {
-        public List<string> RefreshRate { get; set; }
+        public List<int> RefreshRate { get; set; }
         public Size Size { get; set; }
         public Resolution Resolution { get; set; }
         public Spec<int> Protection { get; set; }

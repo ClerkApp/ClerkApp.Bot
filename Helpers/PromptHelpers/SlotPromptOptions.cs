@@ -18,11 +18,10 @@ namespace ClerkBot.Helpers.PromptHelpers
         public SlotPromptOptions(Attachment attachment, string retryText, string json, string bodyType, ListStyle listStyle = ListStyle.None)
         {
             var adaptiveCardContract = JsonConvert.DeserializeObject<AdaptiveCardContract>(json);
-            var choices = adaptiveCardContract.Body.Where(x => x.Type.Equals(bodyType)).Select(x => x.Choices).First();
 
             Prompt = (Activity)MessageFactory.Attachment(attachment);
             RetryPrompt = MessageFactory.Text(retryText);
-            Choices = ChoiceFactory.ToChoices(choices.Select(x => x.Value).ToList());
+            Choices = ChoiceFactory.ToChoices(adaptiveCardContract.GetChoicesList().Select(x => x.Value).ToList());
             Style = listStyle;
         }
 

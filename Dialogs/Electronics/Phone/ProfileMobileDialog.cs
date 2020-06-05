@@ -17,7 +17,6 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Choice = Microsoft.Bot.Builder.Dialogs.Choices.Choice;
 
 namespace ClerkBot.Dialogs.Electronics.Phone
 {
@@ -47,7 +46,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 BudgetRangeAsync,
                 ReliableBrandsAsync,
                 DurabilityAsync,
-                BestFeatureAsync,
+                WantedFeatureAsync,
             });
 
             InitialDialogId = Common.BuildDialogId();
@@ -81,9 +80,9 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             if (result.Count > 0)
             {
                 result.TryGetValue(nameof(MobileProfile.ReliableBrands), out var reliableResult);
+                result.TryGetValue(nameof(MobileProfile.WantedFeatures), out var featuresResult);
                 result.TryGetFoundChoice(nameof(MobileProfile.BudgetRanges), out var budgetRange);
                 result.TryGetFoundChoice(nameof(MobileProfile.Durability), out var durability);
-                result.TryGetChoiceSet(nameof(MobileProfile.FeaturesList), out var featureRange);
 
                 Enum.TryParse(budgetRange.Value.ToLower(), out BudgetRanges budgetResult);
                 UserProfile.ElectronicsProfile.MobileProfile.BudgetRanges.Add(budgetResult);
@@ -94,10 +93,10 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var reliable = JsonConvert.DeserializeObject<CardAction<bool>>(reliableResult.ToString() ?? string.Empty);
                 UserProfile.ElectronicsProfile.MobileProfile.ReliableBrands = reliable.Action;
 
-                foreach (var choice in featureRange)
+                if (featuresResult != null)
                 {
-                    Common.TryParseEnum(choice, out MobileProfile.PhoneFeatures featureResult);
-                    UserProfile.ElectronicsProfile.MobileProfile.FeaturesList.Add(featureResult);
+                    var features = JsonConvert.DeserializeObject<MobileProfile.PhoneFeatures>(featuresResult.ToString() ?? string.Empty);
+                    UserProfile.ElectronicsProfile.MobileProfile.WantedFeatures = features;
                 }
             }
 
@@ -111,30 +110,15 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var dialogTypeName = GetType().Name.GetDialogType();
                 var resourceCardName = dialogTypeName.GetCardName();
                 var fileName = $"{dialogTypeName}.{resourceCardName}";
-
                 var adaptiveCardContract = JsonConvert.DeserializeObject<AdaptiveCardContract>(new EmbeddedResourceReader(fileName).GetJson());
-
-                var title = adaptiveCardContract.Body.First(x => x.Id.Equals("Prompt")).Text;
-                var retry = adaptiveCardContract.Body.First(x => x.Id.Equals("RetryPrompt")).Text;
-                var choices = adaptiveCardContract.Body.First(x => x.Id.Equals("Choices")).Choices.Select(choice =>
-                    new Choice
-                    {
-                        Value = choice.Value,
-                        Action = new CardAction
-                        {
-                            Title = choice.Title,
-                            Type = ActionTypes.PostBack,
-                            Value = choice.Value
-                        }
-                    }).ToList();
 
                 Slots.AddRange(new List<SlotDetails>
                 {
                     new SlotDetails(nameof(MobileProfile.BudgetRanges), nameof(ChoicePrompt), new PromptOptions
                     {
-                        Prompt = MessageFactory.Text(title),
-                        RetryPrompt = MessageFactory.Text(retry),
-                        Choices = choices
+                        Prompt = MessageFactory.Text(adaptiveCardContract.GetTitle()),
+                        RetryPrompt = MessageFactory.Text(adaptiveCardContract.GetRetryPrompt()),
+                        Choices = adaptiveCardContract.GetChoicesList()
                     })
                 });
             }
@@ -152,14 +136,14 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
 
                 var dialogId = $"{resourceCardName}Prompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId));
+                AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<CardAction<bool>>));
 
                 Slots.AddRange(new List<SlotDetails>
                 {
                     new SlotDetails(nameof(MobileProfile.ReliableBrands), dialogId, new PromptOptions
                     {
                         Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                        RetryPrompt = MessageFactory.Text("Please one of the above options")
+                        RetryPrompt = MessageFactory.Text("Please select one of the options")
                     })
                 });
             }
@@ -176,27 +160,13 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var fileName = $"{dialogTypeName}.{resourceCardName}";
                 var adaptiveCardContract = JsonConvert.DeserializeObject<AdaptiveCardContract>(new EmbeddedResourceReader(fileName).GetJson());
 
-                var title = adaptiveCardContract.Body.First(x => x.Id.Equals("Prompt")).Text;
-                var retry = adaptiveCardContract.Body.First(x => x.Id.Equals("RetryPrompt")).Text;
-                var choices = adaptiveCardContract.Body.First(x => x.Id.Equals("Choices")).Choices.Select(choice =>
-                    new Choice
-                    {
-                        Value = choice.Value,
-                        Action = new CardAction
-                        {
-                            Title = choice.Title,
-                            Type = ActionTypes.PostBack,
-                            Value = choice.Value
-                        }
-                    }).ToList();
-
                 Slots.AddRange(new List<SlotDetails>
                 {
                     new SlotDetails(nameof(MobileProfile.Durability), nameof(ChoicePrompt), new PromptOptions
                     {
-                        Prompt = MessageFactory.Text(title),
-                        RetryPrompt = MessageFactory.Text(retry),
-                        Choices = choices
+                        Prompt = MessageFactory.Text(adaptiveCardContract.GetTitle()),
+                        RetryPrompt = MessageFactory.Text(adaptiveCardContract.GetRetryPrompt()),
+                        Choices = adaptiveCardContract.GetChoicesList()
                     })
                 });
             }
@@ -204,10 +174,10 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> BestFeatureAsync(WaterfallStepContext stepContext,
+        private async Task<DialogTurnResult> WantedFeatureAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            if (!UserProfile.ElectronicsProfile.MobileProfile.FeaturesList.Any())
+            if (UserProfile.ElectronicsProfile.MobileProfile.WantedFeatures.AreSomePropertiesFalse())
             {
                 var dialogTypeName = GetType().Name.GetDialogType();
                 var resourceCardName = dialogTypeName.GetCardName();
@@ -216,37 +186,37 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var cardAttachment = embeddedReader.CreateAdaptiveCardAttachment();
 
                 var dialogId = $"{resourceCardName}Prompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId, PhoneFeaturesValidatorAsync));
-
-
+                AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<MobileProfile.PhoneFeatures>));
 
                 Slots.AddRange(new List<SlotDetails>
                 {
-                    new SlotDetails(nameof(MobileProfile.FeaturesList), dialogId, new SlotPromptOptions(
-                        cardAttachment,
-                        "Please choose something from this list",
-                        embeddedReader.GetJson(),
-                        "Input.ChoiceSet"))
+                    new SlotDetails(nameof(MobileProfile.WantedFeatures), dialogId, new PromptOptions
+                    {
+                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
+                        RetryPrompt = MessageFactory.Text("Please choose something from that list and press on button")
+                    })
                 });
             }
 
             return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
         }
 
-        private static Task<bool> PhoneFeaturesValidatorAsync(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
+        private static Task<bool> ObjectDialogValidatorAsync<T>(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
         {
-            var valid = false;
-            var findOne = true;
-            if (promptContext.Recognized.Succeeded)
+            if (!promptContext.Recognized.Succeeded)
             {
-                var inputList = promptContext.Recognized.Value.TryGetValues(nameof(MobileProfile.FeaturesList));
-                foreach (var _ in inputList.Select(input => Enum.TryParse(typeof(MobileProfile.PhoneFeatures), input, out _)).Where(result => findOne && !result))
-                {
-                    findOne = false;
-                }
-                valid = findOne;
+                return Task.FromResult(false);
             }
-            return Task.FromResult(valid);
+
+            try
+            {
+                JsonConvert.DeserializeObject<T>(promptContext.Recognized.Value);
+                return Task.FromResult(true);
+            }
+            catch
+            {
+                return Task.FromResult(false);
+            }
         }
     }
 }

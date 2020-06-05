@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ClerkBot.Enums;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.DialogHelpers;
 using ClerkBot.Helpers.PromptHelpers;
-using ClerkBot.Models.Electronics.Mobile;
 using ClerkBot.Models.Electronics.Mobile.Features;
 using ClerkBot.Models.User;
 using ClerkBot.Resources;
@@ -24,6 +24,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         private UserProfile UserProfile;
         private List<SlotDetails> Slots;
         private IDictionary<string, object> State;
+        private const string RetryText = @"Please used the submit button after selecting";
 
         public QuizMobileDialog(string dialogId, BotStateService botStateService) : base(dialogId)
         {
@@ -39,7 +40,9 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             AddActiveDialogs(new WaterfallStep[]
             {
                 CameraFeatureAsync,
-                GamingFeatureAsync
+                GamingFeatureAsync,
+                AspectFeatureAsync,
+                BudgetFeatureAsync
             });
 
             InitialDialogId = Common.BuildDialogId();
@@ -73,12 +76,14 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
             if (result.Count > 0)
             {
-                result.TryGetValue(nameof(CameraMobileFeature), out var cameraResult);
-                result.TryGetValue(nameof(GamingMobileFeature), out var gameTypeResult);
+                result.TryGetValue(nameof(CameraFeatureMobile), out var cameraResult);
+                result.TryGetValue(nameof(GamingFeatureMobile), out var gameTypeResult);
+                result.TryGetValue(nameof(BudgetFeatureMobile), out var customRangeResult);
+                result.TryGetValue(nameof(AspectFeatureMobile), out var aspectResult);
 
                 if (cameraResult != null)
                 {
-                    var cameraFeature =  JsonConvert.DeserializeObject<CameraMobileFeature>(cameraResult.ToString() ?? string.Empty);
+                    var cameraFeature =  JsonConvert.DeserializeObject<CameraFeatureMobile>(cameraResult.ToString() ?? string.Empty);
                     if (cameraFeature.Action)
                     {
                         UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(cameraFeature);
@@ -86,21 +91,83 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 }
                 if (gameTypeResult != null)
                 {
-                    var gamingFeature = JsonConvert.DeserializeObject<GamingMobileFeature>(gameTypeResult.ToString() ?? string.Empty);
+                    var gamingFeature = JsonConvert.DeserializeObject<GamingFeatureMobile>(gameTypeResult.ToString() ?? string.Empty);
                     UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(gamingFeature);
+                }
+
+                if (customRangeResult != null)
+                {
+                    var customRange = JsonConvert.DeserializeObject<BudgetFeatureMobile>(customRangeResult.ToString() ?? string.Empty);
+                    UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(customRange);
+                }
+
+                if (aspectResult != null)
+                {
+                    var aspectFeature = JsonConvert.DeserializeObject<AspectFeatureMobile>(aspectResult.ToString() ?? string.Empty);
+                    UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(aspectFeature);
                 }
             }
 
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
+        private async Task<DialogTurnResult> AspectFeatureAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if (UserProfile.ElectronicsProfile.MobileProfile.WantedFeatures.Aspect)
+            {
+                var dialogTypeName = GetType().Name.GetDialogType();
+                var resourceCardName = dialogTypeName.GetCardName();
+                var fileName = $"{dialogTypeName}.{resourceCardName}";
+                var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
+
+                var dialogId = $"{resourceCardName}Prompt";
+                AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<AspectFeatureMobile>));
+
+                Slots.AddRange(new List<SlotDetails>
+                {
+                    new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
+                    {
+                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
+                        RetryPrompt = MessageFactory.Text(RetryText)
+                    })
+                });
+            }
+
+            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> BudgetFeatureAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if (UserProfile.ElectronicsProfile.MobileProfile.BudgetRanges.Contains(BudgetRanges.custom))
+            {
+                var dialogTypeName = GetType().Name.GetDialogType();
+                var resourceCardName = dialogTypeName.GetCardName();
+                var fileName = $"{dialogTypeName}.{resourceCardName}";
+                var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
+
+                var dialogId = $"{resourceCardName}Prompt";
+                AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<BudgetFeatureMobile>));
+
+                Slots.AddRange(new List<SlotDetails>
+                {
+                    new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
+                    {
+                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
+                        RetryPrompt = MessageFactory.Text(RetryText)
+                    })
+                });
+            }
+
+            return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
+        }
+
         private async Task<DialogTurnResult> CameraFeatureAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            if (UserProfile.ElectronicsProfile.MobileProfile.FeaturesList.Contains(MobileProfile.PhoneFeatures.camera))
+            if (UserProfile.ElectronicsProfile.MobileProfile.WantedFeatures.Camera)
             {
                 var feature = UserProfile.ElectronicsProfile.MobileProfile.Features.FirstOrDefault(x =>
-                    x.GetType().Name.Equals(nameof(CameraMobileFeature)));
+                    x.GetType().Name.Equals(nameof(CameraFeatureMobile)));
 
                 if (feature != null)
                 {
@@ -113,14 +180,14 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
 
                 var dialogId = $"{resourceCardName}Prompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId));
+                AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<CameraFeatureMobile>));
 
                 Slots.AddRange(new List<SlotDetails>
                 {
-                    new SlotDetails(nameof(CameraMobileFeature), dialogId, new PromptOptions
+                    new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
                     {
                         Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                        RetryPrompt = MessageFactory.Text("Please choose something from this list")
+                        RetryPrompt = MessageFactory.Text(RetryText)
                     })
                 });
             }
@@ -131,10 +198,10 @@ namespace ClerkBot.Dialogs.Electronics.Phone
         private async Task<DialogTurnResult> GamingFeatureAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            if (UserProfile.ElectronicsProfile.MobileProfile.FeaturesList.Contains(MobileProfile.PhoneFeatures.gaming))
+            if (UserProfile.ElectronicsProfile.MobileProfile.WantedFeatures.Gaming)
             {
                 var feature = UserProfile.ElectronicsProfile.MobileProfile.Features.FirstOrDefault(x =>
-                    x.GetType().Name.Equals(nameof(GamingMobileFeature)));
+                    x.GetType().Name.Equals(nameof(GamingFeatureMobile)));
 
                 if (feature != null)
                 {
@@ -147,19 +214,37 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var cardAttachment = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment();
 
                 var dialogId = $"{resourceCardName}Prompt";
-                AddDialog(new AdaptiveCardsPrompt(dialogId));
+                AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<GamingFeatureMobile>));
 
                 Slots.AddRange(new List<SlotDetails>
                 {
-                    new SlotDetails(nameof(GamingMobileFeature), dialogId, new PromptOptions
+                    new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
                     {
                         Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                        RetryPrompt = MessageFactory.Text("Please choose something from this list")
+                        RetryPrompt = MessageFactory.Text(RetryText)
                     })
                 });
             }
 
             return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
+        }
+
+        private static Task<bool> ObjectDialogValidatorAsync<T>(PromptValidatorContext<string> promptContext, CancellationToken cancellationToken)
+        {
+            if (!promptContext.Recognized.Succeeded)
+            {
+                return Task.FromResult(false);
+            }
+
+            try
+            {
+                JsonConvert.DeserializeObject<T>(promptContext.Recognized.Value);
+                return Task.FromResult(true);
+            }
+            catch
+            {
+                return Task.FromResult(false);
+            }
         }
     }
 }

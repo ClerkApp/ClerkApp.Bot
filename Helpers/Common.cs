@@ -101,6 +101,11 @@ namespace ClerkBot.Helpers
             return PropertyCache<T>.PublicProperties.All(propertyInfo => propertyInfo.GetValue(obj) != null);
         }
 
+        public static bool AreSomePropertiesFalse<T>(this T obj)
+        {
+            return PropertyCache<T>.PublicProperties.All(propertyInfo => propertyInfo.GetValue(obj).Equals(false));
+        }
+
         public static class PropertyCache<T>
         {
             private static readonly Lazy<IReadOnlyCollection<PropertyInfo>> publicPropertiesLazy
