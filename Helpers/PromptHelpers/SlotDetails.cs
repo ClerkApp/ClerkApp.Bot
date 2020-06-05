@@ -1,5 +1,8 @@
-﻿using Microsoft.Bot.Builder;
+﻿using ClerkBot.Enums;
+using ClerkBot.Resources;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 
 namespace ClerkBot.Helpers.PromptHelpers
 {
@@ -21,11 +24,22 @@ namespace ClerkBot.Helpers.PromptHelpers
             Options = options;
         }
 
-        public SlotDetails(string name, string dialogId, SlotPromptOptions options)
+        public SlotDetails(string name)
         {
             Name = name;
-            DialogId = dialogId;
-            Options = options.GetPromptOptions();
+        }
+
+        public SlotDetails GetTipsPrompts(string tipsCardName)
+        {
+            var tipsCardAttachment = new EmbeddedResourceReader(tipsCardName).CreateAdaptiveCardAttachment();
+
+            DialogId = nameof(DialogTypes.TipsPrompt);
+            Options = new PromptOptions
+            {
+                Prompt = (Activity) MessageFactory.Attachment(tipsCardAttachment)
+            };
+
+            return this;
         }
 
         public string Name { get; set; }

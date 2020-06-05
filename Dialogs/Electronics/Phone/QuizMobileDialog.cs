@@ -54,10 +54,6 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             shuffledSteps.Insert(0, InitialStepAsync);
             shuffledSteps.Add(ProcessResultsAsync);
 
-
-            AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), shuffledSteps));
         }
 
@@ -123,14 +119,11 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var dialogId = $"{resourceCardName}Prompt";
                 AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<AspectFeatureMobile>));
 
-                Slots.AddRange(new List<SlotDetails>
+                Slots.Add(new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
                 {
-                    new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
-                    {
-                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                        RetryPrompt = MessageFactory.Text(RetryText)
-                    })
-                });
+                    Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
+                    RetryPrompt = MessageFactory.Text(RetryText)
+                }));
             }
 
             return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
@@ -148,14 +141,11 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var dialogId = $"{resourceCardName}Prompt";
                 AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<BudgetFeatureMobile>));
 
-                Slots.AddRange(new List<SlotDetails>
+                Slots.Add(new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
                 {
-                    new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
-                    {
-                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                        RetryPrompt = MessageFactory.Text(RetryText)
-                    })
-                });
+                    Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
+                    RetryPrompt = MessageFactory.Text(RetryText)
+                }));
             }
 
             return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
@@ -182,14 +172,11 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var dialogId = $"{resourceCardName}Prompt";
                 AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<CameraFeatureMobile>));
 
-                Slots.AddRange(new List<SlotDetails>
+                Slots.Add(new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
                 {
-                    new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
-                    {
-                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                        RetryPrompt = MessageFactory.Text(RetryText)
-                    })
-                });
+                    Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
+                    RetryPrompt = MessageFactory.Text(RetryText)
+                }));
             }
 
             return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);
@@ -216,14 +203,11 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 var dialogId = $"{resourceCardName}Prompt";
                 AddDialog(new AdaptiveCardsPrompt(dialogId, ObjectDialogValidatorAsync<GamingFeatureMobile>));
 
-                Slots.AddRange(new List<SlotDetails>
+                Slots.Add(new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
                 {
-                    new SlotDetails(dialogTypeName.GetCardName(), dialogId, new PromptOptions
-                    {
-                        Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
-                        RetryPrompt = MessageFactory.Text(RetryText)
-                    })
-                });
+                    Prompt = (Activity) MessageFactory.Attachment(cardAttachment),
+                    RetryPrompt = MessageFactory.Text(RetryText)
+                }));
             }
 
             return await stepContext.BeginDialogAsync(nameof(SlotFillingDialog), null, cancellationToken);

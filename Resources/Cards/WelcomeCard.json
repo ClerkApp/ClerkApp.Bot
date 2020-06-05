@@ -1,38 +1,64 @@
 ﻿{
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "type": "AdaptiveCard",
-  "version": "1.0",
+  "version": "1.2",
+  "backgroundImage": {
+    "url": "https://image.freepik.com/free-vector/abstract-colorful-circles-background_23-2148288678.jpg"
+  },
   "body": [
     {
-      "type": "Image",
-      "url": "https://i.imgur.com/Pz0Pzbr.png",
-      "style": "person",
-      "horizontalAlignment": "center",
-      "size": "stretch"
-    },
-    {
-      "type": "TextBlock",
-      "spacing": "medium",
-      "size": "default",
-      "weight": "bolder",
-      "text": "Hi! Welcome to your Store Clerk Assistant",
-      "wrap": true,
-      "maxLines": 0
-    },
-    {
-      "type": "TextBlock",
-      "size": "default",
-      "isSubtle": true,
-      "text": "We can help you choose the best thing for you. Type 'login' to get logged in and 'logout' to sign-out.",
-      "wrap": true,
-      "maxLines": 0
-    }
-  ],
-  "actions": [
-    {
-      "type": "Action.OpenUrl",
-      "title": "What is this assistant",
-      "url": "https://medium.com/recombee-blog/machine-learning-for-recommender-systems-part-1-algorithms-evaluation-and-cold-start-6f696683d0ed"
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 50,
+          "items": [
+            {
+              "type": "Image",
+              "url": "https://i.imgur.com/Pz0Pzbr.png\"",
+              "size": "Stretch",
+              "style": "Person",
+              "spacing": "Small"
+            }
+          ],
+          "minHeight": "50px"
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Welcome to your Store Clerk Assistant",
+              "color": "Dark",
+              "size": "Medium",
+              "weight": "Bolder",
+              "wrap": true,
+              "horizontalAlignment": "Center"
+            },
+            {
+              "type": "TextBlock",
+              "text": "Hi there, I'm glad that I can help you choose the best things for you",
+              "color": "Dark",
+              "wrap": true,
+              "horizontalAlignment": "Center"
+            },
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "type": "Action.OpenUrl",
+                  "title": "What is this assistant",
+                  "url": "https://en.wikipedia.org/wiki/Recommender_system",
+                  "style": "positive"
+                }
+              ]
+            }
+          ],
+          "style": "accent",
+          "horizontalAlignment": "Right"
+        }
+      ]
     }
   ]
 }

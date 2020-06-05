@@ -74,26 +74,23 @@ namespace ClerkBot.Dialogs.Conversations
         {
             if (string.IsNullOrEmpty(userProfile.LanguagePreference))
             {
-                Slots.AddRange(new List<SlotDetails>
+                Slots.Add(new SlotDetails(nameof(UserProfile.LanguagePreference), nameof(ChoicePrompt), new PromptOptions
                 {
-                    new SlotDetails(nameof(UserProfile.LanguagePreference), nameof(ChoicePrompt), new PromptOptions
+                    Prompt = MessageFactory.Text("Choose your language:"),
+                    Choices = new List<Choice>
                     {
-                        Prompt = MessageFactory.Text("Choose your language:"),
-                        Choices = new List<Choice>
+                        new Choice
                         {
-                            new Choice
-                            {
-                                Value = "ro",
-                                Action = new CardAction { Title = "Romanian", Type = ActionTypes.PostBack, Value = "ro" }
-                            },
-                            new Choice
-                            {
-                                Value = "en",
-                                Action = new CardAction { Title = "English", Type = ActionTypes.PostBack, Value = "en" }
-                            }
+                            Value = "ro",
+                            Action = new CardAction { Title = "Romanian", Type = ActionTypes.PostBack, Value = "ro" }
                         },
-                    })
-                });
+                        new Choice
+                        {
+                            Value = "en",
+                            Action = new CardAction { Title = "English", Type = ActionTypes.PostBack, Value = "en" }
+                        }
+                    },
+                }));
             }
 
             return await stepContext.NextAsync(null, cancellationToken);

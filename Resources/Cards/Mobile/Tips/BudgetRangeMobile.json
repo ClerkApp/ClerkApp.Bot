@@ -1,0 +1,209 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Container",
+              "backgroundImage": {
+                "url": "https://messagecardplayground.azurewebsites.net/assets/TxP_Background.png"
+              },
+              "items": [
+                {
+                  "type": "Image",
+                  "horizontalAlignment": "Center",
+                  "url": "https://image.flaticon.com/icons/svg/2228/2228042.svg",
+                  "size": "Medium"
+                }
+              ],
+              "bleed": true
+            },
+            {
+              "type": "Container",
+              "spacing": "None",
+              "style": "emphasis",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "size": "ExtraLarge",
+                  "color": "Accent",
+                  "text": "How to choose the budget",
+                  "wrap": true
+                }
+              ],
+              "bleed": true,
+              "height": "stretch"
+            }
+          ],
+          "width": 45,
+          "height": "stretch",
+          "bleed": true
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Container",
+              "height": "stretch",
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "columns": [
+                    {
+                      "type": "Column",
+                      "items": [
+                        {
+                          "type": "Image",
+                          "url": "https://image.flaticon.com/icons/svg/639/639365.svg",
+                          "size": "Small",
+                          "width": "25px",
+                          "spacing": "Small"
+                        }
+                      ],
+                      "width": "auto",
+                      "spacing": "None"
+                    },
+                    {
+                      "type": "Column",
+                      "verticalContentAlignment": "Center",
+                      "items": [
+                        {
+                          "type": "Image",
+                          "url": "https://messagecardplayground.azurewebsites.net/assets/graydot2x2.png",
+                          "width": "10000px",
+                          "height": "2px",
+                          "spacing": "None"
+                        }
+                      ],
+                      "width": "stretch"
+                    },
+                    {
+                      "type": "Column",
+                      "items": [
+                        {
+                          "type": "Image",
+                          "url": "https://image.flaticon.com/icons/svg/2764/2764747.svg",
+                          "size": "Small",
+                          "width": "25px"
+                        }
+                      ],
+                      "width": "auto"
+                    }
+                  ]
+                },
+                {
+                  "type": "ColumnSet",
+                  "columns": [
+                    {
+                      "type": "Column",
+                      "width": 1,
+                      "items": [
+                        {
+                          "type": "TextBlock",
+                          "text": "\n",
+                          "size": "Small"
+                        },
+                        {
+                          "type": "TextBlock",
+                          "text": "What usually means as price range",
+                          "spacing": "None"
+                        }
+                      ]
+                    }
+                  ],
+                  "spacing": "None"
+                },
+                {
+                  "type": "ColumnSet",
+                  "spacing": "None",
+                  "columns": [
+                    {
+                      "type": "Column",
+                      "width": 1,
+                      "items": [
+                        {
+                          "type": "TextBlock",
+                          "text": "\n",
+                          "size": "Small"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "ColumnSet",
+                  "spacing": "None",
+                  "columns": [
+                    {
+                      "type": "Column",
+                      "width": 1,
+                      "items": [
+                        {
+                          "type": "FactSet",
+                          "facts": [
+                            {
+                              "title": "Low-Budget",
+                              "value": "50 - 200 EUR"
+                            },
+                            {
+                              "title": "Mid-Range",
+                              "value": "200 - 400 EUR"
+                            },
+                            {
+                              "title": "High-End",
+                              "value": "60 - 800 EUR"
+                            },
+                            {
+                              "title": "Flagship",
+                              "value": "+800 EUR"
+                            },
+                            {
+                              "title": "Custom",
+                              "value": "Define later on"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "height": "stretch"
+                }
+              ]
+            }
+          ],
+          "width": 55
+        }
+      ],
+      "height": "stretch"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "If you are a true game lover, you shall know that every low budget phone isn't really a good option for gaming",
+              "wrap": true
+            }
+          ],
+          "backgroundImage": {
+            "verticalAlignment": "Center",
+            "horizontalAlignment": "Center"
+          },
+          "style": "good",
+          "bleed": true
+        }
+      ],
+      "spacing": "None"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.2"
+}

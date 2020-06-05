@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ClerkBot.Enums;
 using ClerkBot.Helpers.PromptHelpers;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -83,19 +84,34 @@ namespace ClerkBot.Helpers.DialogHelpers
             var state = dialogContext.ActiveDialog.GetPersistedValues();
 
             // Run through the list of slots until we find one that hasn't been filled yet.
-            var unfilledSlot = _slots.FirstOrDefault((item) => !state.ContainsKey(item.Name));
+            var unfilledSlot = _slots.FirstOrDefault(item => !state.ContainsKey(item.Name));
 
             // If we have an unfilled slot we will try to fill it
             if (unfilledSlot != null)
             {
-                // The name of the slot we will be prompting to fill.
-                dialogContext.ActiveDialog.State[SlotName] = unfilledSlot.Name;
+                // Check if the prompt it's just for a tips, then run again for the real feedback prompt.
+                if(unfilledSlot.DialogId.Equals(nameof(DialogTypes.TipsPrompt)))
+                {
+                    // Remove the tips from the slots.
+                    _slots.Remove(unfilledSlot);
 
-                // If the slot contains prompt text create the PromptOptions.
-                //_slots.Remove(unfilledSlot);
+                    // Send the tip to user
+                    dialogContext.Context.SendActivityAsync(unfilledSlot.Options.Prompt, cancellationToken);
 
-                // Run the child dialog
-                return dialogContext.BeginDialogAsync(unfilledSlot.DialogId, unfilledSlot.Options, cancellationToken);
+                    // Re-run the prompt process to execute the feedback prompt
+                    return RunPromptAsync(dialogContext, cancellationToken);
+                }
+                else
+                {
+                    // The name of the slot we will be prompting to fill.
+                    dialogContext.ActiveDialog.State[SlotName] = unfilledSlot.Name;
+
+                    // If the slot contains prompt text create the PromptOptions.
+                    //_slots.Remove(unfilledSlot);
+
+                    // Run the child dialog
+                    return dialogContext.BeginDialogAsync(unfilledSlot.DialogId, unfilledSlot.Options, cancellationToken);
+                }
             }
             else
             {

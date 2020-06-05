@@ -125,6 +125,18 @@ namespace ClerkBot.Helpers
             return $"{cardName}{className}";
         }
 
+        public static string GetPromptCardName(this string className, string dialogTypeName, [CallerMemberName]string name = "")
+        {
+            var cardName = string.Join("", name.SplitCamelCase().SkipLast(1));
+            return $"{dialogTypeName}.{cardName}{className}";
+        }
+
+        public static string GetTipsCardName(this string className, string dialogTypeName, [CallerMemberName]string name = "")
+        {
+            var cardName = string.Join("", name.SplitCamelCase().SkipLast(1));
+            return $"{dialogTypeName}.Tips.{cardName}{className}";
+        }
+
         public static string GetDialogType(this string dialogClassName)
         {
             return dialogClassName.SplitCamelCase()[^2];

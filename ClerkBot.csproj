@@ -34,10 +34,14 @@
     <Content Remove="Resources\Cards\Mobile\GamingFeatureMobile.json" />
     <Content Remove="Resources\Cards\Mobile\ReliableBrandsMobile.json" />
     <Content Remove="Resources\Cards\Mobile\ResultCardMobile.json" />
+    <Content Remove="Resources\Cards\Mobile\TipsBudgetRangeMobile.json" />
     <Content Remove="Resources\Cards\Mobile\WantedFeatureMobile.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Cards\Mobile\Tips\BudgetRangeMobile.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Cards\Mobile\AspectFeatureMobile.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
