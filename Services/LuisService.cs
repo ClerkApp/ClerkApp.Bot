@@ -19,28 +19,21 @@ namespace Luis
         public string AlteredText;
 
         public enum Intent {
-            AuthIntent, 
             ElectronicIntent, 
             GreetingIntent, 
-            NewBugReportIntent, 
             None, 
-            QueryBugTypeIntent
         };
         [JsonProperty("intents")]
         public Dictionary<Intent, IntentScore> Intents;
 
         public class _Entities
         {
-            // Simple entities
-            public string[] BugType;
-
             // Lists
             public string[][] ElectronicType;
 
             // Instance
             public class _Instance
             {
-                public InstanceData[] BugType;
                 public InstanceData[] ElectronicType;
             }
             [JsonProperty("$instance")]

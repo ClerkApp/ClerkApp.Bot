@@ -41,6 +41,7 @@ namespace ClerkBot
             services.AddOptions();
             services.Configure<ElasticConfig>(Configuration.GetSection("ElasticConfig"));
             services.Configure<LuisConfig>(Configuration.GetSection("LuisConfig"));
+            services.Configure<EnvironmentConfig>(Configuration.GetSection("EnvironmentConfig"));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddControllers().AddNewtonsoftJson();
@@ -57,7 +58,7 @@ namespace ClerkBot
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             //services.AddTransient<IBot, DialogAndWelcomeBot<RootDialog>>();
-            services.AddTransient<IBot, AuthBot<RootDialog>>();
+            services.AddTransient<IBot, RootBot<RootDialog>>();
         }
 
         private void ConfigureCoreServices(IServiceCollection services)

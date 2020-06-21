@@ -9,15 +9,22 @@ using Nest;
 
 namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
-    public class BudgetBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
+    public class BudgetBuilderMobile<TP, TC>: IChildBuilder
+        where TP : MobileProfile
+        where TC : MobileContract
     {
-        private readonly BaseBuilderMobile<TP, TC> BaseBuilder;
+        private readonly List<BudgetRanges> Budget;
+        private readonly BudgetFeatureMobile BudgetFeature;
+        private readonly FiltersCollections<TC> FiltersBuilder;
 
         private readonly List<Func<NumericRangeQueryDescriptor<TC>, INumericRangeQuery>> RangeCriteria;
 
-        public BudgetBuilderMobile(BaseBuilderMobile<TP, TC> baseBuilder)
+        public BudgetBuilderMobile(TP profile, FiltersCollections<TC> filtersBuilder)
         {
-            BaseBuilder = baseBuilder;
+            FiltersBuilder = filtersBuilder;
+            Budget = profile.BudgetRanges;
+            BudgetFeature = profile.Features.FirstOrDefault(f => 
+                f.GetType().Name.Contains(nameof(MobileProfile.PhoneFeatures.Budget))) as BudgetFeatureMobile;
 
             RangeCriteria = new List<Func<NumericRangeQueryDescriptor<TC>, INumericRangeQuery>>();
         }
@@ -26,35 +33,31 @@ namespace ClerkBot.FilterBuilders.Electronics.Mobile
         {
             GenerateCriteria();
 
-            BaseBuilder.MustCollection.AddRange(RangeCriteria.Select(filter =>
-            {
-                return (Func<QueryContainerDescriptor<TC>, QueryContainer>) (budget => budget.Range(filter));
-            }).ToList());
+            FiltersBuilder.Must.AddRange(RangeCriteria.Select(filter =>
+                (Func<QueryContainerDescriptor<TC>, QueryContainer>) (budget => budget.Range(filter))
+            ).ToList());
         }
 
         private void GenerateCriteria()
         {
-            if (BaseBuilder.Profile.BudgetRanges.Contains(BudgetRanges.custom))
+            if (Budget.Contains(BudgetRanges.custom))
             {
-                var customBudget = BaseBuilder.Profile.Features.FirstOrDefault(f => 
-                    f.GetType().Name.Contains(nameof(MobileProfile.PhoneFeatures.Budget))) as BudgetFeatureMobile;
-
-                if (customBudget is null)
+                if (BudgetFeature is null)
                 {
                     return;
                 }
 
                 RangeCriteria.AddRange(new List<Func<NumericRangeQueryDescriptor<TC>, INumericRangeQuery>>
                 {
-                    device => device.Field(f => f.Price[nameof(CurrencyType.EUR)]).GreaterThan(customBudget.MinBudget),
-                    device => device.Field(f => f.Price[nameof(CurrencyType.EUR)]).LessThan(customBudget.MaxBudget)
+                    device => device.Field(f => f.Price[nameof(CurrencyType.EUR)]).GreaterThan(BudgetFeature.MinBudget),
+                    device => device.Field(f => f.Price[nameof(CurrencyType.EUR)]).LessThan(BudgetFeature.MaxBudget)
                 });
             }
             else
             {
                 var (minBudget, maxBudget) = new BudgetRangeMobile
                 {
-                    Budgets = BaseBuilder.Profile.BudgetRanges
+                    Budgets = Budget
                 }.GetBudgetRangeInEuro();
 
                 if (minBudget.Equals(0) && maxBudget.Equals(0))

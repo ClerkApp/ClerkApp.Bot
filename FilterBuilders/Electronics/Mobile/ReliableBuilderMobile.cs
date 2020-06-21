@@ -7,15 +7,19 @@ using Nest;
 
 namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
-    public class ReliableBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
+    public class ReliableBuilderMobile<TP, TC>: IChildBuilder
+        where TP : MobileProfile
+        where TC : MobileContract
     {
-        private readonly BaseBuilderMobile<TP, TC> BaseBuilder;
+        private readonly bool ReliableBrands;
+        private readonly FiltersCollections<TC> FiltersBuilder;
 
         private readonly List<Func<QueryContainerDescriptor<TC>, QueryContainer>> QueryCriteria;
 
-        public ReliableBuilderMobile(BaseBuilderMobile<TP, TC> baseBuilder)
+        public ReliableBuilderMobile(TP profile, FiltersCollections<TC> filtersBuilder)
         {
-            BaseBuilder = baseBuilder;
+            FiltersBuilder = filtersBuilder;
+            ReliableBrands = profile.ReliableBrands;
 
             QueryCriteria = new List<Func<QueryContainerDescriptor<TC>, QueryContainer>>();
         }
@@ -24,14 +28,12 @@ namespace ClerkBot.FilterBuilders.Electronics.Mobile
         {
             GenerateCriteria();
 
-            BaseBuilder.MustCollection.AddRange(QueryCriteria);
+            FiltersBuilder.Must.AddRange(QueryCriteria);
         }
 
         private void GenerateCriteria()
         {
-            var reliable = BaseBuilder.Profile.ReliableBrands;
-
-            if (reliable)
+            if (ReliableBrands)
             {
                 var brands = Enum.GetNames(typeof(ReliableBrands)).ToList();
                 QueryCriteria.Add(device => device.Terms(t => 

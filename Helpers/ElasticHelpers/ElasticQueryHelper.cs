@@ -32,9 +32,9 @@ namespace ClerkBot.Helpers.ElasticHelpers
 
         private static MultiMatchQuery TextQuery(string queryString, string lang)
         {
-            return new MultiMatchQuery()
+            return new MultiMatchQuery
             {
-                Fields = new List<string>()
+                Fields = new List<string>
                 {
                     "id",
                     string.Format("shortDescription.{0}", lang),
@@ -48,7 +48,7 @@ namespace ClerkBot.Helpers.ElasticHelpers
 
         private static BoolQuery StringPropertiesQuery(Dictionary<string, string> stringProperties)
         {
-            return new BoolQuery()
+            return new BoolQuery
             {
                 Must = stringProperties.Select(p => StringFieldMatch(p.Key, p.Value)).ToArray()
             };
@@ -56,7 +56,7 @@ namespace ClerkBot.Helpers.ElasticHelpers
 
         private static BoolQuery NumericPropertiesQuery(Dictionary<string, NumericQuery> numericProperties)
         {
-            return new BoolQuery()
+            return new BoolQuery
             {
                 Must = numericProperties.Select(p => NumericFieldMatch(p.Key, p.Value)).ToArray()
             };
@@ -64,9 +64,9 @@ namespace ClerkBot.Helpers.ElasticHelpers
 
         private static BoolQuery CategoryQuery(string categoryId)
         {
-            return new BoolQuery()
+            return new BoolQuery
             {
-                Must = new List<QueryContainer>()
+                Must = new List<QueryContainer>
                 {
                     StringFieldMatch("categories", categoryId)
                 }
@@ -75,7 +75,7 @@ namespace ClerkBot.Helpers.ElasticHelpers
 
         private static QueryContainer StringFieldMatch(string field, string value)
         {
-            return new MatchQuery()
+            return new MatchQuery
             {
                 Field = "properties." + field,
                 Query = value
@@ -84,7 +84,7 @@ namespace ClerkBot.Helpers.ElasticHelpers
 
         private static QueryContainer NumericFieldMatch(string field, NumericQuery value)
         {
-            return new NumericRangeQuery()
+            return new NumericRangeQuery
             {
                 Field = "properties." + field,
                 GreaterThanOrEqualTo = value.GreaterThanOrEqual,

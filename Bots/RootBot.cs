@@ -16,9 +16,9 @@ using Microsoft.Extensions.Logging;
 
 namespace ClerkBot.Bots
 {
-    public class AuthBot<T> : DialogBot<T> where T : Dialog
+    public class RootBot<T> : DialogBot<T> where T : Dialog
     {
-        public AuthBot(BotStateService botStateService, T dialog, ILogger<DialogBot<T>> logger)
+        public RootBot(BotStateService botStateService, T dialog, ILogger<DialogBot<T>> logger)
             : base(botStateService, dialog, logger)
         {
         }
@@ -34,18 +34,24 @@ namespace ClerkBot.Bots
             {
                 // Greet anyone that was not the target (recipient) of this message.
                 // To learn more about Adaptive Cards, see https://aka.ms/msbot-adaptivecards for more details.
-                if (member.Id != turnContext.Activity.Recipient.Id)
+                if (member.Id == turnContext.Activity.Recipient.Id)
                 {
-                    const string fileName = "WelcomeCard";
-                    var welcomeCard = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment("Welcome");
-                    var response = MessageFactory.Attachment(welcomeCard);
-
-                    var dialogNames = Common.TryGetAllSpecificDialog().Select(dialog => dialog.Replace("Dialog", string.Empty)).ToList();
-                    var options = string.Join(",", dialogNames);
-
-                    await turnContext.SendActivityAsync(response, cancellationToken);
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"For now {Time.HourglassNotDone} I can help you find: {options}"), cancellationToken);
+                    continue;
                 }
+
+                const string fileName = "WelcomeCard";
+                var welcomeCard = new EmbeddedResourceReader(fileName).CreateAdaptiveCardAttachment("Welcome");
+                var dialogNames = Common.TryGetAllSpecificDialog().Select(dialog => dialog.Replace("Dialog", string.Empty)).ToList();
+                var options = string.Join(",", dialogNames);
+                var botResponse = new List<IActivity>();
+
+                botResponse.AddRange(new List<IActivity>
+                {
+                    MessageFactory.Attachment(welcomeCard),
+                    MessageFactory.Text($"For now {Time.HourglassNotDone} I can help you find: {options}")
+                });
+
+                await turnContext.SendActivitiesAsync(botResponse.ToArray(), cancellationToken);
             }
         }
     }

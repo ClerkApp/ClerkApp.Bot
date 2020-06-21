@@ -1,35 +1,34 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ClerkBot.Helpers.ElasticHelpers.Models;
-using ClerkBot.Models.Electronics.Mobile;
 using Nest;
 
 namespace ClerkBot.Helpers.ElasticHelpers
 {
-    public static class ElasticProductSearchResultBuilder
+    public class ElasticProductSearchResultBuilder<T> where T : class
     {
-        public static ProductSearchResult BuildProductSearchResult(ISearchResponse<MobileContract> searchResponse)
+        public ProductSearchResult<T> BuildProductSearchResult(ISearchResponse<T> searchResponse)
         {
-            var result = new ProductSearchResult()
+            var result = new ProductSearchResult<T>
             {
                 TotalItems = searchResponse.Total,
-                Products = searchResponse.Documents.ToList(),
+                Products = searchResponse.Documents.ToList()
             };
             ExtractAggregations(result, searchResponse.Aggregations);
             return result;
         }
 
-        private static void ExtractAggregations(ProductSearchResult result, IReadOnlyDictionary<string, IAggregate> aggregates)
+        private static void ExtractAggregations(ProductSearchResult<T> result, IReadOnlyDictionary<string, IAggregate> aggregates)
         {
             result.StringAggregations = new Dictionary<string, Dictionary<string, long>>();
             result.NumericAggregations = new Dictionary<string, NumericAggregation>();
             foreach (var y in aggregates)
             {
-                if (y.Value.GetType() == typeof(Nest.BucketAggregate))
+                if (y.Value.GetType() == typeof(BucketAggregate))
                 {
                     ExtractStringAggregation(result, y);
                 }
-                else if (y.Value.GetType() == typeof(Nest.ValueAggregate))
+                else if (y.Value.GetType() == typeof(ValueAggregate))
                 {
                     var aggName = y.Key.Split('.')[0];
                     if (!result.NumericAggregations.ContainsKey(aggName))
@@ -53,11 +52,11 @@ namespace ClerkBot.Helpers.ElasticHelpers
             }
         }
 
-        private static void ExtractStringAggregation(ProductSearchResult result, KeyValuePair<string, IAggregate> y)
+        private static void ExtractStringAggregation(ProductSearchResult<T> result, KeyValuePair<string, IAggregate> y)
         {
             var agg = new Dictionary<string, long>();
 
-            foreach (var bucket in ((Nest.BucketAggregate)y.Value).Items)
+            foreach (var bucket in ((BucketAggregate)y.Value).Items)
             {
                 if (bucket.GetType() != typeof(KeyedBucket<object>)) continue;
                 var docCount = ((KeyedBucket<object>)bucket).DocCount;

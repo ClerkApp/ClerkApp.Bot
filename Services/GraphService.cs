@@ -53,9 +53,9 @@ namespace ClerkBot.Services
                 {
                     EmailAddress = new EmailAddress
                     {
-                        Address = toAddress,
-                    },
-                },
+                        Address = toAddress
+                    }
+                }
             };
 
             // Create the message.
@@ -64,10 +64,10 @@ namespace ClerkBot.Services
                 Body = new ItemBody
                 {
                     Content = content,
-                    ContentType = BodyType.Text,
+                    ContentType = BodyType.Text
                 },
                 Subject = subject,
-                ToRecipients = recipients,
+                ToRecipients = recipients
             };
 
             // Send the message.
@@ -120,7 +120,7 @@ namespace ClerkBot.Services
                 var photoResponse = new PhotoResponse
                 {
                     Bytes = bytes,
-                    ContentType = response.Content.Headers.ContentType?.ToString(),
+                    ContentType = response.Content.Headers.ContentType?.ToString()
                 };
 
                 if (photoResponse != null)

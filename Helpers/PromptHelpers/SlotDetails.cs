@@ -12,7 +12,7 @@ namespace ClerkBot.Helpers.PromptHelpers
             : this(resultIdentifier, dialogTypeId, new PromptOptions
             {
                 Prompt = MessageFactory.Text(prompt),
-                RetryPrompt = MessageFactory.Text(retryPrompt),
+                RetryPrompt = MessageFactory.Text(retryPrompt)
             })
         {
         }

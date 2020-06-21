@@ -32,7 +32,7 @@ namespace ClerkBot.Helpers.PromptHelpers
                 Prompt = Prompt,
                 RetryPrompt = RetryPrompt,
                 Choices = Choices,
-                Style = ListStyle.None,
+                Style = ListStyle.None
             };
         }
 

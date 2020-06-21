@@ -34,7 +34,7 @@ namespace ClerkBot.Services
                     new ElasticsearchStorageOptions
                     {
                         ElasticsearchEndpoint = new Uri(elasticConfig.Value.Host),
-                        IndexName = elasticConfig.Value.Indexs.Conversations
+                        IndexName = elasticConfig.Value.Indexes.Conversations
                     }
                 ));
 
@@ -43,7 +43,7 @@ namespace ClerkBot.Services
                     new ElasticsearchStorageOptions
                     {
                         ElasticsearchEndpoint = new Uri(elasticConfig.Value.Host),
-                        IndexName = elasticConfig.Value.Indexs.Users
+                        IndexName = elasticConfig.Value.Indexes.Users
                     }
                 ));
 

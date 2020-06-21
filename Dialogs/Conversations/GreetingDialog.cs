@@ -56,12 +56,12 @@ namespace ClerkBot.Dialogs.Conversations
                 var fullname_slots = new List<SlotDetails>
                 {
                     new SlotDetails(nameof(UserProfile.FirstName), nameof(TextPrompt), "Please enter your first name."),
-                    new SlotDetails(nameof(UserProfile.LastName), nameof(TextPrompt), "Please enter your last name."),
+                    new SlotDetails(nameof(UserProfile.LastName), nameof(TextPrompt), "Please enter your last name.")
                 };
 
                 Slots.AddRange(new List<SlotDetails> {
                     new SlotDetails(nameof(UserProfile.FullName), Common.BuildDialogId(nameof(UserProfile.FullName))),
-                    new SlotDetails(nameof(UserProfile.Age), nameof(NumberPrompt<int>), "Please enter your age."),
+                    new SlotDetails(nameof(UserProfile.Age), nameof(NumberPrompt<int>), "Please enter your age.")
                 });
 
                 AddDialog(new SlotFillingDialog(fullname_slots, Common.BuildDialogId(nameof(UserProfile.FullName))));
@@ -89,7 +89,7 @@ namespace ClerkBot.Dialogs.Conversations
                             Value = "en",
                             Action = new CardAction { Title = "English", Type = ActionTypes.PostBack, Value = "en" }
                         }
-                    },
+                    }
                 }));
             }
 

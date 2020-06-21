@@ -17,7 +17,7 @@ namespace ClerkBot.Helpers
 {
     public static class Common
     {
-        public static readonly List<string> BugTypes = new List<string>() { "Security", "Crash", "Power", "Performance", "Usability", "Serious Bug", "Other" };
+        public static readonly List<string> BugTypes = new List<string> { "Security", "Crash", "Power", "Performance", "Usability", "Serious Bug", "Other" };
 
         public static string BuildDialogId()
         {
@@ -46,7 +46,7 @@ namespace ClerkBot.Helpers
         public static Attachment CreateAdaptiveCardAttachment(this EmbeddedResourceReader embeddedResource, string name = null)
         {
             //var path = Path.Combine(".", "Resources", "Cards", "AdaptiveCards", "ChoiceSet", "PhoneWantedFeatures", "json");
-            var adaptiveCardAttachment = new Attachment()
+            var adaptiveCardAttachment = new Attachment
             {
                 ContentType = "application/vnd.microsoft.card.adaptive",
                 Content = JsonConvert.DeserializeObject(embeddedResource.GetJson()),
@@ -58,7 +58,7 @@ namespace ClerkBot.Helpers
         public static Attachment CreateAdaptiveCardAttachment(string jsonData)
         {
             //var path = Path.Combine(".", "Resources", "Cards", "AdaptiveCards", "ChoiceSet", "PhoneWantedFeatures", "json");
-            var adaptiveCardAttachment = new Attachment()
+            var adaptiveCardAttachment = new Attachment
             {
                 ContentType = "application/vnd.microsoft.card.adaptive",
                 Content = AdaptiveCard.FromJson(jsonData).Card
@@ -100,6 +100,17 @@ namespace ClerkBot.Helpers
         {
             return PropertyCache<T>.PublicProperties.All(propertyInfo => propertyInfo.GetValue(obj) != null);
         }
+
+        // https://stackoverflow.com/a/24087164
+        public static List<List<T>> ChunkBy<T>(this List<T> source, int chunkSize) 
+        {
+            return source
+                .Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / chunkSize)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+        }
+
 
         public static bool AreSomePropertiesFalse<T>(this T obj)
         {
@@ -149,12 +160,22 @@ namespace ClerkBot.Helpers
 
         public static string TryGetRootDialog(this string dialog)
         {
-            return GetAllTypes(typeof(IRootDialog)).Find(x => x.Equals(dialog));
+            return GetAllTypes(typeof(IGenericDialog)).Find(x => x.Equals(dialog));
         }
 
         public static string TryGetSpecificDialog(this string dialog)
         {
             return GetAllTypes(typeof(ISpecificDialog)).Find(x => x.Equals(dialog));
+        }
+
+        public static string TryGetProfileDialog(this string dialog)
+        {
+            return GetAllTypes(typeof(IProfileDialog)).Find(x => x.Equals(dialog));
+        }
+
+        public static string TryGetQuizDialog(this string dialog)
+        {
+            return GetAllTypes(typeof(IQuizDialog)).Find(x => x.Equals(dialog));
         }
 
         public static List<string> TryGetAllSpecificDialog()

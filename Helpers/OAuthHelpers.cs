@@ -99,11 +99,11 @@ namespace ClerkBot.Helpers
                         mail.Subject,
                         $"{mail.From.EmailAddress.Name} <{mail.From.EmailAddress.Address}>",
                         mail.BodyPreview,
-                        new List<CardImage>()
+                        new List<CardImage>
                         {
                             new CardImage(
                                 "https://botframeworksamples.blob.core.windows.net/samples/OutlookLogo.jpg",
-                                "Outlook Logo"),
+                                "Outlook Logo")
                         });
                     reply.Attachments.Add(card.ToAttachment());
                 }

@@ -129,7 +129,7 @@ namespace ClerkBot.Helpers.PromptHelpers
             // To avoid the prompt prematurely ending we need to implement this method and
             // simply re-prompt the user.
             await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
-            return Dialog.EndOfTurn;
+            return EndOfTurn;
         }
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))

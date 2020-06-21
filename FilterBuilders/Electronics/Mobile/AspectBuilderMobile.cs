@@ -9,40 +9,41 @@ using Nest;
 
 namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
-    public class AspectBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
+    public class AspectBuilderMobile<TP, TC>: IChildBuilder
+        where TP : MobileProfile
+        where TC : MobileContract
     {
-        private readonly BaseBuilderMobile<TP, TC> BaseBuilder;
+        private readonly AspectFeatureMobile AspectFeature;
+        private readonly FiltersCollections<TC> FiltersBuilder;
 
         private readonly List<Func<NumericRangeQueryDescriptor<TC>, INumericRangeQuery>> RangeCriteria;
 
-        public AspectBuilderMobile(BaseBuilderMobile<TP, TC> baseBuilder)
+        public AspectBuilderMobile(TP profile, FiltersCollections<TC> filtersBuilder)
         {
-            BaseBuilder = baseBuilder;
+            FiltersBuilder = filtersBuilder;
+            AspectFeature = profile.Features.FirstOrDefault(f => 
+                f.GetType().Name.Contains(nameof(MobileProfile.PhoneFeatures.Aspect))) as AspectFeatureMobile;
 
             RangeCriteria = new List<Func<NumericRangeQueryDescriptor<TC>, INumericRangeQuery>>();
         }
 
         public void Build()
         {
-            var feature = BaseBuilder.Profile.Features.FirstOrDefault(f => 
-                f.GetType().Name.Contains(nameof(MobileProfile.PhoneFeatures.Aspect))) as AspectFeatureMobile;
-
-            if (feature is null)
+            if (AspectFeature is null)
             {
                 return;
             }
 
-            GenerateCriteria(feature);
+            GenerateCriteria();
 
-            BaseBuilder.MustCollection.AddRange(RangeCriteria.Select(filter =>
-            {
-                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(budget => budget.Range(filter));
-            }).ToList());
+            FiltersBuilder.Must.AddRange(RangeCriteria.Select(filter =>
+                (Func<QueryContainerDescriptor<TC>, QueryContainer>)(budget => budget.Range(filter))
+            ).ToList());
         }
 
-        private void GenerateCriteria(AspectFeatureMobile feature)
+        private void GenerateCriteria()
         {
-            var aspectMobile = new AspectMobile(feature);
+            var aspectMobile = new AspectMobile(AspectFeature);
 
             if (aspectMobile.TryGetDimension(Dimension.thickness, out var thickness))
             {

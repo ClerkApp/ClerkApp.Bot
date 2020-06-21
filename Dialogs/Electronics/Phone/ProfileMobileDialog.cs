@@ -21,7 +21,7 @@ using Newtonsoft.Json;
 
 namespace ClerkBot.Dialogs.Electronics.Phone
 {
-    public class ProfileMobileDialog : ComponentDialog
+    public class ProfileMobileDialog : ComponentDialog, IProfileDialog
     {
         private readonly BotStateService BotStateService;
         private UserProfile UserProfile;
@@ -47,7 +47,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 BudgetRangeAsync,
                 ReliableBrandsAsync,
                 DurabilityAsync,
-                WantedFeatureAsync,
+                WantedFeatureAsync
             });
 
             InitialDialogId = Common.BuildDialogId();
@@ -64,7 +64,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), shuffledSteps.ToArray()));
         }
 
-        private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        public async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
@@ -72,7 +72,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> ProcessResultsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        public async Task<DialogTurnResult> ProcessResultsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var result = State;
             UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
@@ -90,7 +90,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                 Intensity.TryFromName(durability.Value, out var durabilityResult);
                 UserProfile.ElectronicsProfile.MobileProfile.Durability = durabilityResult;
 
-                var reliable = JsonConvert.DeserializeObject<CardAction<bool>>(reliableResult.ToString() ?? string.Empty);
+                var reliable = JsonConvert.DeserializeObject<CardAction<bool>>(reliableResult?.ToString() ?? string.Empty);
                 UserProfile.ElectronicsProfile.MobileProfile.ReliableBrands = reliable.Action;
 
                 if (featuresResult != null)

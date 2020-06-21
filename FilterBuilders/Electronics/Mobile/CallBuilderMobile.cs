@@ -7,42 +7,43 @@ using Nest;
 
 namespace ClerkBot.FilterBuilders.Electronics.Mobile
 {
-    public class CallBuilderMobile<TP, TC> where TP : MobileProfile where TC : MobileContract
+    public class CallBuilderMobile<TP, TC>: IChildBuilder
+        where TP : MobileProfile
+        where TC : MobileContract
     {
-        private readonly BaseBuilderMobile<TP, TC> BaseBuilder;
+        private readonly CallMobileFeature CallMobile;
+        private readonly FiltersCollections<TC> FiltersBuilder;
 
         private readonly List<Func<MatchQueryDescriptor<TC>, IMatchQuery>> MatchCriteria;
 
-        public CallBuilderMobile(BaseBuilderMobile<TP, TC> baseBuilder)
+        public CallBuilderMobile(TP profile, FiltersCollections<TC> filtersBuilder)
         {
-            BaseBuilder = baseBuilder;
+            FiltersBuilder = filtersBuilder;
+            CallMobile = profile.Features.FirstOrDefault(f => 
+                f.GetType().Name.Contains(nameof(MobileProfile.PhoneFeatures.Call))) as CallMobileFeature;
 
             MatchCriteria = new List<Func<MatchQueryDescriptor<TC>, IMatchQuery>>();
         }
 
         public void Build()
         {
-            var feature = BaseBuilder.Profile.Features.FirstOrDefault(f => 
-                f.GetType().Name.Contains(nameof(MobileProfile.PhoneFeatures.Call))) as CallMobileFeature;
-
-            if (feature is null)
+            if (CallMobile is null)
             {
                 return;
             }
 
-            GenerateCriteria(feature);
+            GenerateCriteria();
 
-            BaseBuilder.MustCollection.AddRange(MatchCriteria.Select(filter =>
-            {
-                return (Func<QueryContainerDescriptor<TC>, QueryContainer>)(budget => budget.Match(filter));
-            }).ToList());
+            FiltersBuilder.Must.AddRange(MatchCriteria.Select(filter =>
+                (Func<QueryContainerDescriptor<TC>, QueryContainer>)(budget => budget.Match(filter))
+            ).ToList());
         }
 
-        private void GenerateCriteria(CallMobileFeature feature)
+        private void GenerateCriteria()
         {
-            BaseBuilder.SortCollection.Descending(d => d.Network.Band.TotalBands);
-            BaseBuilder.SortCollection.Descending(d => d.Network.Technology.TotalTechs);
-            BaseBuilder.SortCollection.Descending(d => d.Battery.Capacity);
+            FiltersBuilder.Sort.Descending(d => d.Network.Band.TotalBands);
+            FiltersBuilder.Sort.Descending(d => d.Network.Technology.TotalTechs);
+            FiltersBuilder.Sort.Descending(d => d.Battery.Capacity);
 
             MatchCriteria.Add(device => device.Field(f => f.Battery.Fast).Query(bool.TrueString.ToLower()));
         }

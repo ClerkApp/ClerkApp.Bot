@@ -8,6 +8,7 @@ using ClerkBot.Enums;
 using ClerkBot.Helpers;
 using ClerkBot.Helpers.DialogHelpers;
 using ClerkBot.Helpers.PromptHelpers;
+using ClerkBot.Models.Dialog;
 using ClerkBot.Models.Electronics.Mobile.Features;
 using ClerkBot.Models.User;
 using ClerkBot.Resources;
@@ -16,10 +17,11 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Body = Centvrio.Emoji.Body;
 
 namespace ClerkBot.Dialogs.Electronics.Phone
 {
-    public class QuizMobileDialog : ComponentDialog
+    public class QuizMobileDialog : ComponentDialog, IQuizDialog
     {
         private readonly BotStateService BotStateService;
         private UserProfile UserProfile;
@@ -58,7 +60,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), shuffledSteps));
         }
 
-        private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        public async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
@@ -66,43 +68,41 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> ProcessResultsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        public async Task<DialogTurnResult> ProcessResultsAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var result = State;
             UserProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
 
-            if (result.Count > 0)
+            if (result.Count <= 0)
             {
-                result.TryGetValue(nameof(CameraFeatureMobile), out var cameraResult);
-                result.TryGetValue(nameof(GamingFeatureMobile), out var gameTypeResult);
-                result.TryGetValue(nameof(BudgetFeatureMobile), out var customRangeResult);
-                result.TryGetValue(nameof(AspectFeatureMobile), out var aspectResult);
+                return await stepContext.EndDialogAsync(null, cancellationToken);
+            }
 
-                if (cameraResult != null)
+            if (result.TryGetValue(nameof(CameraFeatureMobile), out var cameraResult))
+            {
+                var cameraFeature = JsonConvert.DeserializeObject<CameraFeatureMobile>(cameraResult.ToString() ?? string.Empty);
+                if (cameraFeature.Action)
                 {
-                    var cameraFeature =  JsonConvert.DeserializeObject<CameraFeatureMobile>(cameraResult.ToString() ?? string.Empty);
-                    if (cameraFeature.Action)
-                    {
-                        UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(cameraFeature);
-                    }
+                    UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(cameraFeature);
                 }
-                if (gameTypeResult != null)
-                {
-                    var gamingFeature = JsonConvert.DeserializeObject<GamingFeatureMobile>(gameTypeResult.ToString() ?? string.Empty);
-                    UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(gamingFeature);
-                }
+            }
 
-                if (customRangeResult != null)
-                {
-                    var customRange = JsonConvert.DeserializeObject<BudgetFeatureMobile>(customRangeResult.ToString() ?? string.Empty);
-                    UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(customRange);
-                }
+            if (result.TryGetValue(nameof(GamingFeatureMobile), out var gameTypeResult))
+            {
+                var gamingFeature = JsonConvert.DeserializeObject<GamingFeatureMobile>(gameTypeResult.ToString() ?? string.Empty);
+                UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(gamingFeature);
+            }
 
-                if (aspectResult != null)
-                {
-                    var aspectFeature = JsonConvert.DeserializeObject<AspectFeatureMobile>(aspectResult.ToString() ?? string.Empty);
-                    UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(aspectFeature);
-                }
+            if (result.TryGetValue(nameof(BudgetFeatureMobile), out var customRangeResult))
+            {
+                var customRange = JsonConvert.DeserializeObject<BudgetFeatureMobile>(customRangeResult.ToString() ?? string.Empty);
+                UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(customRange);
+            }
+
+            if (result.TryGetValue(nameof(AspectFeatureMobile), out var aspectResult))
+            {
+                var aspectFeature = JsonConvert.DeserializeObject<AspectFeatureMobile>(aspectResult.ToString() ?? string.Empty);
+                UserProfile.ElectronicsProfile.MobileProfile.TryAddFeature(aspectFeature);
             }
 
             return await stepContext.EndDialogAsync(null, cancellationToken);

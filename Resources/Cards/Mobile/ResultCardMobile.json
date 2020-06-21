@@ -10,6 +10,44 @@
           "url": "${DataLinks.Image}",
           "horizontalAlignment": "Center",
           "size": "Large"
+        },
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${Name.Brand} | ${Status.Year}",
+                  "horizontalAlignment": "Center"
+                },
+                {
+                  "type": "ColumnSet",
+                  "columns": [
+                    {
+                      "type": "Column",
+                      "width": "stretch",
+                      "items": [
+                        {
+                          "type": "TextBlock",
+                          "text": "${Name.Main}",
+                          "weight": "Bolder",
+                          "size": "ExtraLarge",
+                          "spacing": "None",
+                          "wrap": true,
+                          "horizontalAlignment": "Center",
+                          "color": "Accent"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "horizontalAlignment": "Center"
+            }
+          ]
         }
       ],
       "style": "default",
@@ -20,27 +58,87 @@
       "columns": [
         {
           "type": "Column",
-          "width": 2,
+          "width": "stretch",
           "items": [
             {
-              "type": "TextBlock",
-              "text": "${Name.Brand}, ${Status.Year}"
-            },
-            {
-              "type": "TextBlock",
-              "text": "${Name.Main}",
-              "weight": "Bolder",
-              "size": "ExtraLarge",
-              "spacing": "None",
-              "wrap": true
-            },
-            {
-              "type": "TextBlock",
-              "text": "${Price['EUR']}€",
-              "isSubtle": true,
-              "spacing": "None"
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Summary",
+                      "weight": "Bolder",
+                      "spacing": "None",
+                      "size": "Medium"
+                    },
+                    {
+                      "type": "ColumnSet",
+                      "columns": [
+                        {
+                          "type": "Column",
+                          "width": "stretch",
+                          "items": [
+                            {
+                              "type": "FactSet",
+                              "facts": [
+                                {
+                                  "title": "Selfie Cameras:",
+                                  "value": "${Camera.Selfie.Number} "
+                                },
+                                {
+                                  "title": "Back Cameras:",
+                                  "value": "${Camera.Main.Number} "
+                                },
+                                {
+                                  "title": "Battery Capacity:",
+                                  "value": "${Battery.Capacity}mAh"
+                                },
+                                {
+                                  "title": "Contain Jack:",
+                                  "value": "${Features.Jack} "
+                                },
+                                {
+                                  "title": "Has NFC:",
+                                  "value": "${Features.Nfc} "
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Column",
+                          "width": "auto",
+                          "items": [
+                            {
+                              "type": "TextBlock",
+                              "text": "Price",
+                              "horizontalAlignment": "Center",
+                              "size": "Medium"
+                            },
+                            {
+                              "type": "TextBlock",
+                              "text": "${Price['EUR']} €",
+                              "size": "Large",
+                              "weight": "Bolder",
+                              "color": "Dark"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
-          ]
+          ],
+          "horizontalAlignment": "Right",
+          "height": "stretch",
+          "spacing": "None",
+          "separator": true,
+          "style": "accent"
         }
       ]
     }

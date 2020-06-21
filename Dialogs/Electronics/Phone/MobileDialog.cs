@@ -54,13 +54,13 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             AddDialog(new WaterfallDialog(Common.BuildDialogId(), waterfallSteps));
         }
 
-        private static async Task<DialogTurnResult> WelcomeAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        public async Task<DialogTurnResult> WelcomeAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync(MessageFactory.Text($"I can help you choose the best phone {Centvrio.Emoji.Phone.Mobile} to suit your needs {FacePositive.Squinting}"), cancellationToken);
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> ResultCardAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        public async Task<DialogTurnResult> ResultCardAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
             var filterBuilder = new BaseBuilderMobile<MobileProfile, MobileContract>(userProfile.ElectronicsProfile.MobileProfile);
@@ -75,31 +75,33 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                     .Sort(filterBuilder.GetSort()));
 
             var queryTest = searchResponse.ToJson();
-            var searchResult = ElasticProductSearchResultBuilder.BuildProductSearchResult(searchResponse);
+            var searchResult = new ElasticProductSearchResultBuilder<MobileContract>().BuildProductSearchResult(searchResponse);
 
             var botResponse = new List<IActivity>();
             if (searchResult.Products.Any())
             {
                 var phoneCards = new List<Attachment>();
 
-                foreach (var mobile in searchResult.Products)
+                Parallel.ForEach(searchResult.Products, mobile =>
                 {
                     var dialogTypeName = GetType().Name.GetDialogType();
                     var resourceCardName = dialogTypeName.GetCardName();
                     var fileName = $"{dialogTypeName}.{resourceCardName}";
 
                     var phoneResultTemplate = new AdaptiveCardTemplate(new EmbeddedResourceReader(fileName).GetJson());
-                        
-                    phoneCards.Add(Common.CreateAdaptiveCardAttachment(phoneResultTemplate.Expand(JsonConvert.SerializeObject(mobile))));
-                }
 
-                botResponse.AddRange(new List<IActivity>
-                {
-                    MessageFactory.Text($"{FaceRole.Partying} I believe I've found a list of {userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.First()} " +
-                                        $"phone that perfectly fits you {FacePositive.GrinningSmilingEyes}"),
-                    MessageFactory.Carousel(phoneCards),
-                    MessageFactory.Text($"If you want to give another try, just say re-try {FacePositive.Grinning}")
+                    phoneCards.Add(Common.CreateAdaptiveCardAttachment(phoneResultTemplate.Expand(JsonConvert.SerializeObject(mobile))));
                 });
+
+                botResponse.Add(MessageFactory.Text(
+                    $"{FaceRole.Partying} I believe I've found a list of {userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.First()} " + 
+                    $"phone that perfectly fits you {FacePositive.GrinningSmilingEyes}"));
+                phoneCards.ChunkBy(2).ForEach(chunk => 
+                    botResponse.AddRange(new List<IActivity>
+                    {
+                        MessageFactory.Carousel(chunk)
+                    }));
+                botResponse.Add(MessageFactory.Text($"If you want to give another try, just say re-try {FacePositive.Grinning}"));
             }
             else
             {
@@ -117,27 +119,27 @@ namespace ClerkBot.Dialogs.Electronics.Phone
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> ProfileInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        public async Task<DialogTurnResult> ProfileInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+            var dialog = nameof(ProfileMobileDialog).TryGetProfileDialog();
 
-            var areAllPropertiesNotNull = userProfile.ElectronicsProfile.MobileProfile.ArePropertiesNotNull();
-
-            if (!areAllPropertiesNotNull)
+            if (dialog != null && !userProfile.ElectronicsProfile.MobileProfile.ArePropertiesNotNull())
             {
-                return await stepContext.BeginDialogAsync(nameof(ProfileMobileDialog), null, cancellationToken);
+                return await stepContext.BeginDialogAsync(dialog, null, cancellationToken);
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> QuizInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        public async Task<DialogTurnResult> QuizInfoAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var userProfile = await BotStateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+            var dialog = nameof(QuizMobileDialog).TryGetQuizDialog();
 
-            if (!userProfile.ElectronicsProfile.MobileProfile.WantedFeatures.AreSomePropertiesFalse())
+            if (dialog != null && !userProfile.ElectronicsProfile.MobileProfile.WantedFeatures.AreSomePropertiesFalse())
             {
-                return await stepContext.BeginDialogAsync(nameof(QuizMobileDialog), userProfile, cancellationToken);
+                return await stepContext.BeginDialogAsync(dialog, userProfile, cancellationToken);
             }
 
             return await stepContext.NextAsync(null, cancellationToken);
