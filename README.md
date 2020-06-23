@@ -6,4 +6,4 @@
 
 - [Mobile Rules](https://docs.google.com/spreadsheets/d/1HjkYMhAgxAiYIaWoANTiFn6AVLGO3t9-C_EUzP6Sy0s/edit?usp=sharing)
 - [Documentation](https://drive.google.com/file/d/17b5V0WznG5BwVEXx9rcryBQBdizLSp9K/view?usp=sharing)
-- [Prezentare](https://docs.google.com/presentation/d/1ApfHiktkCKfOeV_izYMGWTZLP6WZGZYXNB6PX0xV_dk/edit?usp=sharing)
+- [Prezentare](https://docs.google.com/presentation/d/1IiPD1SARgezdTky9s0QqGjzsBwHrSNC9KNR2JgUakBg/edit?usp=sharing)
