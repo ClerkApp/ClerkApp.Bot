@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Centvrio.Emoji;
 using ClerkBot.Config;
 using ClerkBot.Dialogs.Conversations;
 using ClerkBot.Dialogs.Electronics;
@@ -84,6 +85,9 @@ namespace ClerkBot.Dialogs
 
         private static async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            await stepContext.Context.SendActivityAsync(
+                MessageFactory.Text($"I always like to say: \"Never stop from trying other things\" {FacePositive.Grinning}"),
+                cancellationToken);
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
     }

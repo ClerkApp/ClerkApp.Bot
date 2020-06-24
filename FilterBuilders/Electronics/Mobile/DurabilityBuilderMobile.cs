@@ -40,15 +40,16 @@ namespace ClerkBot.FilterBuilders.Electronics.Mobile
 
         private void GenerateCriteria()
         {
-            if (Durability.Value >= Intensity.Hard.Value)
-            {
-                MatchCriteria.Add(device => device.Field(f => f.Features.DustResistant).Query(bool.TrueString.ToLower()));
-                MatchPhraseCriteria.Add(device => device.Field(f => f.Body.Build).Query("glass back"));
+            MatchCriteria.Add(device => device.Field(f => f.Features.DustResistant).Query(bool.TrueString.ToLower()));
 
-                if(Durability.Value >= Intensity.ExtraHard.Value)
-                {
-                    MatchCriteria.Add(device => device.Field(f => f.Body.Build).Query("steel").Operator(Operator.Or).Query("aluminum"));
-                }
+            if (Durability.Value == Intensity.Hard.Value)
+            {
+                MatchPhraseCriteria.Add(device => device.Field(f => f.Body.Build).Query("glass back"));
+            }
+
+            if(Durability.Value == Intensity.ExtraHard.Value)
+            {
+                MatchCriteria.Add(device => device.Field(f => f.Body.Build).Operator(Operator.Or).Query("aluminum steel"));
             }
         }
     }

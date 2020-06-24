@@ -71,8 +71,6 @@ namespace ClerkBot.Dialogs.Electronics
 
         public async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var test = this.Dialogs.GetDialogs();
-            stepContext.Stack.Clear();
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 

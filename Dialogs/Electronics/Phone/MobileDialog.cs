@@ -56,7 +56,9 @@ namespace ClerkBot.Dialogs.Electronics.Phone
 
         public async Task<DialogTurnResult> WelcomeAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"I can help you choose the best phone {Centvrio.Emoji.Phone.Mobile} to suit your needs {FacePositive.Squinting}"), cancellationToken);
+            await stepContext.Context.SendActivityAsync(
+                MessageFactory.Text($"I can help you choose the best phone {Centvrio.Emoji.Phone.Mobile} to suit your needs {FacePositive.Squinting}"),
+                cancellationToken);
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
@@ -101,7 +103,6 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                     {
                         MessageFactory.Carousel(chunk)
                     }));
-                botResponse.Add(MessageFactory.Text($"If you want to give another try, just say re-try {FacePositive.Grinning}"));
             }
             else
             {
@@ -110,8 +111,7 @@ namespace ClerkBot.Dialogs.Electronics.Phone
                     MessageFactory.Text(
                         $"Sorry {FaceNegative.Crying} but I don't think there is a phone {Centvrio.Emoji.Phone.Mobile}" +
                         $"in this {userProfile.ElectronicsProfile.MobileProfile.BudgetRanges.First()} range that will fulfill your wishes {Money.Receipt}"),
-                    MessageFactory.Text($"You could try again, maybe increasing {Arrow.Up} your budget or taking out {OtherSymbols.CrossMark} some features..."),
-                    MessageFactory.Text($"If you want to give another try, just say re-try {FacePositive.Grinning}")
+                    MessageFactory.Text($"You could try again, maybe increasing {Arrow.Up} your budget or taking out {OtherSymbols.CrossMark} some features...")
                 });
             }
 
